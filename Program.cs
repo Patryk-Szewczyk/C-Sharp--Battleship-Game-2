@@ -1,8 +1,14 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Controler;
 using Page_Intro;
 using Page_Menu;
+//using Page_PVP;
+//using Page_PVC;
+using Page_Instructions;
+//using Page_Ranking;
+//using Page_Options;
+//using Page_Credits;
 
 namespace Controler
 {
