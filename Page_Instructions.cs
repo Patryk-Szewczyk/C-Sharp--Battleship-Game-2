@@ -1,18 +1,21 @@
+using Page_Menu;
+
 namespace Page_Instructions
 {
-    interface IPageInstructions
+    // KIEDY SKOŃCZYSZ GRĘ - SPRÓBUJ ZAAPLICOWAĆ "static" DO INTERFEJSÓW STRON!
+    interface IPageInstructions   // Mogłem opuścić interfejs, aby mieć metody statyczne, ale używam go ponieważ chcę mieć widoczne na górze nazwy wszystkich metody danej klasy:
     {
-        public static void Instruction() { }   // Wy�wietlenie strony instrukcji.
-        protected static void Page_Game() { }   // Wy�wietlenie instrukcji obs�ugi gry.
-        protected static void Page_Ships() { }   // Wy�wietlenie informacji odno�nie statk�w.
-        protected static void Page_Board() { }   // Wy�wietlenie instrukcji post�powania z plansz� w trakcie gry.
+        public void Instructions();   // Wyświetlenie strony instrukcji.
+        public void Page_Game();   // Wyświetlenie instrukcji obsługi gry.
+        public void Page_Ships();   // Wyświetlenie informacji odnośnie statków.
+        public void Page_Board();   // Wyświetlenie instrukcji postępowania z planszą w trakcie gry.
     }
     public class PageInstructions : IPageInstructions
     {
         public static bool isInstructionButtonLoop = true;
         public static string[] instructionButtons = { "Game", "Ships", "Board"};
         public static int instructionButtNum = instructionButtons.Length;
-        public static void Instruction()
+        public void Instructions()
         {
             while (isInstructionButtonLoop == true)
             {
@@ -25,7 +28,7 @@ namespace Page_Instructions
                 Console.WriteLine("BB  BB BB BB        BB     BB     BB    BB  BB    BB  BB           BB     BB  BB    BB  BB BB BB");
                 Console.WriteLine("BB  BB  BBBB  BBBBBBB      BB     BB    BB   BBBBBB    BBBBBBB     BB     BB   BBBBBB   BB  BBBB");
                 Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
-                Console.WriteLine("Choose instruction page: (arrows/wsad) | Back to menu: [E]\n");
+                Console.WriteLine("Choose instruction page: (arrows/wsad) | Back to menu: [Q]\n");
                 for (int i = 0, j = instructionButtons.Length; i < instructionButtons.Length; i++, j--)
                 {
                     if (j == instructionButtNum)
@@ -41,41 +44,37 @@ namespace Page_Instructions
                 switch (instructionButtNum)
                 {
                     case 3:
-                        PageInstructions.Page_Game();
+                        PageInstructions game = new PageInstructions();
+                        game.Page_Game();
                         break;
                     case 2:
-                        PageInstructions.Page_Ships();
+                        PageInstructions ships = new PageInstructions();
+                        ships.Page_Ships();
                         break;
                     case 1:
-                        PageInstructions.Page_Board();
+                        PageInstructions board = new PageInstructions();
+                        board.Page_Board();
                         break;
                 }
-                // ASCII:
-                int asciiValue = 0;
+                // Poruszanie się po przyciskach (obliczenia):
                 ConsoleKeyInfo key = Console.ReadKey(true);
-                if (key.Key != ConsoleKey.Enter)
-                {
-                    Console.Write("");
-                    asciiValue = (int)key.Key;
-                }
-                else
-                {
-                    isInstructionButtonLoop = false;
-                }
-                // Poruszanie si� po przyciskach (obliczenia):
-                if (asciiValue == 87 || asciiValue == 38)
+                if (key.Key == ConsoleKey.UpArrow || key.Key == ConsoleKey.W)
                 {
                     instructionButtNum = (instructionButtNum < instructionButtons.Length) ? instructionButtNum += 1 : instructionButtNum;
-                    Console.WriteLine(instructionButtNum);
                 }
-                else if (asciiValue == 83 || asciiValue == 40)
+                else if (key.Key == ConsoleKey.DownArrow || key.Key == ConsoleKey.S)
                 {
                     instructionButtNum = (instructionButtNum > 1) ? instructionButtNum -= 1 : instructionButtNum;
-                    Console.WriteLine(instructionButtNum);
+                }
+                else if (key.Key == ConsoleKey.Q)
+                {
+                    isInstructionButtonLoop = false;
+                    MenuPage.isMenuButtonLoop = true;
+                    MenuPage.Menu();
                 }
             }
         }
-        protected static void Page_Game()
+        public void Page_Game()
         {
             Console.WriteLine("1. Every player have a 7 ships.");
             Console.WriteLine("2. Every player must set our every ship on our board.");
@@ -98,11 +97,11 @@ namespace Page_Instructions
             Console.WriteLine("17. After battle, players see your scores and next they see appropriate game mode score ranking.");
             Console.WriteLine("18. After game players can play game again or get in game credits.");
         }
-        protected static void Page_Ships()
+        public void Page_Ships()
         {
             Console.WriteLine("Page_Ships");
         }
-        protected static void Page_Board()
+        public void Page_Board()
         {
             Console.WriteLine("Page_Board");
         }
