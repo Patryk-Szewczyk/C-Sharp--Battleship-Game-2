@@ -6,7 +6,7 @@ namespace Page_PVC
     // KIEDY SKOŃCZYSZ GRĘ - SPRÓBUJ ZAAPLICOWAĆ "static" DO INTERFEJSÓW STRON!
     interface IPagePVC   // Mogłem opuścić interfejs, aby mieć metody statyczne, ale używam go ponieważ chcę mieć widoczne na górze nazwy wszystkich metody danej klasy:
     {
-        public void PVC();   // Wyświetlenie strony PVC.
+        void PVC();   // Wyświetlenie strony PVC.
     }
     public class PagePVC : IPagePVC
     {
@@ -15,18 +15,18 @@ namespace Page_PVC
         {
             while (isPVCShipPositingLoop == true)
             {
-                Console.Clear();
-                Console.WriteLine("BBBBBBB   BB    BB   BBBBBBB");
-                Console.WriteLine("BB    BB  BB    BB  BB      ");
-                Console.WriteLine("BB    BB  BB    BB  BB      ");
-                Console.WriteLine("BBBBBBB   BB    BB  BB      ");
-                Console.WriteLine("BB         BB  BB   BB      ");
-                Console.WriteLine("BB          BBBB    BB      ");
-                Console.WriteLine("BB           BB      BBBBBBB");
-                Console.WriteLine("\n- - - - - - - - - - - - - -\n");
-                Console.WriteLine("Back to menu: [Q]\n");
-                ConsoleKeyInfo key = Console.ReadKey(true);
-                if (key.Key == ConsoleKey.Q)
+                System.Console.Clear();
+                System.Console.WriteLine("BBBBBBB   BB    BB   BBBBBBB");
+                System.Console.WriteLine("BB    BB  BB    BB  BB      ");
+                System.Console.WriteLine("BB    BB  BB    BB  BB      ");
+                System.Console.WriteLine("BBBBBBB   BB    BB  BB      ");
+                System.Console.WriteLine("BB         BB  BB   BB      ");
+                System.Console.WriteLine("BB          BBBB    BB      ");
+                System.Console.WriteLine("BB           BB      BBBBBBB");
+                System.Console.WriteLine("\n- - - - - - - - - - - - - -\n");
+                System.Console.WriteLine("Back to menu: [Q]\n");
+                System.ConsoleKeyInfo key = System.Console.ReadKey(true);
+                if (key.Key == System.ConsoleKey.Q)
                 {
                     isPVCShipPositingLoop = false;
                     MenuPage.isMenuButtonLoop = true;
