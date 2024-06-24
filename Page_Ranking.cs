@@ -6,17 +6,19 @@ namespace Page_Ranking
     interface IPageRanking   // Mogłem opuścić interfejs, aby mieć metody statyczne, ale używam go ponieważ chcę mieć widoczne na górze nazwy wszystkich metody danej klasy:
     {
         void Ranking();   // Wyświetlenie strony rankingu.
-        void Scores_PVP();   // Wyświetlenie wyników trybu gry: PVP.
+        //void Scores_PVP();   // Wyświetlenie wyników trybu gry: PVP.
         void Scores_PVC();   // Wyświetlenie wyników trybu gry: PVC.
     }
     public class PageRanking : IPageRanking
     {
         public static bool isRankingButtonLoop = true;
         public static bool isCorrectSign = false;
-        public static string[] rankingButtons = { "PVP", "PVC" };
+        public static string[] rankingButtons = { "PVC" };
         public static int rankingButtNum = rankingButtons.Length;
         public void Ranking()
         {
+            System.ConsoleKey key = System.ConsoleKey.Backspace;   // Dowolny niewłaściwy klawisz.
+            System.ConsoleKeyInfo corr_key;
             while (isRankingButtonLoop == true)
             {
                 System.Console.Clear();
@@ -28,7 +30,7 @@ namespace Page_Ranking
                 System.Console.WriteLine("BB    BB  BB    BB  BB BB BB  BB   BB   BB  BB BB BB  BB    BB");
                 System.Console.WriteLine("BB    BB  BB    BB  BB  BBBB  BB    BB  BB  BB  BBBB   BBBBBB ");
                 System.Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
-                System.Console.WriteLine("Choose game mode: (arrows/wsad) | Back to menu: [Q]\n");
+                System.Console.WriteLine("Choose game mode: (arrows/[W][S]) | Back to menu: [Q]\n");
                 for (int i = 0, j = rankingButtons.Length; i < rankingButtons.Length; i++, j--)
                 {
                     if (j == rankingButtNum)
@@ -43,19 +45,18 @@ namespace Page_Ranking
                 System.Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
                 switch (rankingButtNum)
                 {
-                    case 2:
+                    /*case 2:
                         PageRanking pvp = new PageRanking();
                         pvp.Scores_PVP();
-                        break;
+                        break;*/
                     case 1:
                         PageRanking pvc = new PageRanking();
                         pvc.Scores_PVC();
                         break;
                 }
-                System.ConsoleKey key = System.ConsoleKey.Backspace;   // Dowolny niewłaściwy klawisz.
                 while (isCorrectSign == false)   // Pętla ta uniemożliwia przeładowanie strony kiedy kliknie się niewłaściwy klawisz.
                 {
-                    System.ConsoleKeyInfo corr_key = System.Console.ReadKey(true);
+                    corr_key = System.Console.ReadKey(true);
                     if (corr_key.Key == System.ConsoleKey.W || corr_key.Key == System.ConsoleKey.S || corr_key.Key == System.ConsoleKey.UpArrow || corr_key.Key == System.ConsoleKey.DownArrow || corr_key.Key == System.ConsoleKey.Q)
                     {
                         isCorrectSign = true;
@@ -80,11 +81,11 @@ namespace Page_Ranking
                 }
             }
         }
-        public void Scores_PVP()
+        /*public void Scores_PVP()  // Anulowany tryb:
         {
             System.Console.WriteLine("Page_PVP");
-        }
-        public void Scores_PVC()
+        }*/
+        public void Scores_PVC()  // Tryb gracz vs komputer:
         {
             System.Console.WriteLine("Page_PVC");
         }
