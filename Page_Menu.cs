@@ -16,11 +16,13 @@ namespace Page_Menu
         public static bool menuSoundtrack_PLAY = false;
         public static bool isMenuButtonLoop = true;
         public static bool isCorrectSign = false;
-        public static string[] menuButtons = { "PVP Mode", "PVC Mode", "Instruction", "Ranking", "Options", "Credits", "Exit" };
+        public static string[] menuButtons = { "PVC Mode", "Instruction", "Ranking", "Options", "Credits", "Exit" };
         public static int menuButtNum = menuButtons.Length;   // Zawsze ostatni, bo chcę mieć kursor na górze!
 
         public static void Menu()
         {
+            System.ConsoleKey key = System.ConsoleKey.Backspace;   // Dowolny niewłaściwy klawisz.
+            System.ConsoleKeyInfo corr_key;
             if (menuSoundtrack_PLAY != true)   // Jeżeli ścieżka dżwiękowa nie jest włączona, włącz ją.
             {
                 MenuPage.Soundtrack("Soundtracks/Menu/473915__xhale303__synthwave-loop.wav");
@@ -36,8 +38,8 @@ namespace Page_Menu
                 System.Console.WriteLine("BB    BB  BB    BB     BB        BB     BB        BB              BB  BB    BB  BB  BB            BB");
                 System.Console.WriteLine("BB    BB  BB    BB     BB        BB     BB        BB              BB  BB    BB  BB  BB           BB");
                 System.Console.WriteLine("BBBBBBB   BB    BB     BB        BB     BBBBBBBB  BBBBBBBB  BBBBBBB   BB    BB  BB  BB          BBBBBBBB");
-                System.Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
-                System.Console.WriteLine("MENU: (navigation = arrows/wsad, click = ENTER/[E])\n");
+                System.Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
+                System.Console.WriteLine("MENU: (navigation = arrows/[W][S], click = ENTER/[E])\n");
                 for (int i = 0, j = menuButtons.Length; i < menuButtons.Length; i++, j--)
                 {
                     if (j == menuButtNum)
@@ -49,10 +51,9 @@ namespace Page_Menu
                         System.Console.WriteLine("  " + menuButtons[i]);
                     }
                 }
-                System.ConsoleKey key = System.ConsoleKey.Backspace;   // Dowolny niewłaściwy klawisz.
                 while (isCorrectSign == false)   // Pętla ta uniemożliwia przeładowanie strony kiedy kliknie się niewłaściwy klawisz.
                 {
-                    System.ConsoleKeyInfo corr_key = System.Console.ReadKey(true);
+                    corr_key = System.Console.ReadKey(true);
                     if (corr_key.Key == System.ConsoleKey.W || corr_key.Key == System.ConsoleKey.S || corr_key.Key == System.ConsoleKey.UpArrow || corr_key.Key == System.ConsoleKey.DownArrow || corr_key.Key == System.ConsoleKey.E || corr_key.Key == System.ConsoleKey.Enter)
                     {
                         isCorrectSign = true;
@@ -65,41 +66,47 @@ namespace Page_Menu
                     isMenuButtonLoop = false;
                     switch (menuButtNum)
                     {
-                        case 7:   // PVP
+                        /*case 7:   // PVP
                             PagePVP.isPVPShipPositingLoop = true;
                             PagePVP pvp = new PagePVP();
                             pvp.PVP();
-                            GC.Collect();   // Usuwanie obiektu z pamięci, aby nie zaśmiecać jej dodatkowymi kopiami tego opiektu. (wiem, że on sam się włącza, a chcę mieć 100% pewność, że jednak obiekt ten znika z pamięci)
-                            break;
+                            //GC.Collect();   // Usuwanie obiektu z pamięci, aby nie zaśmiecać jej dodatkowymi kopiami tego opiektu. (wiem, że on sam się włącza, a chcę mieć 100% pewność, że jednak obiekt ten znika z pamięci)
+                            //GC.WaitForPendingFinalizers();
+                            break;*/
                         case 6:   // PVC
                             PagePVC.isPVCShipPositingLoop = true;
                             PagePVC pvc = new PagePVC();
                             pvc.PVC();
-                            GC.Collect();
+                            //GC.Collect();
+                            //GC.WaitForPendingFinalizers();
                             break;
                         case 5:   // Instruction
                             PageInstructions.isInstructionButtonLoop = true;
                             PageInstructions instruction = new PageInstructions();
                             instruction.Instructions();
-                            GC.Collect();
+                            //GC.Collect();
+                            //GC.WaitForPendingFinalizers();
                             break;
                         case 4:   // Ranking
                             PageRanking.isRankingButtonLoop = true;
                             PageRanking ranking = new PageRanking();
                             ranking.Ranking();
-                            GC.Collect();
+                            //GC.Collect();
+                            //GC.WaitForPendingFinalizers();
                             break;
                         case 3:   // Options
                             PageOptions.isOptionsButtonLoop = true;
                             PageOptions options = new PageOptions();
                             options.Options();
-                            GC.Collect();
+                            //GC.Collect();
+                            //GC.WaitForPendingFinalizers();
                             break;
                         case 2:   // Credits
                             PageCredits.isCreditsLoop = true;
                             PageCredits credits = new PageCredits();
                             credits.Credits();
-                            GC.Collect();
+                            //GC.Collect();
+                            //GC.WaitForPendingFinalizers();
                             break;
                         case 1:   // Exit
                             isMenuButtonLoop = false;
