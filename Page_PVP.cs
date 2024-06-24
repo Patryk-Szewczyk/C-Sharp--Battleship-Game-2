@@ -13,6 +13,7 @@ namespace Page_PVP
         public static bool isPVPShipPositingLoop = true;
         public void PVP()
         {
+            System.ConsoleKeyInfo key;
             while (isPVPShipPositingLoop == true)
             {
                 MenuPage.menuSoundtrack.Stop();   // Test poprwności zamykania i ponownego odtwierania ścieżki dźwiękowej | ?
@@ -30,7 +31,7 @@ namespace Page_PVP
                 System.Console.WriteLine("BB           BB     BB      ");
                 System.Console.WriteLine("\n- - - - - - - - - - - - - -\n");
                 System.Console.WriteLine("Back to menu: [Q]\n");
-                System.ConsoleKeyInfo key = System.Console.ReadKey(true);
+                key = System.Console.ReadKey(true);
                 if (key.Key == System.ConsoleKey.Q)
                 {
                     isPVPShipPositingLoop = false;
