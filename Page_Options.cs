@@ -1,4 +1,7 @@
 using Page_Menu;
+using Page_PVP;
+using Page_PVC;
+using Page_Ranking;
 
 namespace Page_Options
 {
@@ -11,16 +14,20 @@ namespace Page_Options
     {
         public static bool isOptionsButtonLoop = true;
         public static bool isCorrectSign = false;
-        public static string[] optionsButtons = { "Music:                            ON = [E], OFF = [D]",
-                                                  "Sound effects:                    ON = [E], OFF = [D]",
-                                                  "AI voice:                         ON = [E], OFF = [D]",
-                                                  "AI subtitles:                     ON = [E], OFF = [D]",
-                                                  "Game Credits: website / console:  website = [E], console = [D]",
-                                                  "Delete ranking data:              moving = [O][L], choose = [I], delete = [C]",
-                                                  "Delete Machine Learning data:     moving = [O][L], choose = [I], delete = [C]" };
+        public static string[] optionsButtons = 
+        { 
+            "Music:                            ON = [E], OFF = [D]",
+            "Sound effects:                    ON = [E], OFF = [D]",
+            "AI voice:                         ON = [E], OFF = [D]",
+            "AI subtitles:                     ON = [E], OFF = [D]",
+            "Delete ranking data:              moving = [O][L], choose = [I], delete = [C]",   // PVP || PVC
+            "Delete Machine Learning data:     moving = [O][L], choose = [I], delete = [C]" 
+        };
+        public static string[] toRankingButtons = { "PVP", "PVC" };   // EJJJJJJJJJJ!!! JESTEŚ NA TYM JAKBY CO!!!
         public static int optionsButtNum = optionsButtons.Length;
         public void Options()
         {
+            System.ConsoleKey key = System.ConsoleKey.Backspace;   // Dowolny niewłaściwy klawisz.
             while (isOptionsButtonLoop == true)
             {
                 System.Console.Clear();
@@ -32,7 +39,7 @@ namespace Page_Options
                 System.Console.WriteLine("BB    BB  BB           BB     BB  BB    BB  BB BB BB        BB");
                 System.Console.WriteLine(" BBBBBB   BB           BB     BB   BBBBBB   BB  BBBB  BBBBBBB ");
                 System.Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
-                System.Console.WriteLine("Options: (arrows/wsad) | Back to menu: [Q]\n");
+                System.Console.WriteLine("Options: (arrows/[W][S]) | Back to menu: [Q]\n");
                 for (int i = 0, j = optionsButtons.Length; i < optionsButtons.Length; i++, j--)
                 {
                     if (j == optionsButtNum)
@@ -50,7 +57,6 @@ namespace Page_Options
                 {
                     // INFORMACJE O STANIE POSZCZEGÓLNYCH OPCJI, np. Music: OFF
                 }*/
-                System.ConsoleKey key = System.ConsoleKey.Backspace;   // Dowolny niewłaściwy klawisz.
                 while (isCorrectSign == false)   // Pętla ta uniemożliwia przeładowanie strony kiedy kliknie się niewłaściwy klawisz.
                 {
                     System.ConsoleKeyInfo corr_key = System.Console.ReadKey(true);
