@@ -1,27 +1,36 @@
+using System;
+using static System.Net.Mime.MediaTypeNames;
+
 namespace Page_Intro
 {
     public class IntroPage
     {
         public static void Intro()
         {
-            System.Console.WriteLine("BBBBBBB     BBBB    BBBBBBBB  BBBBBBBB  BB        BBBBBBBB   BBBBBBB  BB    BB  BB  BBBBBBB      BBBBBB");
-            System.Console.WriteLine("BB    BB   BB  BB      BB        BB     BB        BB        BB        BB    BB  BB  BB    BB    BB    BB");
-            System.Console.WriteLine("BB    BB  BB    BB     BB        BB     BB        BB        BB        BB    BB  BB  BB    BB         BB");
-            System.Console.WriteLine("BBBBBBBB  BBBBBBBB     BB        BB     BB        BBBBBBBB   BBBBBB   BBBBBBBB  BB  BBBBBBB        BBB");
-            System.Console.WriteLine("BB    BB  BB    BB     BB        BB     BB        BB              BB  BB    BB  BB  BB            BB");
-            System.Console.WriteLine("BB    BB  BB    BB     BB        BB     BB        BB              BB  BB    BB  BB  BB           BB");
-            System.Console.WriteLine("BBBBBBB   BB    BB     BB        BB     BBBBBBBB  BBBBBBBB  BBBBBBB   BB    BB  BB  BB          BBBBBBBB");
-            System.Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
-            System.Console.WriteLine("Battleship [Version 2.00]");
-            System.Console.WriteLine("Copyright (c) Patryk Szewczyk. All rights reserved.\n");   // Prawa autorskie zastrzeżone. Tylko do własnego użytku. Zakaz kopiowana i zarabiania na tym produkcie.
-            System.Console.WriteLine("Battleship Game is simple game which depend of sunking ships between players.");
-            System.Console.WriteLine("To start game you must do a few activites to mainly set ships.\n");
-            System.Console.WriteLine("I yery please YOU about enable full screen.");
-            System.Console.WriteLine("In else case you see errors in figure of NOT clearing console code (in console top).\n");
-            System.Console.WriteLine("Also I please you about turn on sounds to minimum 20%.");
-            System.Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
-            System.Console.WriteLine("To continue with the instructions, click ENTER key\n");
-            System.Console.ReadLine();   // Aby przejść dalej do kolejnej pseudo-strony konsoli (metoda "Console.Clear()") trzeba kliknąć ENTER
+            System.Console.WriteLine("\nBattleship 2 AI [Version 1.00]" +
+                "\nCopyright (c) Patryk Szewczyk 20841 | 2 INF, AHNS. All rights reserved." +
+                "\n\nBattleship Game is simple game which depend of sunking ships between players." +
+                "\nTo start game you must do a few activites to mainly set ships." +
+                "\n\nI very please YOU about enable full screen." +
+                "\nIn else case you see errors in figure of NOT clearing console code (in console top)." +
+                "\nAlso I please you about turn on sounds to minimum 20%." +
+                "\n\nWARNING! The closing credits were created as an \".html\" file that plays in the" +
+                "\ndefault browser. In order for the end credits to play correctly, go to the main" +
+                "\ndirectory and set the \"credits.html\" file properties to the option to ALWAYS open" +
+                "\nit in the browser. To do this, select the \"select another application\" option and" +
+                "\nselect a browser. Additionally maximize your browser window." +
+                "\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" +
+                "\n\nTo continue, click ENTER key:\n");
+            System.ConsoleKeyInfo corr_key;
+            bool isEnter = false;
+            while (isEnter == false)
+            {
+                corr_key = System.Console.ReadKey(true);  // "ture", bo nie chcę widzieć znaku
+                if (corr_key.Key == System.ConsoleKey.Enter)
+                {
+                    isEnter = true;
+                }
+            }
         }
     }
 }
