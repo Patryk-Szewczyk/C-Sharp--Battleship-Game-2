@@ -13,8 +13,14 @@ namespace Page_PVC
         public static bool isPVCShipPositingLoop = true;
         public void PVC()
         {
+            System.ConsoleKeyInfo key;
             while (isPVCShipPositingLoop == true)
             {
+                MenuPage.menuSoundtrack.Stop();   // Test poprwności zamykania i ponownego odtwierania ścieżki dźwiękowej | ?
+                MenuPage.menuSoundtrack_PLAY = false;
+
+                //
+
                 System.Console.Clear();
                 System.Console.WriteLine("BBBBBBB   BB    BB   BBBBBBB");
                 System.Console.WriteLine("BB    BB  BB    BB  BB      ");
@@ -25,7 +31,7 @@ namespace Page_PVC
                 System.Console.WriteLine("BB           BB      BBBBBBB");
                 System.Console.WriteLine("\n- - - - - - - - - - - - - -\n");
                 System.Console.WriteLine("Back to menu: [Q]\n");
-                System.ConsoleKeyInfo key = System.Console.ReadKey(true);
+                key = System.Console.ReadKey(true);
                 if (key.Key == System.ConsoleKey.Q)
                 {
                     isPVCShipPositingLoop = false;
