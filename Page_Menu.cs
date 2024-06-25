@@ -12,8 +12,9 @@ namespace Page_Menu
 {
     public class MenuPage
     {
-        public static SoundPlayer menuSoundtrack = new SoundPlayer();   // WEŹ TO SPRÓBUJ PRZENIEŚĆ DO MENU Z try/catch
+        public static SoundPlayer currentSoundtrack = new SoundPlayer();   // WEŹ TO SPRÓBUJ PRZENIEŚĆ DO MENU Z try/catch
         public static bool menuSoundtrack_PLAY = false;
+        public static bool creditsSoundtrack_PLAY = false;
         public static bool isMenuButtonLoop = true;
         public static bool isCorrectSign = false;
         public static string[] menuButtons = { "PVC Mode", "Instruction", "Ranking", "Options", "Credits", "Exit" };
@@ -23,11 +24,18 @@ namespace Page_Menu
         {
             System.ConsoleKey key = System.ConsoleKey.Backspace;   // Dowolny niewłaściwy klawisz.
             System.ConsoleKeyInfo corr_key;
-            if (menuSoundtrack_PLAY != true)   // Jeżeli ścieżka dżwiękowa nie jest włączona, włącz ją.
+            if (MenuPage.menuSoundtrack_PLAY == false && MenuPage.creditsSoundtrack_PLAY == false)
             {
                 MenuPage.Soundtrack("Soundtracks/Menu/473915__xhale303__synthwave-loop.wav");
-                menuSoundtrack_PLAY = true;
-            }   // Włączenieścieżki dźwiękowej musi znajdować się w tym warunku, gdyż jeżeli wyjdziemy z danej podstrony i wrócimy do menu (menu wówczas wywołuje się), to ścieżka dżwiękowa wywoła się z menu.
+                MenuPage.menuSoundtrack_PLAY = true;
+            }
+            else if (MenuPage.menuSoundtrack_PLAY == false && MenuPage.creditsSoundtrack_PLAY == true)
+            {
+                MenuPage.currentSoundtrack.Stop();
+                MenuPage.creditsSoundtrack_PLAY = false;
+                MenuPage.Soundtrack("Soundtracks/Menu/473915__xhale303__synthwave-loop.wav");
+                MenuPage.menuSoundtrack_PLAY = true;
+            }
             while (isMenuButtonLoop == true)   // MENU
             {
                 System.Console.Clear();
@@ -128,10 +136,14 @@ namespace Page_Menu
         {
             try   // W przypadku braku ścieżki dżwiękowej, wyjątek zostanie złapany, przez co program nie zakończy działania.
             {
-                menuSoundtrack.SoundLocation = filepath;
-                menuSoundtrack.PlayLooping();
+                MenuPage.currentSoundtrack.SoundLocation = filepath;
+                MenuPage.currentSoundtrack.PlayLooping();
+                //Console.WriteLine("STAN MUZYKI: Znaleziono\n\n" + filepath);
             }
-            catch { }
+            catch (Exception error)
+            {
+                //Console.WriteLine("STAN MUZYKI: Nie znaleziono\n\n" + error);
+            }
         }
     }
 }
