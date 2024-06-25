@@ -1,4 +1,7 @@
 using Page_Menu;
+using System;
+using System.Diagnostics;
+using System.IO;
 
 namespace Page_Credits
 {
@@ -13,6 +16,18 @@ namespace Page_Credits
         public static bool isCreditsLoop = true;
         public void Credits()
         {
+            if (MenuPage.menuSoundtrack_PLAY == true && MenuPage.creditsSoundtrack_PLAY == false)
+            {
+                MenuPage.currentSoundtrack.Stop();
+                MenuPage.creditsSoundtrack_PLAY = true;
+                MenuPage.menuSoundtrack_PLAY = false;
+            }
+            if (MenuPage.menuSoundtrack_PLAY == false && MenuPage.creditsSoundtrack_PLAY == true)
+            {
+                MenuPage.Soundtrack("Soundtracks/Credits/stay-retro-124958.wav");
+            }
+
+            System.ConsoleKeyInfo key;
             while (isCreditsLoop == true)
             {
                 System.Console.Clear();
@@ -25,7 +40,28 @@ namespace Page_Credits
                 System.Console.WriteLine(" BBBBBB   BB    BB  BB BB BB  BBBBBBBB     BBBBBBB  BB    BB  BBBBBBBB  BBBBBB    BB     BB     BBBBBBB ");
                 System.Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
                 System.Console.WriteLine("Back to menu: [Q]\n");
-                System.ConsoleKeyInfo key = System.Console.ReadKey(true);
+
+                string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+                string projectDirectory = Directory.GetParent(baseDirectory).Parent.Parent.FullName;
+                string htmlFilePath = Path.Combine(projectDirectory, "credits.html");
+                //Console.WriteLine("Ścieżka do pliku HTML: " + htmlFilePath);
+                if (File.Exists(htmlFilePath))
+                {
+                    //Console.WriteLine("Plik credits.html znaleziony. Otwieranie przeglądarki...");
+                    var process = new Process();
+                    process.StartInfo = new ProcessStartInfo
+                    {
+                        FileName = htmlFilePath,
+                        UseShellExecute = true
+                    };
+                    process.Start();
+                }
+                /*else
+                {
+                    Console.WriteLine("Plik credits.html nie został znaleziony.");
+                }*/
+
+                key = System.Console.ReadKey(true);
                 if (key.Key == System.ConsoleKey.Q)
                 {
                     isCreditsLoop = false;
