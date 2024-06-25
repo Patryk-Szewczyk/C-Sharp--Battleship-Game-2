@@ -21,7 +21,7 @@ namespace Page_Options
             "AI voice:                         ON = [E], OFF = [D]",
             "AI subtitles:                     ON = [E], OFF = [D]",
             "Delete ranking data:              moving = [O][L], choose = [I], delete = [C]",   // PVP || PVC
-            "Delete Machine Learning data:     moving = [O][L], choose = [I], delete = [C]" 
+            //"Delete Machine Learning data:     moving = [O][L], choose = [I], delete = [C]" 
         };
         public static string[] toRankingButtons = { "PVP", "PVC" };   // EJJJJJJJJJJ!!! JESTEŚ NA TYM JAKBY CO!!!
         public static int optionsButtNum = optionsButtons.Length;
