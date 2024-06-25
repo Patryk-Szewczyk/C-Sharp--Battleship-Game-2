@@ -16,7 +16,7 @@ namespace Page_PVC
             System.ConsoleKeyInfo key;
             while (isPVCShipPositingLoop == true)
             {
-                MenuPage.menuSoundtrack.Stop();   // Test poprwności zamykania i ponownego odtwierania ścieżki dźwiękowej | ?
+                MenuPage.currentSoundtrack.Stop();   // Test poprwności zamykania i ponownego odtwierania ścieżki dźwiękowej | ?
                 MenuPage.menuSoundtrack_PLAY = false;
 
                 //
