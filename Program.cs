@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using Game;
 using Page_Intro;
 using Page_Menu;
 
@@ -12,7 +10,6 @@ namespace Game
         {
             Console.Title = "Battleship Game 2";
             Console.CursorVisible = false;
-            //Console.ForegroundColor = ConsoleColor.Cyan;
 
             IntroPage.Intro();
             MenuPage.Menu();
