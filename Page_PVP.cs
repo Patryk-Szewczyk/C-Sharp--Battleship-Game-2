@@ -16,7 +16,7 @@ namespace Page_PVP
             System.ConsoleKeyInfo key;
             while (isPVPShipPositingLoop == true)
             {
-                MenuPage.menuSoundtrack.Stop();   // Test poprwności zamykania i ponownego odtwierania ścieżki dźwiękowej | ?
+                MenuPage.currentSoundtrack.Stop();   // Test poprwności zamykania i ponownego odtwierania ścieżki dźwiękowej | ?
                 MenuPage.menuSoundtrack_PLAY = false;
 
                 //
