@@ -1,3 +1,4 @@
+using System;
 using Page_Menu;
 using Page_PVP;
 using Page_PVC;
@@ -30,28 +31,28 @@ namespace Page_Options
             System.ConsoleKey key = System.ConsoleKey.Backspace;   // Dowolny niewłaściwy klawisz.
             while (isOptionsButtonLoop == true)
             {
-                System.Console.Clear();
-                System.Console.WriteLine(" BBBBBB   BBBBBBB   BBBBBBBB  BB   BBBBBB   BBBB  BB   BBBBBBB");
-                System.Console.WriteLine("BB    BB  BB    BB     BB     BB  BB    BB  BB BB BB  BB      ");
-                System.Console.WriteLine("BB    BB  BB    BB     BB     BB  BB    BB  BB BB BB  BB      ");
-                System.Console.WriteLine("BB    BB  BBBBBBB      BB     BB  BB    BB  BB BB BB   BBBBBB ");
-                System.Console.WriteLine("BB    BB  BB           BB     BB  BB    BB  BB BB BB        BB");
-                System.Console.WriteLine("BB    BB  BB           BB     BB  BB    BB  BB BB BB        BB");
-                System.Console.WriteLine(" BBBBBB   BB           BB     BB   BBBBBB   BB  BBBB  BBBBBBB ");
-                System.Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
-                System.Console.WriteLine("Options: (arrows/[W][S]) | Back to menu: [Q]\n");
+                Console.Clear();
+                Console.WriteLine(" BBBBBB   BBBBBBB   BBBBBBBB  BB   BBBBBB   BBBB  BB   BBBBBBB");
+                Console.WriteLine("BB    BB  BB    BB     BB     BB  BB    BB  BB BB BB  BB      ");
+                Console.WriteLine("BB    BB  BB    BB     BB     BB  BB    BB  BB BB BB  BB      ");
+                Console.WriteLine("BB    BB  BBBBBBB      BB     BB  BB    BB  BB BB BB   BBBBBB ");
+                Console.WriteLine("BB    BB  BB           BB     BB  BB    BB  BB BB BB        BB");
+                Console.WriteLine("BB    BB  BB           BB     BB  BB    BB  BB BB BB        BB");
+                Console.WriteLine(" BBBBBB   BB           BB     BB   BBBBBB   BB  BBBB  BBBBBBB ");
+                Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
+                Console.WriteLine("Options: (arrows/[W][S]) | Back to menu: [Q]\n");
                 for (int i = 0, j = optionsButtons.Length; i < optionsButtons.Length; i++, j--)
                 {
                     if (j == optionsButtNum)
                     {
-                        System.Console.WriteLine("> " + optionsButtons[i]);
+                        Console.WriteLine("> " + optionsButtons[i]);
                     }
                     else
                     {
-                        System.Console.WriteLine("  " + optionsButtons[i]);
+                        Console.WriteLine("  " + optionsButtons[i]);
                     }
                 }
-                System.Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
+                Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
 
                 /*switch (optionsButtNum)
                 {
@@ -59,7 +60,7 @@ namespace Page_Options
                 }*/
                 while (isCorrectSign == false)   // Pętla ta uniemożliwia przeładowanie strony kiedy kliknie się niewłaściwy klawisz.
                 {
-                    System.ConsoleKeyInfo corr_key = System.Console.ReadKey(true);
+                    System.ConsoleKeyInfo corr_key = Console.ReadKey(true);
                     if (corr_key.Key == System.ConsoleKey.W || corr_key.Key == System.ConsoleKey.S || corr_key.Key == System.ConsoleKey.UpArrow || corr_key.Key == System.ConsoleKey.DownArrow || corr_key.Key == System.ConsoleKey.Q)
                     {
                         isCorrectSign = true;
