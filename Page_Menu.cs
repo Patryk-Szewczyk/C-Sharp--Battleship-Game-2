@@ -1,6 +1,6 @@
 // Te przestrzenie nazw są tu POTRZEBNE, ponieważ metoda MENU odwołuje się do klas tych przestrzeni nazw.
-using System.Media;
 using System;
+using System.Media;
 using Page_Instructions;
 using Page_Credits;
 using Page_PVP;
