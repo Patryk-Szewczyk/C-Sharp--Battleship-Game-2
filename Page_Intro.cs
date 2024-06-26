@@ -1,5 +1,4 @@
 using System;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Page_Intro
 {
@@ -7,7 +6,7 @@ namespace Page_Intro
     {
         public static void Intro()
         {
-            System.Console.WriteLine("\nBattleship 2 AI [Version 1.00]" +
+            Console.WriteLine("\nBattleship 2 AI [Version 1.00]" +
                 "\nCopyright (c) Patryk Szewczyk 20841 | 2 INF, AHNS. All rights reserved." +
                 "\n\nBattleship Game is simple game which depend of sunking ships between players." +
                 "\nTo start game you must do a few activites to mainly set ships." +
@@ -25,7 +24,7 @@ namespace Page_Intro
             bool isEnter = false;
             while (isEnter == false)
             {
-                corr_key = System.Console.ReadKey(true);  // "ture", bo nie chcę widzieć znaku
+                corr_key = Console.ReadKey(true);  // "ture", bo nie chcę widzieć znaku
                 if (corr_key.Key == System.ConsoleKey.Enter)
                 {
                     isEnter = true;
