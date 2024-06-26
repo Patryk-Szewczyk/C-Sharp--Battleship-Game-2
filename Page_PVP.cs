@@ -1,3 +1,4 @@
+using System;
 using Page_Menu;
 
 namespace Page_PVP
@@ -21,17 +22,17 @@ namespace Page_PVP
 
                 //
 
-                System.Console.Clear();
-                System.Console.WriteLine("BBBBBBB   BB    BB  BBBBBBB ");
-                System.Console.WriteLine("BB    BB  BB    BB  BB    BB");
-                System.Console.WriteLine("BB    BB  BB    BB  BB    BB");
-                System.Console.WriteLine("BBBBBBB   BB    BB  BBBBBBB ");
-                System.Console.WriteLine("BB         BB  BB   BB      ");
-                System.Console.WriteLine("BB          BBBB    BB      ");
-                System.Console.WriteLine("BB           BB     BB      ");
-                System.Console.WriteLine("\n- - - - - - - - - - - - - -\n");
-                System.Console.WriteLine("Back to menu: [Q]\n");
-                key = System.Console.ReadKey(true);
+                Console.Clear();
+                Console.WriteLine("BBBBBBB   BB    BB  BBBBBBB ");
+                Console.WriteLine("BB    BB  BB    BB  BB    BB");
+                Console.WriteLine("BB    BB  BB    BB  BB    BB");
+                Console.WriteLine("BBBBBBB   BB    BB  BBBBBBB ");
+                Console.WriteLine("BB         BB  BB   BB      ");
+                Console.WriteLine("BB          BBBB    BB      ");
+                Console.WriteLine("BB           BB     BB      ");
+                Console.WriteLine("\n- - - - - - - - - - - - - -\n");
+                Console.WriteLine("Back to menu: [Q]\n");
+                key = Console.ReadKey(true);
                 if (key.Key == System.ConsoleKey.Q)
                 {
                     isPVPShipPositingLoop = false;
