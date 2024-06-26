@@ -1,12 +1,12 @@
 // Te przestrzenie nazw są tu POTRZEBNE, ponieważ metoda MENU odwołuje się do klas tych przestrzeni nazw.
+using System.Media;
+using System;
 using Page_Instructions;
 using Page_Credits;
 using Page_PVP;
 using Page_PVC;
 using Page_Ranking;
 using Page_Options;
-using System.Media;
-using System;
 
 namespace Page_Menu
 {
@@ -38,30 +38,30 @@ namespace Page_Menu
             }
             while (isMenuButtonLoop == true)   // MENU
             {
-                System.Console.Clear();
-                System.Console.WriteLine("BBBBBBB     BBBB    BBBBBBBB  BBBBBBBB  BB        BBBBBBBB   BBBBBBB  BB    BB  BB  BBBBBBB      BBBBBB");
-                System.Console.WriteLine("BB    BB   BB  BB      BB        BB     BB        BB        BB        BB    BB  BB  BB    BB    BB    BB");
-                System.Console.WriteLine("BB    BB  BB    BB     BB        BB     BB        BB        BB        BB    BB  BB  BB    BB         BB");
-                System.Console.WriteLine("BBBBBBBB  BBBBBBBB     BB        BB     BB        BBBBBBBB   BBBBBB   BBBBBBBB  BB  BBBBBBB        BBB");
-                System.Console.WriteLine("BB    BB  BB    BB     BB        BB     BB        BB              BB  BB    BB  BB  BB            BB");
-                System.Console.WriteLine("BB    BB  BB    BB     BB        BB     BB        BB              BB  BB    BB  BB  BB           BB");
-                System.Console.WriteLine("BBBBBBB   BB    BB     BB        BB     BBBBBBBB  BBBBBBBB  BBBBBBB   BB    BB  BB  BB          BBBBBBBB");
-                System.Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
-                System.Console.WriteLine("MENU: (navigation = arrows/[W][S], click = ENTER/[E])\n");
+                Console.Clear();
+                Console.WriteLine("BBBBBBB     BBBB    BBBBBBBB  BBBBBBBB  BB        BBBBBBBB   BBBBBBB  BB    BB  BB  BBBBBBB      BBBBBB");
+                Console.WriteLine("BB    BB   BB  BB      BB        BB     BB        BB        BB        BB    BB  BB  BB    BB    BB    BB");
+                Console.WriteLine("BB    BB  BB    BB     BB        BB     BB        BB        BB        BB    BB  BB  BB    BB         BB");
+                Console.WriteLine("BBBBBBBB  BBBBBBBB     BB        BB     BB        BBBBBBBB   BBBBBB   BBBBBBBB  BB  BBBBBBB        BBB");
+                Console.WriteLine("BB    BB  BB    BB     BB        BB     BB        BB              BB  BB    BB  BB  BB            BB");
+                Console.WriteLine("BB    BB  BB    BB     BB        BB     BB        BB              BB  BB    BB  BB  BB           BB");
+                Console.WriteLine("BBBBBBB   BB    BB     BB        BB     BBBBBBBB  BBBBBBBB  BBBBBBB   BB    BB  BB  BB          BBBBBBBB");
+                Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
+                Console.WriteLine("MENU: (navigation = arrows/[W][S], click = ENTER/[E])\n");
                 for (int i = 0, j = menuButtons.Length; i < menuButtons.Length; i++, j--)
                 {
                     if (j == menuButtNum)
                     {
-                        System.Console.WriteLine("> " + menuButtons[i]);
+                        Console.WriteLine("> " + menuButtons[i]);
                     }
                     else
                     {
-                        System.Console.WriteLine("  " + menuButtons[i]);
+                        Console.WriteLine("  " + menuButtons[i]);
                     }
                 }
                 while (isCorrectSign == false)   // Pętla ta uniemożliwia przeładowanie strony kiedy kliknie się niewłaściwy klawisz.
                 {
-                    corr_key = System.Console.ReadKey(true);
+                    corr_key = Console.ReadKey(true);
                     if (corr_key.Key == System.ConsoleKey.W || corr_key.Key == System.ConsoleKey.S || corr_key.Key == System.ConsoleKey.UpArrow || corr_key.Key == System.ConsoleKey.DownArrow || corr_key.Key == System.ConsoleKey.E || corr_key.Key == System.ConsoleKey.Enter)
                     {
                         isCorrectSign = true;
@@ -139,11 +139,11 @@ namespace Page_Menu
                 MenuPage.currentSoundtrack.SoundLocation = filepath;
                 MenuPage.currentSoundtrack.PlayLooping();
                 //Console.WriteLine("STAN MUZYKI: Znaleziono\n\n" + filepath);
-            }
-            catch (Exception error)
+            } catch { }
+            /*catch (Exception error)
             {
                 //Console.WriteLine("STAN MUZYKI: Nie znaleziono\n\n" + error);
-            }
+            }*/
         }
     }
 }
