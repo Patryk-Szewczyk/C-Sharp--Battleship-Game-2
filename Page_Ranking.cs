@@ -1,3 +1,4 @@
+using System;
 using Page_Menu;
 
 namespace Page_Ranking
@@ -21,28 +22,28 @@ namespace Page_Ranking
             System.ConsoleKeyInfo corr_key;
             while (isRankingButtonLoop == true)
             {
-                System.Console.Clear();
-                System.Console.WriteLine("BBBBBBB     BBBB    BBBB  BB  BB    BB  BB  BBBB  BB   BBBBBB ");
-                System.Console.WriteLine("BB    BB   BB  BB   BB BB BB  BB   BB   BB  BB BB BB  BB    BB");
-                System.Console.WriteLine("BB    BB  BB    BB  BB BB BB  BB  BB    BB  BB BB BB  BB      ");
-                System.Console.WriteLine("BBBBBBB   BBBBBBBB  BB BB BB  BBBBB     BB  BB BB BB  BB  BBB ");
-                System.Console.WriteLine("BB    BB  BB    BB  BB BB BB  BB  BB    BB  BB BB BB  BB  B BB");
-                System.Console.WriteLine("BB    BB  BB    BB  BB BB BB  BB   BB   BB  BB BB BB  BB    BB");
-                System.Console.WriteLine("BB    BB  BB    BB  BB  BBBB  BB    BB  BB  BB  BBBB   BBBBBB ");
-                System.Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
-                System.Console.WriteLine("Choose game mode: (arrows/[W][S]) | Back to menu: [Q]\n");
+                Console.Clear();
+                Console.WriteLine("BBBBBBB     BBBB    BBBB  BB  BB    BB  BB  BBBB  BB   BBBBBB ");
+                Console.WriteLine("BB    BB   BB  BB   BB BB BB  BB   BB   BB  BB BB BB  BB    BB");
+                Console.WriteLine("BB    BB  BB    BB  BB BB BB  BB  BB    BB  BB BB BB  BB      ");
+                Console.WriteLine("BBBBBBB   BBBBBBBB  BB BB BB  BBBBB     BB  BB BB BB  BB  BBB ");
+                Console.WriteLine("BB    BB  BB    BB  BB BB BB  BB  BB    BB  BB BB BB  BB  B BB");
+                Console.WriteLine("BB    BB  BB    BB  BB BB BB  BB   BB   BB  BB BB BB  BB    BB");
+                Console.WriteLine("BB    BB  BB    BB  BB  BBBB  BB    BB  BB  BB  BBBB   BBBBBB ");
+                Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
+                Console.WriteLine("Choose game mode: (arrows/[W][S]) | Back to menu: [Q]\n");
                 for (int i = 0, j = rankingButtons.Length; i < rankingButtons.Length; i++, j--)
                 {
                     if (j == rankingButtNum)
                     {
-                        System.Console.WriteLine("> " + rankingButtons[i]);
+                        Console.WriteLine("> " + rankingButtons[i]);
                     }
                     else
                     {
-                        System.Console.WriteLine("  " + rankingButtons[i]);
+                        Console.WriteLine("  " + rankingButtons[i]);
                     }
                 }
-                System.Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
+                Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
                 switch (rankingButtNum)
                 {
                     /*case 2:
@@ -56,7 +57,7 @@ namespace Page_Ranking
                 }
                 while (isCorrectSign == false)   // Pętla ta uniemożliwia przeładowanie strony kiedy kliknie się niewłaściwy klawisz.
                 {
-                    corr_key = System.Console.ReadKey(true);
+                    corr_key = Console.ReadKey(true);
                     if (corr_key.Key == System.ConsoleKey.W || corr_key.Key == System.ConsoleKey.S || corr_key.Key == System.ConsoleKey.UpArrow || corr_key.Key == System.ConsoleKey.DownArrow || corr_key.Key == System.ConsoleKey.Q)
                     {
                         isCorrectSign = true;
@@ -87,7 +88,7 @@ namespace Page_Ranking
         }*/
         public void Scores_PVC()  // Tryb gracz vs komputer:
         {
-            System.Console.WriteLine("Page_PVC");
+            Console.WriteLine("Page_PVC");
         }
     }
 }
