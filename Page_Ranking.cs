@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Page_Menu;
 
 namespace Page_Ranking
@@ -88,7 +89,145 @@ namespace Page_Ranking
         }*/
         public void Scores_PVC()  // Tryb gracz vs komputer:
         {
-            Console.WriteLine("Page_PVC");
+            string filePath = "players.txt";
+
+            try
+            {
+                // Odczytaj cały tekst z pliku
+                string fileContent = File.ReadAllText(filePath);
+                string[] players = fileContent.Split('*');
+                string[,] playersNested = new string[players.Length, 5];
+                string[] playerDetails = null;
+                for (int i = 0; i < players.Length; i++)
+                {
+                    // Każdy gracz ma 5 informacji oddzielonych znakiem "#":
+                    playerDetails = players[i].Split('#');
+                    for (int j = 0; j < playerDetails.Length; j++)
+                    {
+                        playersNested[i, j] = playerDetails[j];
+                    }
+                }
+
+                // Sortowanie graczy względem ilości zdobytych punktów:
+                bool isEnd = false;
+                while (isEnd == false)
+                {
+                    isEnd = true;
+                    for (int i = 0; i < players.Length - 1; i++)
+                    {
+                        // Porównujemy po ilości zdobytych punktów (kolumna 1), zmieniamy warunek na < 0
+                        if (int.Parse(playersNested[i, 1]) < int.Parse(playersNested[i + 1, 1]))
+                        {
+                            // Zamiana miejscami całego wiersza
+                            for (int j = 0; j < playersNested.GetLength(1); j++)
+                            {
+                                string cell = playersNested[i, j];
+                                playersNested[i, j] = playersNested[i + 1, j];
+                                playersNested[i + 1, j] = cell;
+                            }
+                            isEnd = false;
+                        }
+                    }
+                };
+                // Odczytaj cały tekst z pliku | OK
+                /*for (int i = 0; i < players.Length; i++)
+                {
+                    Console.Write(playersNested[i, 0]);
+                    Console.WriteLine();
+                }*/
+
+                // Wyświetlanie zawartości playersName dla sprawdzenia
+                string space_TH = "";
+                string minus_TH = "";
+                string space_TD = "";
+                string place = "";
+                int longestSpace = -1;
+                int playerLength = 0;
+                int longestFirstCol = 0;
+                int firstColAdd = 0;
+                int playersLimit = 12;
+                for (int i = 0; i < players.Length; i++)
+                {
+                    playerLength = playersNested[i, 0].Length;
+                    if (playerLength > longestSpace)
+                    {
+                        longestSpace = playerLength;
+                    }
+                }
+                longestSpace -= 6;   // Player (odjąć długość)
+                longestSpace = (longestSpace <= 0) ? 0 : longestSpace;
+                longestFirstCol = longestSpace + 6;
+                for (int i = 0; i < longestSpace; i++)
+                {
+                    space_TH += " ";
+                    minus_TH += "-";
+                }
+                Console.WriteLine("|" + minus_TH + "---------------------------------------------------|");
+                Console.WriteLine("| PLACE | PLAYER"+ space_TH + " | SCORE | SUNKEN | LOSS | ACCURATE |");
+                Console.WriteLine("|" + minus_TH + "---------------------------------------------------|");
+                playersLimit = (players.Length >= playersLimit) ? playersLimit : players.Length;
+                for (int i = 0; i < playersLimit; i++)
+                {
+                    Console.Write("| ");
+                    for (int j = 0; j < 5; j++)
+                    {
+                        if (j == 0)
+                        {
+                            {
+                                place = (i + 1).ToString() + ".";
+                                space_TD = "";
+                                firstColAdd = 5 - place.Length;   // 5 - PLACE
+                                for (int k = 0; k < firstColAdd; k++)
+                                {
+                                    space_TD += " ";
+                                }
+                                Console.Write(space_TD + place + " | ");
+                            }
+                            space_TD = "";
+                            firstColAdd = longestFirstCol - playersNested[i, j].Length;
+                            for (int k = 0; k < firstColAdd; k++)
+                            {
+                                space_TD += " ";
+                            }
+                            Console.Write(playersNested[i, j] + space_TD + " | ");
+                        }
+                        else if (j == 1)
+                        {
+                            space_TD = "";
+                            firstColAdd = 5 - playersNested[i, j].Length;   // 5 - Score
+                            for (int k = 0; k < firstColAdd; k++)
+                            {
+                                space_TD += " ";
+                            }
+                            Console.Write(space_TD + playersNested[i, j] + " | ");
+                        }
+                        else if (j == 2)
+                        {
+                            Console.Write("     " + playersNested[i, j] + " | ");
+                        }
+                        else if (j == 3)
+                        {
+                            Console.Write("   " + playersNested[i, j] + " | ");
+                        }
+                        else if (j == 4)
+                        {
+                            space_TD = "";
+                            firstColAdd = 8 - playersNested[i, j].Length;   // 8 - ACCURATE
+                            for (int k = 0; k < firstColAdd; k++)
+                            {
+                                space_TD += " ";
+                            }
+                            Console.Write(space_TD + playersNested[i, j] + " | ");
+                        }
+                    }
+                    Console.WriteLine("\n|" + minus_TH + "---------------------------------------------------|");
+                }
+            }
+            catch (IOException ex)
+            {
+                Console.WriteLine("An error occurred while reading the file:");
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }
