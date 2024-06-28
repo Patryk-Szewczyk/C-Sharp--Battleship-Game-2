@@ -47,7 +47,7 @@ namespace Page_Menu
                 Console.WriteLine("BB    BB  BB    BB     BB        BB     BB        BB              BB  BB    BB  BB  BB           BB");
                 Console.WriteLine("BBBBBBB   BB    BB     BB        BB     BBBBBBBB  BBBBBBBB  BBBBBBB   BB    BB  BB  BB          BBBBBBBB");
                 Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
-                Console.WriteLine("MENU: (navigation = arrows/[W][S], click = ENTER/[E])\n");
+                Console.WriteLine("MENU: | Moving: arrows/[W][S] | Click = ENTER/[E]\n");
                 for (int i = 0, j = menuButtons.Length; i < menuButtons.Length; i++, j--)
                 {
                     if (j == menuButtNum)
