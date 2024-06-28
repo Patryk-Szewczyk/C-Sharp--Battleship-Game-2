@@ -23,8 +23,14 @@ namespace Page_PVC
     {
         public static bool isPVCShipPositingLoop = true;
         public static System.ConsoleKeyInfo mainKey;
+        public static int playersLimit = 20;
+        public static int playerButtNum = 0;   // Zawsze ostatni, bo chcę mieć kursor na górze!
         public void PVC()
         {
+            PagePVC pagePVC = new PagePVC();
+            string[,] playersDetails_PARTS = pagePVC.DownloadPlayers();
+            int playerButtNum = playersDetails_PARTS.GetLength(0);
+
             System.ConsoleKeyInfo key;
             while (isPVCShipPositingLoop == true)
             {
@@ -40,32 +46,63 @@ namespace Page_PVC
                 Console.WriteLine("BB          BBBB    BB      ");
                 Console.WriteLine("BB           BB      BBBBBBB");
                 Console.WriteLine("\n- - - - - - - - - - - - - -\n");
-                Console.WriteLine("Back to menu: [Q]\n");
+                Console.WriteLine("PVC MODE: | Moving: arrows/[W][S] | Click = ENTER/[E] | Create player: [C] | Delete player: [P] | Back to menu: [Q] \n");
 
-                SelectPlayer();
+                Console.WriteLine("Select player:");
+                if (playersDetails_PARTS != null)
+                {
+                    for (int i = 0, j = playersDetails_PARTS.GetLength(0); i < playersDetails_PARTS.GetLength(0); i++, j--)
+                    {
+                        if (j == playerButtNum)
+                        {
+                            Console.WriteLine("> " + playersDetails_PARTS[i, 0]);
+                        }
+                        else
+                        {
+                            Console.WriteLine("  " + playersDetails_PARTS[i, 0]);
+                        }
+                    }
+                }
 
-                //PagePVC.SetShips_PLAYER(PagePVC.mainKey);   // Ta medota musi być przrd metodą "Console.ReadKey()", ponieważ jej wynik musi być
+                //pagePVC.SetShips_PLAYER(PagePVC.mainKey);   // Ta medota musi być przrd metodą "Console.ReadKey()", ponieważ jej wynik musi być
                 // wyswietlony po metodzie "Console.Clear()", której stan (stan wyświetlacza konsoli) jest zatrzymywany przez "Console.ReadKey()".
 
                 PagePVC.mainKey = Console.ReadKey(true);
-                if (mainKey.Key == System.ConsoleKey.Q)
+                if (PagePVC.mainKey.Key == System.ConsoleKey.Q)
                 {
                     isPVCShipPositingLoop = false;
                     MenuPage.isMenuButtonLoop = true;
                     MenuPage.Menu();
                 }
+                // Poruszanie się po przyciskach (obliczenia):
+                if (PagePVC.mainKey.Key == System.ConsoleKey.UpArrow || PagePVC.mainKey.Key == System.ConsoleKey.W)
+                {
+                    playerButtNum = (playerButtNum < playersDetails_PARTS.GetLength(0)) ? playerButtNum += 1 : playerButtNum;
+                }
+                else if (PagePVC.mainKey.Key == System.ConsoleKey.DownArrow || PagePVC.mainKey.Key == System.ConsoleKey.S)
+                {
+                    playerButtNum = (playerButtNum > 1) ? playerButtNum -= 1 : playerButtNum;
+                }
             }
         }
-        public static void SelectPlayer()
+        public string[,] DownloadPlayers()
         {
-            Console.WriteLine("Select player:");
-
-
-
-
-            string filePath = "players.txt";
-            string content = "Gracz 1";
-
+            // Odczytaj cały tekst z pliku
+            string fileContent = File.ReadAllText("players.txt");
+            string[] players = fileContent.Split('*');
+            string[,] playersDetails_PARTS = new string[players.Length, 5];
+            string[] playerDetails_BLOCK = null;
+            for (int i = 0; i < players.Length; i++)
+            {
+                // Każdy gracz ma 5 informacji oddzielonych znakiem "#":
+                playerDetails_BLOCK = players[i].Split('#');
+                for (int j = 0; j < playerDetails_BLOCK.Length; j++)
+                {
+                    playersDetails_PARTS[i, j] = playerDetails_BLOCK[j];
+                }
+            }
+            return playersDetails_PARTS;
+            // Zapisz dane do pliku:
             /*try
             {
                 // Zapisz tekst do pliku
@@ -77,68 +114,8 @@ namespace Page_PVC
                 Console.WriteLine("An error occurred while writing to the file:");
                 Console.WriteLine(ex.Message);
             }*/
-
-            try
-            {
-                // Odczytaj cały tekst z pliku
-                string fileContent = File.ReadAllText(filePath);
-                string[] players = fileContent.Split('*');
-                string[,] playersName = new string[players.Length, 5];
-                string[] playerDetails = null;
-                for (int i = 0; i < players.Length; i++)
-                {
-                    // Każdy gracz ma 5 informacji oddzielonych znakiem "#":
-                    playerDetails = players[i].Split('#');
-                    for (int j = 0; j < playerDetails.Length; j++)
-                    {
-                        playersName[i, j] = playerDetails[j];
-                    }
-
-                    // Wypełnienie pozostałych elementów pustymi wartościami, jeśli playerDetails ma mniej niż 5 elementów
-                    for (int j = playerDetails.Length; j < 5; j++)
-                    {
-                        playersName[i, j] = "";
-                    }
-                }
-
-                // Wyświetlanie zawartości playersName dla sprawdzenia
-                /*for (int i = 0; i < players.Length; i++)
-                {
-                    for (int j = 0; j < 5; j++)
-                    {
-                        Console.Write(playersName[i, j] + " | ");
-                    }
-                    Console.WriteLine();
-                }*/
-                for (int i = 0; i < players.Length; i++)
-                {
-                    Console.Write(playersName[i, 0]);
-                    Console.WriteLine();
-                }
-
-
-                //Console.WriteLine("File content:");
-                //Console.WriteLine(fileContent);
-            }
-            catch (IOException ex)
-            {
-                Console.WriteLine("An error occurred while reading the file:");
-                Console.WriteLine(ex.Message);
-            }
-
-            // Gracz 1#3480#5#4#22%
-            // 3480 - punkty
-            // 5 - zatopione statki(wroga)
-            // 4 - stracone statki(swoje)
-            // 22% - celność
-
-
-
-
-
-
         }
-        public static void SetShips_PLAYER(System.ConsoleKeyInfo key)
+        public void SetShips_PLAYER(System.ConsoleKeyInfo key)
         {
             // Walidacja poruszania się po planszy:
             int setVal = SetShips_PLAYER_CLASS.CursorNavigate(key);
