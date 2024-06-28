@@ -15,7 +15,7 @@ namespace Page_Ranking
     {
         public static bool isRankingButtonLoop = true;
         public static bool isCorrectSign = false;
-        public static string[] rankingButtons = { "PVC" };
+        public static string[] rankingButtons = { "PVC Mode" };
         public static int rankingButtNum = rankingButtons.Length;
         public void Ranking()
         {
@@ -32,7 +32,7 @@ namespace Page_Ranking
                 Console.WriteLine("BB    BB  BB    BB  BB BB BB  BB   BB   BB  BB BB BB  BB    BB");
                 Console.WriteLine("BB    BB  BB    BB  BB  BBBB  BB    BB  BB  BB  BBBB   BBBBBB ");
                 Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
-                Console.WriteLine("Choose game mode: (arrows/[W][S]) | Back to menu: [Q]\n");
+                Console.WriteLine("RANKING: | Moving: arrows/[W][S] | Back to menu: [Q]\n");
                 for (int i = 0, j = rankingButtons.Length; i < rankingButtons.Length; i++, j--)
                 {
                     if (j == rankingButtNum)
@@ -145,7 +145,7 @@ namespace Page_Ranking
                 int playerLength = 0;
                 int longestFirstCol = 0;
                 int firstColAdd = 0;
-                int playersLimit = 12;
+                int playersLimit = 10;
                 for (int i = 0; i < players.Length; i++)
                 {
                     playerLength = playersNested[i, 0].Length;
