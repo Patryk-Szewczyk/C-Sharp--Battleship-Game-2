@@ -1,6 +1,6 @@
 using System;
 using Page_Menu;
-using GlobalMethods_Bank;
+using Library_GlobalMethods;
 
 namespace Page_Instructions
 {
@@ -34,7 +34,7 @@ namespace Page_Instructions
                 Console.WriteLine("BB  BB BB BB        BB     BB     BB    BB  BB    BB  BB           BB     BB  BB    BB  BB BB BB");
                 Console.WriteLine("BB  BB  BBBB  BBBBBBB      BB     BB    BB   BBBBBB    BBBBBBB     BB     BB   BBBBBB   BB  BBBB");
                 Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
-                Console.WriteLine("Choose instruction page: (arrows/[W][S]) | Back to menu: [Q]\n");
+                Console.WriteLine("INSTRUCTION: | Moving: arrows/[W][S] | Back to menu: [Q]\n");
                 for (int i = 0, j = instructionButtons.Length; i < instructionButtons.Length; i++, j--)
                 {
                     if (j == instructionButtNum)
@@ -116,11 +116,11 @@ namespace Page_Instructions
         public void Page_Ships()
         {
             Console.WriteLine("You have 5 ships, about these length:" +
-                "\nO - patrol boat" +
-                "\nOO - frigate" +
-                "\nOOO - submarine" +
-                "\nOOOO - destroyer" +
-                "\nOOOOO - aircraft carrier");
+                "\n1 - patrol boat" +
+                "\n22 - frigate" +
+                "\n333 - submarine" +
+                "\n4444 - destroyer" +
+                "\n55555 - aircraft carrier");
             Console.WriteLine("\nDestruction all ships indicate win these player who do it the opposite player.");
         }
         public void Page_Board()  // NA PODSTAWIE PONIŻSZEGO ZAPISU ZAIMPLEMENTUJ DWIE PĘTLE, KTÓRE BĘDĄ ODPOWIEDZIALNE ZA WKŁADANIE ODPOWIEDNICH DANYCH Z IF'óW DO METODY "GlobalMethod.Color()"!!!
