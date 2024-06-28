@@ -20,8 +20,6 @@ namespace Page_PVP
                 MenuPage.currentSoundtrack.Stop();   // Test poprwności zamykania i ponownego odtwierania ścieżki dźwiękowej | ?
                 MenuPage.menuSoundtrack_PLAY = false;
 
-                //
-
                 Console.Clear();
                 Console.WriteLine("BBBBBBB   BB    BB  BBBBBBB ");
                 Console.WriteLine("BB    BB  BB    BB  BB    BB");
@@ -31,7 +29,7 @@ namespace Page_PVP
                 Console.WriteLine("BB          BBBB    BB      ");
                 Console.WriteLine("BB           BB     BB      ");
                 Console.WriteLine("\n- - - - - - - - - - - - - -\n");
-                Console.WriteLine("Back to menu: [Q]\n");
+                Console.WriteLine("PVP MODE: | Back to menu: [Q] | Create player: [C] | Delete player: [P]\n");
                 key = Console.ReadKey(true);
                 if (key.Key == System.ConsoleKey.Q)
                 {
