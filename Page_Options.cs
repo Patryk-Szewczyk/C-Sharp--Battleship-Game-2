@@ -21,8 +21,8 @@ namespace Page_Options
             "Sound effects:                    ON = [E], OFF = [D]",
             "AI voice:                         ON = [E], OFF = [D]",
             "AI subtitles:                     ON = [E], OFF = [D]",
-            "Delete ranking data:              moving = [O][L], choose = [I], delete = [C]",   // PVP || PVC
-            //"Delete Machine Learning data:     moving = [O][L], choose = [I], delete = [C]" 
+            "Delete ranking data:              moving = [O][L], choose = [I], delete = [P]",   // PVP || PVC
+            //"Delete Machine Learning data:     moving = [O][L], choose = [I], delete = [P]" 
         };
         public static string[] toRankingButtons = { "PVP", "PVC" };   // EJJJJJJJJJJ!!! JESTEŚ NA TYM JAKBY CO!!!
         public static int optionsButtNum = optionsButtons.Length;
@@ -40,7 +40,7 @@ namespace Page_Options
                 Console.WriteLine("BB    BB  BB           BB     BB  BB    BB  BB BB BB        BB");
                 Console.WriteLine(" BBBBBB   BB           BB     BB   BBBBBB   BB  BBBB  BBBBBBB ");
                 Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
-                Console.WriteLine("Options: (arrows/[W][S]) | Back to menu: [Q]\n");
+                Console.WriteLine("OPTIONS: | Moving: arrows/[W][S] | Back to menu: [Q]\n");
                 for (int i = 0, j = optionsButtons.Length; i < optionsButtons.Length; i++, j--)
                 {
                     if (j == optionsButtNum)
