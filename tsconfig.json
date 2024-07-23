@@ -1,0 +1,7 @@
+{
+    "compileOptions": {
+        "rootDir": "./src",
+        "outDir": "./dist",
+        "target": "ES2015"
+    }
+}
