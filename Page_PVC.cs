@@ -27,13 +27,19 @@ namespace Page_PVC
         public static int playersLimit = 20;
         public static int playerButtNum = 0;   // Zawsze ostatni, bo chcê mieæ kursor na górze!
         public static bool isSelectPlayer = false;
+        public static string userName = "";
+        public static int player_IDX = 0;
         public void PVC()
         {
             PagePVC pagePVC = new PagePVC();
             string[,] playersDetails_PARTS = pagePVC.DownloadPlayers();
             int playerButtNum = playersDetails_PARTS.GetLength(0);
 
-            System.ConsoleKeyInfo key;
+            // Reset zmiennych poza-pêtlowych strony: [gracz]
+            PagePVC.player_IDX = 0;
+            PagePVC.userName = playersDetails_PARTS[0, 0];
+
+        System.ConsoleKeyInfo key;
             while (isPVCShipPositingLoop == true)
             {
                 //MenuPage.currentSoundtrack.Stop();   // Test poprwnoœci zamykania i ponownego odtwierania œcie¿ki dŸwiêkowej | OK
@@ -50,9 +56,11 @@ namespace Page_PVC
                 Console.WriteLine("\n- - - - - - - - - - - - - -\n");
                 Console.WriteLine("PVC MODE: | Moving: arrows/[W][S] | Click = ENTER | Create player: [C] | Delete player: [P] | Back to menu: [Backspace]\n");
 
+
+                
                 if (PagePVC.isSelectPlayer == false)
                 {
-                    Console.WriteLine("Select player:");
+                    Console.WriteLine("Select player: [" + PagePVC.userName + "]");
                     if (playersDetails_PARTS != null)
                     {
                         for (int i = 0, j = playersDetails_PARTS.GetLength(0); i < playersDetails_PARTS.GetLength(0); i++, j--)
@@ -68,7 +76,7 @@ namespace Page_PVC
                         }
                     }
                 }
-                else if (PagePVC.isSelectPlayer == true)
+                if (PagePVC.isSelectPlayer == true)
                 {
                     pagePVC.SetShips_PLAYER(PagePVC.mainKey);   // Ta medota musi byæ przrd metod¹ "Console.ReadKey()", poniewa¿ jej wynik musi byæ
                     // wyswietlony po metodzie "Console.Clear()", której stan (stan wyœwietlacza konsoli) jest zatrzymywany przez "Console.ReadKey()".
@@ -94,15 +102,29 @@ namespace Page_PVC
                 else if (PagePVC.mainKey.Key == System.ConsoleKey.Enter)
                 {
                     PagePVC.isSelectPlayer = true;
+                    //PagePVC.userName = playersDetails_PARTS[playerButtNum, 0];
                 }
                 // Poruszanie siê po przyciskach (obliczenia):
-                if (PagePVC.mainKey.Key == System.ConsoleKey.UpArrow || PagePVC.mainKey.Key == System.ConsoleKey.W)
+                if (PagePVC.isSelectPlayer == false)
                 {
-                    playerButtNum = (playerButtNum < playersDetails_PARTS.GetLength(0)) ? playerButtNum += 1 : playerButtNum;
-                }
-                else if (PagePVC.mainKey.Key == System.ConsoleKey.DownArrow || PagePVC.mainKey.Key == System.ConsoleKey.S)
-                {
-                    playerButtNum = (playerButtNum > 1) ? playerButtNum -= 1 : playerButtNum;
+                    if (PagePVC.mainKey.Key == System.ConsoleKey.UpArrow || PagePVC.mainKey.Key == System.ConsoleKey.W)
+                    {
+                        playerButtNum = (playerButtNum < playersDetails_PARTS.GetLength(0)) ? playerButtNum += 1 : playerButtNum;
+                        if (PagePVC.player_IDX > 0)
+                        {
+                            PagePVC.player_IDX--;
+                            PagePVC.userName = playersDetails_PARTS[PagePVC.player_IDX, 0];
+                        }
+                    }
+                    else if (PagePVC.mainKey.Key == System.ConsoleKey.DownArrow || PagePVC.mainKey.Key == System.ConsoleKey.S)
+                    {
+                        playerButtNum = (playerButtNum > 1) ? playerButtNum -= 1 : playerButtNum;
+                        if (PagePVC.player_IDX < playersDetails_PARTS.GetLength(0) - 1)
+                        {
+                            PagePVC.player_IDX++;
+                            PagePVC.userName = playersDetails_PARTS[PagePVC.player_IDX, 0];
+                        }
+                    }
                 }
             }
         }
@@ -139,7 +161,7 @@ namespace Page_PVC
         public void SetShips_PLAYER(System.ConsoleKeyInfo key)
         {
             // Walidacja poruszania siê po planszy:
-            Console.WriteLine("Ustaw swoje statki:");
+            Console.WriteLine("Ustaw swoje statki: [" + PagePVC.userName + "]");
             int setVal = SetShips_PLAYER_CLASS.CursorNavigate(key);
             Console.WriteLine("Set value: " + setVal);
         }
