@@ -1,4 +1,5 @@
 using System;
+using System.Configuration;
 using System.IO;
 using System.Linq.Expressions;
 using Page_Menu;
@@ -29,6 +30,8 @@ namespace Page_PVC
         public static bool isSelectPlayer = false;
         public static string userName = "";
         public static int player_IDX = 0;
+        public static bool isOption_CREATE = false;
+        public static bool isOption_DELETE = false;
         public void PVC()
         {
             PagePVC pagePVC = new PagePVC();
@@ -55,8 +58,6 @@ namespace Page_PVC
                 Console.WriteLine("BB           BB      BBBBBBB");
                 Console.WriteLine("\n- - - - - - - - - - - - - -\n");
                 Console.WriteLine("PVC MODE: | Moving: arrows/[W][S] | Click = ENTER | Create player: [C] | Delete player: [P] | Back to menu: [Backspace]\n");
-
-
                 
                 if (PagePVC.isSelectPlayer == false)
                 {
@@ -76,6 +77,96 @@ namespace Page_PVC
                         }
                     }
                 }
+                
+
+                // Opcje: a) tworzenie u¿ytkownika b) usuwanie u¿ytkowniak
+                if (PagePVC.isOption_CREATE == true)
+                {
+                    PagePVC.isOption_CREATE = false;
+                    //PagePVC.isSelectPlayer = false;
+                    Console.WriteLine("\n- - - - - - - - - - - - - -\n");
+                    Console.Write("Utwórz u¿ytkownika: ");
+                    Console.ReadLine();
+
+                    Console.Clear();
+                    Console.WriteLine("BBBBBBB   BB    BB   BBBBBBB");
+                    Console.WriteLine("BB    BB  BB    BB  BB      ");
+                    Console.WriteLine("BB    BB  BB    BB  BB      ");
+                    Console.WriteLine("BBBBBBB   BB    BB  BB      ");
+                    Console.WriteLine("BB         BB  BB   BB      ");
+                    Console.WriteLine("BB          BBBB    BB      ");
+                    Console.WriteLine("BB           BB      BBBBBBB");
+                    Console.WriteLine("\n- - - - - - - - - - - - - -\n");
+                    Console.WriteLine("PVC MODE: | Moving: arrows/[W][S] | Click = ENTER | Create player: [C] | Delete player: [P] | Back to menu: [Backspace]\n");
+
+                    if (PagePVC.isSelectPlayer == false)
+                    {
+                        Console.WriteLine("Select player: [" + PagePVC.userName + "]");
+                        if (playersDetails_PARTS != null)
+                        {
+                            for (int i = 0, j = playersDetails_PARTS.GetLength(0); i < playersDetails_PARTS.GetLength(0); i++, j--)
+                            {
+                                if (j == playerButtNum)
+                                {
+                                    Console.WriteLine("> " + playersDetails_PARTS[i, 0]);
+                                }
+                                else
+                                {
+                                    Console.WriteLine("  " + playersDetails_PARTS[i, 0]);
+                                }
+                            }
+                        }
+                    }
+                }
+                else if (PagePVC.isOption_DELETE == true)
+                {
+                    PagePVC.isOption_DELETE = false;
+                    //PagePVC.isSelectPlayer = false;
+                    Console.WriteLine("\n- - - - - - - - - - - - - -\n");
+                    Console.Write("Skasuj u¿ytkownika: ");
+                    Console.ReadLine();
+
+                    Console.Clear();
+                    Console.WriteLine("BBBBBBB   BB    BB   BBBBBBB");
+                    Console.WriteLine("BB    BB  BB    BB  BB      ");
+                    Console.WriteLine("BB    BB  BB    BB  BB      ");
+                    Console.WriteLine("BBBBBBB   BB    BB  BB      ");
+                    Console.WriteLine("BB         BB  BB   BB      ");
+                    Console.WriteLine("BB          BBBB    BB      ");
+                    Console.WriteLine("BB           BB      BBBBBBB");
+                    Console.WriteLine("\n- - - - - - - - - - - - - -\n");
+                    Console.WriteLine("PVC MODE: | Moving: arrows/[W][S] | Click = ENTER | Create player: [C] | Delete player: [P] | Back to menu: [Backspace]\n");
+
+                    if (PagePVC.isSelectPlayer == false)
+                    {
+                        Console.WriteLine("Select player: [" + PagePVC.userName + "]");
+                        if (playersDetails_PARTS != null)
+                        {
+                            for (int i = 0, j = playersDetails_PARTS.GetLength(0); i < playersDetails_PARTS.GetLength(0); i++, j--)
+                            {
+                                if (j == playerButtNum)
+                                {
+                                    Console.WriteLine("> " + playersDetails_PARTS[i, 0]);
+                                }
+                                else
+                                {
+                                    Console.WriteLine("  " + playersDetails_PARTS[i, 0]);
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+
+
+                // UWAGA! weŸ wyœwietlanie napisów w osobn¹ metodê z parametrami!
+
+
+
+
+
+
                 if (PagePVC.isSelectPlayer == true)
                 {
                     pagePVC.SetShips_PLAYER(PagePVC.mainKey);   // Ta medota musi byæ przrd metod¹ "Console.ReadKey()", poniewa¿ jej wynik musi byæ
@@ -85,7 +176,7 @@ namespace Page_PVC
                 while (isCorrectSign == false)
                 {
                     PagePVC.mainKey = Console.ReadKey(true);
-                    if (PagePVC.mainKey.Key == System.ConsoleKey.W || PagePVC.mainKey.Key == System.ConsoleKey.S || PagePVC.mainKey.Key == System.ConsoleKey.D || PagePVC.mainKey.Key == System.ConsoleKey.A || PagePVC.mainKey.Key == System.ConsoleKey.UpArrow || PagePVC.mainKey.Key == System.ConsoleKey.DownArrow || PagePVC.mainKey.Key == System.ConsoleKey.LeftArrow || PagePVC.mainKey.Key == System.ConsoleKey.RightArrow || PagePVC.mainKey.Key == System.ConsoleKey.Enter || PagePVC.mainKey.Key == System.ConsoleKey.Backspace)
+                    if (PagePVC.mainKey.Key == System.ConsoleKey.W || PagePVC.mainKey.Key == System.ConsoleKey.S || PagePVC.mainKey.Key == System.ConsoleKey.D || PagePVC.mainKey.Key == System.ConsoleKey.A || PagePVC.mainKey.Key == System.ConsoleKey.UpArrow || PagePVC.mainKey.Key == System.ConsoleKey.DownArrow || PagePVC.mainKey.Key == System.ConsoleKey.LeftArrow || PagePVC.mainKey.Key == System.ConsoleKey.RightArrow || PagePVC.mainKey.Key == System.ConsoleKey.C || PagePVC.mainKey.Key == System.ConsoleKey.P || PagePVC.mainKey.Key == System.ConsoleKey.Enter || PagePVC.mainKey.Key == System.ConsoleKey.Backspace)
                     {
                         isCorrectSign = true;
                     }
@@ -99,13 +190,14 @@ namespace Page_PVC
                     PagePVC.isSelectPlayer = false;
                     MenuPage.Menu();
                 }
-                else if (PagePVC.mainKey.Key == System.ConsoleKey.Enter)
+                /*else if (PagePVC.mainKey.Key == System.ConsoleKey.Enter)
                 {
                     PagePVC.isSelectPlayer = true;
-                    //PagePVC.userName = playersDetails_PARTS[playerButtNum, 0];
-                }
-                // Poruszanie siê po przyciskach (obliczenia):
-                if (PagePVC.isSelectPlayer == false)
+                }*/
+                PagePVC.isOption_CREATE = (PagePVC.mainKey.Key == System.ConsoleKey.C) ? true : false;
+                PagePVC.isOption_DELETE = (PagePVC.mainKey.Key == System.ConsoleKey.P) ? true : false;
+                PagePVC.isSelectPlayer = (PagePVC.mainKey.Key == System.ConsoleKey.Enter && (PagePVC.isOption_CREATE == false || PagePVC.isOption_DELETE == false)) ? true : false ;
+                if (PagePVC.isSelectPlayer == false)   // Poruszanie siê po przyciskach (obliczenia):
                 {
                     if (PagePVC.mainKey.Key == System.ConsoleKey.UpArrow || PagePVC.mainKey.Key == System.ConsoleKey.W)
                     {
