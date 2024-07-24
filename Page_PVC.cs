@@ -27,8 +27,8 @@ namespace Page_PVC
         public static bool isPVCShipPositingLoop = true;
         public static bool isCorrectSign = false;
         public static System.ConsoleKeyInfo mainKey;
-        public static int playersLimit = 20;
-        public static int playerButtNum = 0;   // Zawsze ostatni, bo chcÍ mieÊ kursor na gÛrze!
+        //public static int playersLimit = 20;
+        //public static int playerButtNum = 0;   // Zawsze ostatni, bo chcÍ mieÊ kursor na gÛrze!
         public static bool isSelectPlayer = false;
         public static string userName = "";
         public static int player_IDX = 0;
@@ -38,10 +38,13 @@ namespace Page_PVC
         // TE MUSZ• BY∆ GLOBALNE!!! - - - - -------------------------------------------------- ResztÍ przenieú jako lokalne do w≥aúciwych metod!
         public static PagePVC pagePVC = new PagePVC();
         public static List<List<string>> /*string[,]*/ playersDetails_PARTS = new List<List<string>>();
-        //public static int playerButtNum_SELECT_PLAYER = playersDetails_PARTS.Count;
+        //----------------------------------------------------------------------------------------
         public void PVC()
         {
+
             pagePVC.DownloadPlayers();
+            int playerButtNum_POINTER = PagePVC.playersDetails_PARTS.Count;   // UWAGA!!! Ta deklaracja ma znajdowaÊ siÍ tutaj, poniewaø w zmienna "playersDetails_PARTS"   // Zawsze ostatni <wartoúÊ>, bo chcÍ mieÊ kursor na gÛrze!
+            // jest zadeklarowana jako pusta lista zagnieødøona, a jej wartoúÊ jest okreúlana w metodzie "DownloadPlayers".
             // Reset zmiennych poza-pÍtlowych strony: [gracz]
             PagePVC.player_IDX = 0;
             PagePVC.userName = playersDetails_PARTS[0][0];
@@ -53,7 +56,7 @@ namespace Page_PVC
                 // Wyúwietlenie informacji strony (stanu wyboru uøytkownika):
                 if (PagePVC.isSelectPlayer == false)
                 {
-                    pagePVC.SelectUserPart(PagePVC.playersDetails_PARTS, PagePVC.playerButtNum);
+                    pagePVC.SelectUserPart(PagePVC.playersDetails_PARTS, playerButtNum_POINTER);
                     if (PagePVC.isOption_CREATE == true)
                     {
                         PagePVC.isOption_CREATE = false;
@@ -63,7 +66,7 @@ namespace Page_PVC
                         // Dodawanie uøytkownika:
                         pagePVC.addUser(PagePVC.addUser_VALUE, PagePVC.playersDetails_PARTS);
                         // Ponowne wyúwietlenie stanu wyboru uøytkownika:
-                        pagePVC.SelectUserPart(PagePVC.playersDetails_PARTS, PagePVC.playerButtNum);
+                        pagePVC.SelectUserPart(PagePVC.playersDetails_PARTS, playerButtNum_POINTER);
                     }
                     else if (PagePVC.isOption_DELETE == true)
                     {
@@ -74,7 +77,7 @@ namespace Page_PVC
                         // Uwuwanie uøytkownika:
                         pagePVC.deleteUser(PagePVC.deleteUser_VALUE, PagePVC.playersDetails_PARTS);
                         // Ponowne wyúwietlenie stanu wyboru uøytkownika:
-                        pagePVC.SelectUserPart(PagePVC.playersDetails_PARTS, PagePVC.playerButtNum);
+                        pagePVC.SelectUserPart(PagePVC.playersDetails_PARTS, playerButtNum_POINTER);
                     }
                 }
                 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -112,7 +115,7 @@ namespace Page_PVC
                 {
                     if (PagePVC.mainKey.Key == System.ConsoleKey.UpArrow || PagePVC.mainKey.Key == System.ConsoleKey.W)
                     {
-                        playerButtNum = (playerButtNum < PagePVC.playersDetails_PARTS.Count) ? playerButtNum += 1 : playerButtNum;
+                        playerButtNum_POINTER = (playerButtNum_POINTER < PagePVC.playersDetails_PARTS.Count) ? playerButtNum_POINTER += 1 : playerButtNum_POINTER;
                         if (PagePVC.player_IDX > 0)
                         {
                             PagePVC.player_IDX--;
@@ -121,7 +124,7 @@ namespace Page_PVC
                     }
                     else if (PagePVC.mainKey.Key == System.ConsoleKey.DownArrow || PagePVC.mainKey.Key == System.ConsoleKey.S)
                     {
-                        playerButtNum = (playerButtNum > 1) ? playerButtNum -= 1 : playerButtNum;
+                        playerButtNum_POINTER = (playerButtNum_POINTER > 1) ? playerButtNum_POINTER -= 1 : playerButtNum_POINTER;
                         if (PagePVC.player_IDX < PagePVC.playersDetails_PARTS.Count - 1)
                         {
                             PagePVC.player_IDX++;
@@ -132,7 +135,7 @@ namespace Page_PVC
                 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
             }
         }
-        public void SelectUserPart(List<List<string>> playersDetails_PARTS, int playerButtNum)   // Wyúwietlenie wszytkich informacji na stronie "PagePVC":  ShowPageData(string[,] array, int index_number) 
+        public void SelectUserPart(List<List<string>> playersDetails_PARTS, int playerButtNum_POINTER)   // Wyúwietlenie wszytkich informacji na stronie "PagePVC":  ShowPageData(string[,] array, int index_number) 
         {
             Console.Clear();
             Console.WriteLine("BBBBBBB   BB    BB   BBBBBBB");
@@ -150,7 +153,7 @@ namespace Page_PVC
             {
                 for (int i = 0, j = playersDetails_PARTS.Count; i < playersDetails_PARTS.Count; i++, j--)
                 {
-                    if (j == playerButtNum)
+                    if (j == playerButtNum_POINTER)
                     {
                         Console.WriteLine("> " + playersDetails_PARTS[i][0]);
                     }
@@ -201,7 +204,9 @@ namespace Page_PVC
             fileContent += "*" + userName + "#0#0#0#0%";
             File.WriteAllText("players.txt", fileContent);
             pagePVC.DownloadPlayers();   // Ponowne wczytanie zaktualizowanej bazy danych uøytkownikÛw.
-            Console.WriteLine("Dodano uøytkownika: " + userName);
+            PagePVC.player_IDX++;   // UWAGA! ROZWI•Ø TEN PROBLEM NA WSKAèNIKU!!!
+            PagePVC.userName = PagePVC.playersDetails_PARTS[PagePVC.player_IDX][0];
+            Console.WriteLine("\nDodano uøytkownika: " + userName);
             Console.ReadLine();
         }
         public void deleteUser(string userName, List<List<string>> playersDetails_PARTS)
