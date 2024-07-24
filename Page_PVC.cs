@@ -42,131 +42,35 @@ namespace Page_PVC
             PagePVC.player_IDX = 0;
             PagePVC.userName = playersDetails_PARTS[0, 0];
 
-        System.ConsoleKeyInfo key;
+            System.ConsoleKeyInfo key;
             while (isPVCShipPositingLoop == true)
             {
-                //MenuPage.currentSoundtrack.Stop();   // Test poprwnoœci zamykania i ponownego odtwierania œcie¿ki dŸwiêkowej | OK
-                //MenuPage.menuSoundtrack_PLAY = false;
-
-                Console.Clear();
-                Console.WriteLine("BBBBBBB   BB    BB   BBBBBBB");
-                Console.WriteLine("BB    BB  BB    BB  BB      ");
-                Console.WriteLine("BB    BB  BB    BB  BB      ");
-                Console.WriteLine("BBBBBBB   BB    BB  BB      ");
-                Console.WriteLine("BB         BB  BB   BB      ");
-                Console.WriteLine("BB          BBBB    BB      ");
-                Console.WriteLine("BB           BB      BBBBBBB");
-                Console.WriteLine("\n- - - - - - - - - - - - - -\n");
-                Console.WriteLine("PVC MODE: | Moving: arrows/[W][S] | Click = ENTER | Create player: [C] | Delete player: [P] | Back to menu: [Backspace]\n");
-                
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+                // Wyœwietlenie informacji strony (stanu wyboru u¿ytkownika):
                 if (PagePVC.isSelectPlayer == false)
                 {
-                    Console.WriteLine("Select player: [" + PagePVC.userName + "]");
-                    if (playersDetails_PARTS != null)
+                    pagePVC.ShowPageData(playersDetails_PARTS, playerButtNum);
+                    if (PagePVC.isOption_CREATE == true)
                     {
-                        for (int i = 0, j = playersDetails_PARTS.GetLength(0); i < playersDetails_PARTS.GetLength(0); i++, j--)
-                        {
-                            if (j == playerButtNum)
-                            {
-                                Console.WriteLine("> " + playersDetails_PARTS[i, 0]);
-                            }
-                            else
-                            {
-                                Console.WriteLine("  " + playersDetails_PARTS[i, 0]);
-                            }
-                        }
+                        PagePVC.isOption_CREATE = false;
+                        Console.WriteLine("\n- - - - - - - - - - - - - -\n");
+                        Console.Write("Utwórz u¿ytkownika: ");
+                        Console.ReadLine();
+                        // Ponowne wyœwietlenie stanu wyboru u¿ytkownika:
+                        pagePVC.ShowPageData(playersDetails_PARTS, playerButtNum);
+                    }
+                    else if (PagePVC.isOption_DELETE == true)
+                    {
+                        PagePVC.isOption_DELETE = false;
+                        Console.WriteLine("\n- - - - - - - - - - - - - -\n");
+                        Console.Write("Skasuj u¿ytkownika: ");
+                        Console.ReadLine();
+                        // Ponowne wyœwietlenie stanu wyboru u¿ytkownika:
+                        pagePVC.ShowPageData(playersDetails_PARTS, playerButtNum);
                     }
                 }
-                
-
-                // Opcje: a) tworzenie u¿ytkownika b) usuwanie u¿ytkowniak
-                if (PagePVC.isOption_CREATE == true)
-                {
-                    PagePVC.isOption_CREATE = false;
-                    //PagePVC.isSelectPlayer = false;
-                    Console.WriteLine("\n- - - - - - - - - - - - - -\n");
-                    Console.Write("Utwórz u¿ytkownika: ");
-                    Console.ReadLine();
-
-                    Console.Clear();
-                    Console.WriteLine("BBBBBBB   BB    BB   BBBBBBB");
-                    Console.WriteLine("BB    BB  BB    BB  BB      ");
-                    Console.WriteLine("BB    BB  BB    BB  BB      ");
-                    Console.WriteLine("BBBBBBB   BB    BB  BB      ");
-                    Console.WriteLine("BB         BB  BB   BB      ");
-                    Console.WriteLine("BB          BBBB    BB      ");
-                    Console.WriteLine("BB           BB      BBBBBBB");
-                    Console.WriteLine("\n- - - - - - - - - - - - - -\n");
-                    Console.WriteLine("PVC MODE: | Moving: arrows/[W][S] | Click = ENTER | Create player: [C] | Delete player: [P] | Back to menu: [Backspace]\n");
-
-                    if (PagePVC.isSelectPlayer == false)
-                    {
-                        Console.WriteLine("Select player: [" + PagePVC.userName + "]");
-                        if (playersDetails_PARTS != null)
-                        {
-                            for (int i = 0, j = playersDetails_PARTS.GetLength(0); i < playersDetails_PARTS.GetLength(0); i++, j--)
-                            {
-                                if (j == playerButtNum)
-                                {
-                                    Console.WriteLine("> " + playersDetails_PARTS[i, 0]);
-                                }
-                                else
-                                {
-                                    Console.WriteLine("  " + playersDetails_PARTS[i, 0]);
-                                }
-                            }
-                        }
-                    }
-                }
-                else if (PagePVC.isOption_DELETE == true)
-                {
-                    PagePVC.isOption_DELETE = false;
-                    //PagePVC.isSelectPlayer = false;
-                    Console.WriteLine("\n- - - - - - - - - - - - - -\n");
-                    Console.Write("Skasuj u¿ytkownika: ");
-                    Console.ReadLine();
-
-                    Console.Clear();
-                    Console.WriteLine("BBBBBBB   BB    BB   BBBBBBB");
-                    Console.WriteLine("BB    BB  BB    BB  BB      ");
-                    Console.WriteLine("BB    BB  BB    BB  BB      ");
-                    Console.WriteLine("BBBBBBB   BB    BB  BB      ");
-                    Console.WriteLine("BB         BB  BB   BB      ");
-                    Console.WriteLine("BB          BBBB    BB      ");
-                    Console.WriteLine("BB           BB      BBBBBBB");
-                    Console.WriteLine("\n- - - - - - - - - - - - - -\n");
-                    Console.WriteLine("PVC MODE: | Moving: arrows/[W][S] | Click = ENTER | Create player: [C] | Delete player: [P] | Back to menu: [Backspace]\n");
-
-                    if (PagePVC.isSelectPlayer == false)
-                    {
-                        Console.WriteLine("Select player: [" + PagePVC.userName + "]");
-                        if (playersDetails_PARTS != null)
-                        {
-                            for (int i = 0, j = playersDetails_PARTS.GetLength(0); i < playersDetails_PARTS.GetLength(0); i++, j--)
-                            {
-                                if (j == playerButtNum)
-                                {
-                                    Console.WriteLine("> " + playersDetails_PARTS[i, 0]);
-                                }
-                                else
-                                {
-                                    Console.WriteLine("  " + playersDetails_PARTS[i, 0]);
-                                }
-                            }
-                        }
-                    }
-                }
-
-
-
-
-                // UWAGA! weŸ wyœwietlanie napisów w osobn¹ metodê z parametrami!
-
-
-
-
-
-
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+                // Operacja klawiszowe:
                 if (PagePVC.isSelectPlayer == true)
                 {
                     pagePVC.SetShips_PLAYER(PagePVC.mainKey);   // Ta medota musi byæ przrd metod¹ "Console.ReadKey()", poniewa¿ jej wynik musi byæ
@@ -183,6 +87,8 @@ namespace Page_PVC
                 }
                 isCorrectSign = false;
                 // Akcje na klawisze:
+                PagePVC.isOption_CREATE = (PagePVC.mainKey.Key == System.ConsoleKey.C) ? true : false;
+                PagePVC.isOption_DELETE = (PagePVC.mainKey.Key == System.ConsoleKey.P) ? true : false;
                 if (PagePVC.mainKey.Key == System.ConsoleKey.Backspace)
                 {
                     isPVCShipPositingLoop = false;
@@ -190,13 +96,10 @@ namespace Page_PVC
                     PagePVC.isSelectPlayer = false;
                     MenuPage.Menu();
                 }
-                /*else if (PagePVC.mainKey.Key == System.ConsoleKey.Enter)
+                else if (PagePVC.mainKey.Key == System.ConsoleKey.Enter && (PagePVC.isOption_CREATE == false || PagePVC.isOption_DELETE == false))
                 {
                     PagePVC.isSelectPlayer = true;
-                }*/
-                PagePVC.isOption_CREATE = (PagePVC.mainKey.Key == System.ConsoleKey.C) ? true : false;
-                PagePVC.isOption_DELETE = (PagePVC.mainKey.Key == System.ConsoleKey.P) ? true : false;
-                PagePVC.isSelectPlayer = (PagePVC.mainKey.Key == System.ConsoleKey.Enter && (PagePVC.isOption_CREATE == false || PagePVC.isOption_DELETE == false)) ? true : false ;
+                }
                 if (PagePVC.isSelectPlayer == false)   // Poruszanie siê po przyciskach (obliczenia):
                 {
                     if (PagePVC.mainKey.Key == System.ConsoleKey.UpArrow || PagePVC.mainKey.Key == System.ConsoleKey.W)
@@ -218,9 +121,39 @@ namespace Page_PVC
                         }
                     }
                 }
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
             }
         }
-        public string[,] DownloadPlayers()
+        public void ShowPageData(string[,] playersDetails_PARTS, int playerButtNum)   // Wyœwietlenie wszytkich informacji na stronie "PagePVC":  ShowPageData(string[,] array, int index_number) 
+        {
+            Console.Clear();
+            Console.WriteLine("BBBBBBB   BB    BB   BBBBBBB");
+            Console.WriteLine("BB    BB  BB    BB  BB      ");
+            Console.WriteLine("BB    BB  BB    BB  BB      ");
+            Console.WriteLine("BBBBBBB   BB    BB  BB      ");
+            Console.WriteLine("BB         BB  BB   BB      ");
+            Console.WriteLine("BB          BBBB    BB      ");
+            Console.WriteLine("BB           BB      BBBBBBB");
+            Console.WriteLine("\n- - - - - - - - - - - - - -\n");
+            Console.WriteLine("PVC MODE: | Moving: arrows/[W][S] | Click = ENTER | Create player: [C] | Delete player: [P] | Back to menu: [Backspace]\n");
+
+            Console.WriteLine("Select player: [" + PagePVC.userName + "]");
+            if (playersDetails_PARTS != null)
+            {
+                for (int i = 0, j = playersDetails_PARTS.GetLength(0); i < playersDetails_PARTS.GetLength(0); i++, j--)
+                {
+                    if (j == playerButtNum)
+                    {
+                        Console.WriteLine("> " + playersDetails_PARTS[i, 0]);
+                    }
+                    else
+                    {
+                        Console.WriteLine("  " + playersDetails_PARTS[i, 0]);
+                    }
+                }
+            }
+        }
+        public string[,] DownloadPlayers()   // Pobranie danych z pliku tekstowego u¿ytkowaników:
         {
             // Odczytaj ca³y tekst z pliku
             string fileContent = File.ReadAllText("players.txt");
@@ -252,6 +185,8 @@ namespace Page_PVC
         }
         public void SetShips_PLAYER(System.ConsoleKeyInfo key)
         {
+            Console.Clear();
+
             // Walidacja poruszania siê po planszy:
             Console.WriteLine("Ustaw swoje statki: [" + PagePVC.userName + "]");
             int setVal = SetShips_PLAYER_CLASS.CursorNavigate(key);
