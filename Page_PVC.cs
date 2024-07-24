@@ -3,6 +3,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq.Expressions;
 using Page_Menu;
+using System.Collections.Generic;
 
 namespace Page_PVC
 {
@@ -22,6 +23,7 @@ namespace Page_PVC
     }*/
     public class PagePVC/* : IPagePVC*/
     {
+        //----------------------------------------------------------------------------------------
         public static bool isPVCShipPositingLoop = true;
         public static bool isCorrectSign = false;
         public static System.ConsoleKeyInfo mainKey;
@@ -30,17 +32,19 @@ namespace Page_PVC
         public static bool isSelectPlayer = false;
         public static string userName = "";
         public static int player_IDX = 0;
-        public static bool isOption_CREATE = false;
-        public static bool isOption_DELETE = false;
+        public static bool isOption_CREATE = false, isOption_DELETE = false;
+        public static string addUser_VALUE = "", deleteUser_VALUE = "";
+        //----------------------------------------------------------------------------------------
+        // TE MUSZ¥ BYÆ GLOBALNE!!! - - - - -------------------------------------------------- Resztê przenieœ jako lokalne do w³aœciwych metod!
+        public static PagePVC pagePVC = new PagePVC();
+        public static List<List<string>> /*string[,]*/ playersDetails_PARTS = new List<List<string>>();
+        //public static int playerButtNum_SELECT_PLAYER = playersDetails_PARTS.Count;
         public void PVC()
         {
-            PagePVC pagePVC = new PagePVC();
-            string[,] playersDetails_PARTS = pagePVC.DownloadPlayers();
-            int playerButtNum = playersDetails_PARTS.GetLength(0);
-
+            pagePVC.DownloadPlayers();
             // Reset zmiennych poza-pêtlowych strony: [gracz]
             PagePVC.player_IDX = 0;
-            PagePVC.userName = playersDetails_PARTS[0, 0];
+            PagePVC.userName = playersDetails_PARTS[0][0];
 
             System.ConsoleKeyInfo key;
             while (isPVCShipPositingLoop == true)
@@ -49,29 +53,33 @@ namespace Page_PVC
                 // Wyœwietlenie informacji strony (stanu wyboru u¿ytkownika):
                 if (PagePVC.isSelectPlayer == false)
                 {
-                    pagePVC.ShowPageData(playersDetails_PARTS, playerButtNum);
+                    pagePVC.SelectUserPart(PagePVC.playersDetails_PARTS, PagePVC.playerButtNum);
                     if (PagePVC.isOption_CREATE == true)
                     {
                         PagePVC.isOption_CREATE = false;
                         Console.WriteLine("\n- - - - - - - - - - - - - -\n");
                         Console.Write("Utwórz u¿ytkownika: ");
-                        Console.ReadLine();
+                        PagePVC.addUser_VALUE = Console.ReadLine();
+                        // Dodawanie u¿ytkownika:
+                        pagePVC.addUser(PagePVC.addUser_VALUE, PagePVC.playersDetails_PARTS);
                         // Ponowne wyœwietlenie stanu wyboru u¿ytkownika:
-                        pagePVC.ShowPageData(playersDetails_PARTS, playerButtNum);
+                        pagePVC.SelectUserPart(PagePVC.playersDetails_PARTS, PagePVC.playerButtNum);
                     }
                     else if (PagePVC.isOption_DELETE == true)
                     {
                         PagePVC.isOption_DELETE = false;
                         Console.WriteLine("\n- - - - - - - - - - - - - -\n");
                         Console.Write("Skasuj u¿ytkownika: ");
-                        Console.ReadLine();
+                        PagePVC.deleteUser_VALUE = Console.ReadLine();
+                        // Uwuwanie u¿ytkownika:
+                        pagePVC.deleteUser(PagePVC.deleteUser_VALUE, PagePVC.playersDetails_PARTS);
                         // Ponowne wyœwietlenie stanu wyboru u¿ytkownika:
-                        pagePVC.ShowPageData(playersDetails_PARTS, playerButtNum);
+                        pagePVC.SelectUserPart(PagePVC.playersDetails_PARTS, PagePVC.playerButtNum);
                     }
                 }
                 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
                 // Operacja klawiszowe:
-                if (PagePVC.isSelectPlayer == true)
+                else if (PagePVC.isSelectPlayer == true)
                 {
                     pagePVC.SetShips_PLAYER(PagePVC.mainKey);   // Ta medota musi byæ przrd metod¹ "Console.ReadKey()", poniewa¿ jej wynik musi byæ
                     // wyswietlony po metodzie "Console.Clear()", której stan (stan wyœwietlacza konsoli) jest zatrzymywany przez "Console.ReadKey()".
@@ -104,27 +112,27 @@ namespace Page_PVC
                 {
                     if (PagePVC.mainKey.Key == System.ConsoleKey.UpArrow || PagePVC.mainKey.Key == System.ConsoleKey.W)
                     {
-                        playerButtNum = (playerButtNum < playersDetails_PARTS.GetLength(0)) ? playerButtNum += 1 : playerButtNum;
+                        playerButtNum = (playerButtNum < PagePVC.playersDetails_PARTS.Count) ? playerButtNum += 1 : playerButtNum;
                         if (PagePVC.player_IDX > 0)
                         {
                             PagePVC.player_IDX--;
-                            PagePVC.userName = playersDetails_PARTS[PagePVC.player_IDX, 0];
+                            PagePVC.userName = PagePVC.playersDetails_PARTS[PagePVC.player_IDX][0];
                         }
                     }
                     else if (PagePVC.mainKey.Key == System.ConsoleKey.DownArrow || PagePVC.mainKey.Key == System.ConsoleKey.S)
                     {
                         playerButtNum = (playerButtNum > 1) ? playerButtNum -= 1 : playerButtNum;
-                        if (PagePVC.player_IDX < playersDetails_PARTS.GetLength(0) - 1)
+                        if (PagePVC.player_IDX < PagePVC.playersDetails_PARTS.Count - 1)
                         {
                             PagePVC.player_IDX++;
-                            PagePVC.userName = playersDetails_PARTS[PagePVC.player_IDX, 0];
+                            PagePVC.userName = PagePVC.playersDetails_PARTS[PagePVC.player_IDX][0];
                         }
                     }
                 }
                 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
             }
         }
-        public void ShowPageData(string[,] playersDetails_PARTS, int playerButtNum)   // Wyœwietlenie wszytkich informacji na stronie "PagePVC":  ShowPageData(string[,] array, int index_number) 
+        public void SelectUserPart(List<List<string>> playersDetails_PARTS, int playerButtNum)   // Wyœwietlenie wszytkich informacji na stronie "PagePVC":  ShowPageData(string[,] array, int index_number) 
         {
             Console.Clear();
             Console.WriteLine("BBBBBBB   BB    BB   BBBBBBB");
@@ -140,36 +148,40 @@ namespace Page_PVC
             Console.WriteLine("Select player: [" + PagePVC.userName + "]");
             if (playersDetails_PARTS != null)
             {
-                for (int i = 0, j = playersDetails_PARTS.GetLength(0); i < playersDetails_PARTS.GetLength(0); i++, j--)
+                for (int i = 0, j = playersDetails_PARTS.Count; i < playersDetails_PARTS.Count; i++, j--)
                 {
                     if (j == playerButtNum)
                     {
-                        Console.WriteLine("> " + playersDetails_PARTS[i, 0]);
+                        Console.WriteLine("> " + playersDetails_PARTS[i][0]);
                     }
                     else
                     {
-                        Console.WriteLine("  " + playersDetails_PARTS[i, 0]);
+                        Console.WriteLine("  " + playersDetails_PARTS[i][0]);
                     }
                 }
             }
         }
-        public string[,] DownloadPlayers()   // Pobranie danych z pliku tekstowego u¿ytkowaników:
+        public void DownloadPlayers()   // Pobranie danych z pliku tekstowego u¿ytkowaników: (nie zrobi³em globalnej tablicy jako listy i z tego powodu zrobi³em osobn¹ metode do wyœwietlania zaktualizowanej tablicy graczy)
         {
             // Odczytaj ca³y tekst z pliku
             string fileContent = File.ReadAllText("players.txt");
             string[] players = fileContent.Split('*');
-            string[,] playersDetails_PARTS = new string[players.Length, 5];
+            string[,] playersDetails_PARTS_AR = new string[players.Length, 5];
+            List<List<string>> playersDetails_PARTS_LT_Level_1 = new List<List<string>>();
             string[] playerDetails_BLOCK = null;
             for (int i = 0; i < players.Length; i++)
             {
+                List<string> playersDetails_PARTS_LT_Level_2 = new List<string>();
                 // Ka¿dy gracz ma 5 informacji oddzielonych znakiem "#":
                 playerDetails_BLOCK = players[i].Split('#');
                 for (int j = 0; j < playerDetails_BLOCK.Length; j++)
                 {
-                    playersDetails_PARTS[i, j] = playerDetails_BLOCK[j];
+                    playersDetails_PARTS_AR[i, j] = playerDetails_BLOCK[j];
+                    playersDetails_PARTS_LT_Level_2.Add(playerDetails_BLOCK[j]);
                 }
+                playersDetails_PARTS_LT_Level_1.Add(playersDetails_PARTS_LT_Level_2);
             }
-            return playersDetails_PARTS;
+            PagePVC.playersDetails_PARTS = playersDetails_PARTS_LT_Level_1;   // Wczeœniej: playersDetails_PARTS_AR
             // Zapisz dane do pliku:
             /*try
             {
@@ -182,6 +194,20 @@ namespace Page_PVC
                 Console.WriteLine("An error occurred while writing to the file:");
                 Console.WriteLine(ex.Message);
             }*/
+        }
+        public void addUser(string userName, List<List<string>> playersDetails_PARTS)
+        {
+            string fileContent = File.ReadAllText("players.txt");
+            fileContent += "*" + userName + "#0#0#0#0%";
+            File.WriteAllText("players.txt", fileContent);
+            pagePVC.DownloadPlayers();   // Ponowne wczytanie zaktualizowanej bazy danych u¿ytkowników.
+            Console.WriteLine("Dodano u¿ytkownika: " + userName);
+            Console.ReadLine();
+        }
+        public void deleteUser(string userName, List<List<string>> playersDetails_PARTS)
+        {
+            Console.WriteLine("U¿ytkownik do usuniêcia: " + userName);
+            Console.ReadLine();
         }
         public void SetShips_PLAYER(System.ConsoleKeyInfo key)
         {

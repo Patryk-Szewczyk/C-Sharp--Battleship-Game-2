@@ -22,6 +22,14 @@ namespace Page_Menu
 
         public static void Menu()
         {
+            // Deklaracja obiektów:
+            //PagePVP pvp = new PagePVP();
+            PagePVC pvc = new PagePVC();
+            PageInstructions instruction = new PageInstructions();
+            PageRanking ranking = new PageRanking();
+            PageOptions options = new PageOptions();
+            PageCredits credits = new PageCredits();
+
             System.ConsoleKey key = System.ConsoleKey.Backspace;   // Dowolny niew³aœciwy klawisz.
             System.ConsoleKeyInfo corr_key;
             if (MenuPage.menuSoundtrack_PLAY == false && MenuPage.creditsSoundtrack_PLAY == false)
@@ -78,40 +86,33 @@ namespace Page_Menu
                             PagePVP.isPVPShipPositingLoop = true;
                             PagePVP pvp = new PagePVP();
                             pvp.PVP();
-                            //GC.Collect();   // Usuwanie obiektu z pamiêci, aby nie zaœmiecaæ jej dodatkowymi kopiami tego opiektu. (wiem, ¿e on sam siê w³¹cza, a chcê mieæ 100% pewnoœæ, ¿e jednak obiekt ten znika z pamiêci)
-                            //GC.WaitForPendingFinalizers();
                             break;*/
                         case 6:   // PVC
                             PagePVC.isPVCShipPositingLoop = true;
-                            PagePVC pvc = new PagePVC();
                             pvc.PVC();
                             //GC.Collect();
                             //GC.WaitForPendingFinalizers();
                             break;
                         case 5:   // Instruction
                             PageInstructions.isInstructionButtonLoop = true;
-                            PageInstructions instruction = new PageInstructions();
                             instruction.Instructions();
                             //GC.Collect();
                             //GC.WaitForPendingFinalizers();
                             break;
                         case 4:   // Ranking
                             PageRanking.isRankingButtonLoop = true;
-                            PageRanking ranking = new PageRanking();
                             ranking.Ranking();
                             //GC.Collect();
                             //GC.WaitForPendingFinalizers();
                             break;
                         case 3:   // Options
                             PageOptions.isOptionsButtonLoop = true;
-                            PageOptions options = new PageOptions();
                             options.Options();
                             //GC.Collect();
                             //GC.WaitForPendingFinalizers();
                             break;
                         case 2:   // Credits
                             PageCredits.isCreditsLoop = true;
-                            PageCredits credits = new PageCredits();
                             credits.Credits();
                             //GC.Collect();
                             //GC.WaitForPendingFinalizers();
