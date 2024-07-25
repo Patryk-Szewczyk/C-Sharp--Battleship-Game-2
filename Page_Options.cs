@@ -13,7 +13,7 @@ namespace Page_Options
     }
     public class PageOptions : IPageOptions
     {
-        public static bool isOptionsButtonLoop = true;
+        public static bool isOptionsLoop = true;
         public static bool isCorrectSign = false;
         public static string[] optionsButtons = 
         { 
@@ -29,7 +29,7 @@ namespace Page_Options
         public void Options()
         {
             System.ConsoleKey key = System.ConsoleKey.Backspace;   // Dowolny niew³aœciwy klawisz.
-            while (isOptionsButtonLoop == true)
+            while (isOptionsLoop == true)
             {
                 Console.Clear();
                 Console.WriteLine(" BBBBBB   BBBBBBB   BBBBBBBB  BB   BBBBBB   BBBB  BB   BBBBBBB");
@@ -79,7 +79,7 @@ namespace Page_Options
                 }
                 else if (key == System.ConsoleKey.Backspace)
                 {
-                    isOptionsButtonLoop = false;
+                    isOptionsLoop = false;
                     MenuPage.isMenuButtonLoop = true;
                     MenuPage.Menu();
                 }

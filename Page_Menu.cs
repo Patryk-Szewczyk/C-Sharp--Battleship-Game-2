@@ -84,23 +84,22 @@ namespace Page_Menu
                     {
                         /*case 7:   // PVP
                             PagePVP.isPVPShipPositingLoop = true;
-                            PagePVP pvp = new PagePVP();
                             pvp.PVP();
                             break;*/
                         case 6:   // PVC
-                            PagePVC.isPVCShipPositingLoop = true;
+                            PagePVC.isPVCLoop = true;
                             pvc.PVC();
                             break;
                         case 5:   // Instruction
-                            PageInstructions.isInstructionButtonLoop = true;
+                            PageInstructions.isInstructionLoop = true;
                             instruction.Instructions();
                             break;
                         case 4:   // Ranking
-                            PageRanking.isRankingButtonLoop = true;
+                            PageRanking.isRankingLoop = true;
                             ranking.Ranking();
                             break;
                         case 3:   // Options
-                            PageOptions.isOptionsButtonLoop = true;
+                            PageOptions.isOptionsLoop = true;
                             options.Options();
                             break;
                         case 2:   // Credits

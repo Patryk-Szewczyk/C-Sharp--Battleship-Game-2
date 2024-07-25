@@ -15,7 +15,7 @@ namespace Page_Instructions
     public class PageInstructions : IPageInstructions
     {
        // public static GlobalMethod globalMethod = new GlobalMethod();
-        public static bool isInstructionButtonLoop = true;
+        public static bool isInstructionLoop = true;
         public static bool isCorrectSign = false;
         public static string[] instructionButtons = { "Game", "Ships", "Board"};
         public static int instructionButtNum = instructionButtons.Length;
@@ -23,7 +23,7 @@ namespace Page_Instructions
         {
             System.ConsoleKey key = System.ConsoleKey.Backspace;   // Dowolny niew³aœciwy klawisz.
             System.ConsoleKeyInfo corr_key;
-            while (isInstructionButtonLoop == true)
+            while (isInstructionLoop == true)
             {
                 Console.Clear();
                 Console.WriteLine("BB  BBBB  BB   BBBBBBB  BBBBBBBB  BBBBBBB   BB    BB   BBBBBBB  BBBBBBBB  BB   BBBBBB   BBBB  BB");
@@ -83,7 +83,7 @@ namespace Page_Instructions
                 }
                 else if (key == System.ConsoleKey.Backspace)
                 {
-                    isInstructionButtonLoop = false;
+                    isInstructionLoop = false;
                     MenuPage.isMenuButtonLoop = true;
                     MenuPage.Menu();
                 }

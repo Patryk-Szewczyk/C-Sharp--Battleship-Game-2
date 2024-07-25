@@ -13,7 +13,7 @@ namespace Page_Ranking
     }
     public class PageRanking : IPageRanking
     {
-        public static bool isRankingButtonLoop = true;
+        public static bool isRankingLoop = true;
         public static bool isCorrectSign = false;
         public static string[] rankingButtons = { "PVC Mode" };
         public static int rankingButtNum = rankingButtons.Length;
@@ -21,7 +21,7 @@ namespace Page_Ranking
         {
             System.ConsoleKey key = System.ConsoleKey.Backspace;   // Dowolny niew³aœciwy klawisz.
             System.ConsoleKeyInfo corr_key;
-            while (isRankingButtonLoop == true)
+            while (isRankingLoop == true)
             {
                 Console.Clear();
                 Console.WriteLine("BBBBBBB     BBBB    BBBB  BB  BB    BB  BB  BBBB  BB   BBBBBB ");
@@ -77,7 +77,7 @@ namespace Page_Ranking
                 }
                 else if (key == System.ConsoleKey.Backspace)
                 {
-                    isRankingButtonLoop = false;
+                    isRankingLoop = false;
                     MenuPage.isMenuButtonLoop = true;
                     MenuPage.Menu();
                 }
@@ -89,7 +89,7 @@ namespace Page_Ranking
         }*/
         public void Scores_PVC()  // Tryb gracz vs komputer:
         {
-            string filePath = "players.txt";
+            string filePath = "players_PVC.txt";
 
             try
             {
