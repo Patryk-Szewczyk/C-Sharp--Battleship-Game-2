@@ -90,32 +90,22 @@ namespace Page_Menu
                         case 6:   // PVC
                             PagePVC.isPVCShipPositingLoop = true;
                             pvc.PVC();
-                            //GC.Collect();
-                            //GC.WaitForPendingFinalizers();
                             break;
                         case 5:   // Instruction
                             PageInstructions.isInstructionButtonLoop = true;
                             instruction.Instructions();
-                            //GC.Collect();
-                            //GC.WaitForPendingFinalizers();
                             break;
                         case 4:   // Ranking
                             PageRanking.isRankingButtonLoop = true;
                             ranking.Ranking();
-                            //GC.Collect();
-                            //GC.WaitForPendingFinalizers();
                             break;
                         case 3:   // Options
                             PageOptions.isOptionsButtonLoop = true;
                             options.Options();
-                            //GC.Collect();
-                            //GC.WaitForPendingFinalizers();
                             break;
                         case 2:   // Credits
                             PageCredits.isCreditsLoop = true;
                             credits.Credits();
-                            //GC.Collect();
-                            //GC.WaitForPendingFinalizers();
                             break;
                         case 1:   // Exit
                             isMenuButtonLoop = false;
