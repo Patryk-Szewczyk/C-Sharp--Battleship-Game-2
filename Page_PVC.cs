@@ -202,7 +202,6 @@ namespace Page_PVC
             string fileContent = File.ReadAllText("players_PVC.txt");
             string userName = "";
             string createState = "";   // "empty" / "correct" / "uncorrect" / "the-same"
-            //string userName_NEW = "";
             bool isAtLeastValidSign = false;
             char[] valid_CHAR_AR = { 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 
                                   'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 
@@ -236,8 +235,10 @@ namespace Page_PVC
             if (createState == "correct")   // Sprawdzenie poprawnoœci znaków:
             {
                 int isUncorrectSign_COUNTER = 0;
+
                 for (int i = 0; i < userName.Length; i++)
                 {
+                    isUncorrectSign_COUNTER = 0;
                     for (int j = 0; j < valid_CHAR_AR.Length; j++)
                     {
                         if (userName[i] != valid_CHAR_AR[j])
@@ -245,10 +246,10 @@ namespace Page_PVC
                             isUncorrectSign_COUNTER++;
                         }
                     }
-                }
-                if (isUncorrectSign_COUNTER == valid_CHAR_AR.Length)
-                {
-                    createState = "un-correct";
+                    if (isUncorrectSign_COUNTER == valid_CHAR_AR.Length)
+                    {
+                        createState = "uncorrect";
+                    }
                 }
             }
 
@@ -257,6 +258,7 @@ namespace Page_PVC
             {
                 int startIDX = 0;
                 int endIDX = userName.Length;
+
                 // Ustalanie "pocz¹tku" w³aœciwego stringa do pozbywania siê zbêdnych spacji w jego œrodku:
                 for (int i = 0; i < userName.Length; i++)
                 {
@@ -298,22 +300,18 @@ namespace Page_PVC
 
             if (createState == "correct")   // Sprawdzenie czy tworzony u¿ytkownik nie znajduje siê ju¿ w bazie danych u¿ytkowników:
             {
-                // createState == "the-same"
                 for (int i = 0; i < playersDetails_PARTS.Count; i++)
                 {
-                    for (int j = 0; j < playersDetails_PARTS[i].Count; j++)
+                    if (userName == playersDetails_PARTS[i][0])
                     {
-                        if (userName == playersDetails_PARTS[0][j])
-                        {
-                            createState = "the-same";
-                        }
+                        createState = "the-same";
                     }
                 }
             }
 
             // Sprawdzenie czy wystêpuj¹ poprawne znaki w ka¿dym indeksie nazwy
 
-            switch  (createState)
+            switch (createState)
             {
                 case "correct":
                     fileContent += "*" + userName + "#0#0#0#0%";
@@ -329,7 +327,7 @@ namespace Page_PVC
                     Console.ReadLine();
                     break;
                 case "uncorrect":
-                    Console.WriteLine("\n\nUser has not been create, because you write uncorrect sign/s. Write user name with correct signs");
+                    Console.WriteLine("\n\nUser has not been create, because you write uncorrect sign/s. Write user name with correct signs.");
                     Console.WriteLine("\nClick ENTER to reload page.");
                     Console.ReadLine();
                     break;
