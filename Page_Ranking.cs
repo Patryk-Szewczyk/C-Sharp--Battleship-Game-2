@@ -17,6 +17,7 @@ namespace Page_Ranking
         public static bool isCorrectSign = false;
         public static string[] rankingButtons = { "PVC Mode" };
         public static int rankingButtNum = rankingButtons.Length;
+        public static string playersLimit_OPTION = "no-limit";   // "no-limit" / "limit"
         public void Ranking()
         {
             System.ConsoleKey key = System.ConsoleKey.Backspace;   // Dowolny niew³aœciwy klawisz.
@@ -145,7 +146,7 @@ namespace Page_Ranking
                 int playerLength = 0;
                 int longestFirstCol = 0;
                 int firstColAdd = 0;
-                int playersLimit = 10;
+                int playersLimit = 10;   // Limit wyœwietlanych graczy.
                 for (int i = 0; i < players.Length; i++)
                 {
                     playerLength = playersNested[i, 0].Length;
@@ -165,7 +166,14 @@ namespace Page_Ranking
                 Console.WriteLine("|" + minus_TH + "---------------------------------------------------|");
                 Console.WriteLine("| PLACE | PLAYER"+ space_TH + " | SCORE | SUNKEN | LOSS | ACCURATE |");
                 Console.WriteLine("|" + minus_TH + "---------------------------------------------------|");
-                playersLimit = (players.Length >= playersLimit) ? playersLimit : players.Length;
+                if (PageRanking.playersLimit_OPTION == "limit")
+                {
+                    playersLimit = (players.Length >= playersLimit) ? playersLimit : players.Length;   // Ograniczony limit wyœwietlania graczy w rankingu.
+                }
+                else if (PageRanking.playersLimit_OPTION == "no-limit")
+                {
+                    playersLimit = players.Length;   // Wyœwietlanie graczy bez limitu.
+                }
                 for (int i = 0; i < playersLimit; i++)
                 {
                     Console.Write("| ");

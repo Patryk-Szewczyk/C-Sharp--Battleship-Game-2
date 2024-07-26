@@ -27,7 +27,7 @@ namespace Page_PVC
         public static string userName = "";
         public static PagePVC pagePVC = new PagePVC();
         public static List<List<string>> /*string[,]*/ playersDetails_PARTS = new List<List<string>>();
-        public static bool isDeletedBELOW = false;   // Przy usuwaniu uøytkowanika powyøej kursowa i rÛwno z ni trzeba przy wyúwietlaniu kursora przesunπÊ go w dÛ≥.
+        public static string isDeletedDirection = "ABOVE";   // Przy usuwaniu uøytkowanika powyøej kursowa i rÛwno z ni trzeba przy wyúwietlaniu kursora przesunπÊ go w dÛ≥.
         public static int player_IDX = 0;
         public void PVC()
         {
@@ -135,11 +135,15 @@ namespace Page_PVC
             Console.WriteLine("\n- - - - - - - - - - - - - -\n");
             Console.WriteLine("PVC MODE: | Moving: arrows/[W][S] | Click = ENTER | Create player: [C] | Delete player: [P] | Back to menu: [Backspace]\n");
 
-            if (PagePVC.isDeletedBELOW == true)   // Kiedy usuniÍto uøytkownika poniøej kursora, zmniejsza siÍ wartoúÊ lokalizacji kursora wzglÍdem wyúwietlonych uøytkowanikÛw.
+            if (PagePVC.isDeletedDirection == "BELOW")   // Kiedy usuniÍto uøytkownika poniøej kursora, zmniejsza siÍ wartoúÊ lokalizacji kursora wzglÍdem wyúwietlonych uøytkowanikÛw.
             {
                 player_IDX = player_IDX - 1;
                 PagePVC.player_IDX = PagePVC.player_IDX - 1;
-
+            }
+            else if (PagePVC.isDeletedDirection == "CENTER")
+            {
+                //int nextIDX = PagePVC.player_IDX + 1;
+                PagePVC.userName = PagePVC.playersDetails_PARTS[PagePVC.player_IDX][0];
             }
 
             Console.WriteLine("Select player: [" + PagePVC.userName + "]");
@@ -157,7 +161,7 @@ namespace Page_PVC
                     }
                 }
             }
-            PagePVC.isDeletedBELOW = false;
+            PagePVC.isDeletedDirection = "ABOVE";
         }
         public void DownloadPlayers()   // Pobranie danych z pliku tekstowego uøytkowanikÛw: (nie zrobi≥em globalnej tablicy jako listy i z tego powodu zrobi≥em osobnπ metode do wyúwietlania zaktualizowanej tablicy graczy)
         {
@@ -197,36 +201,27 @@ namespace Page_PVC
         {
             string fileContent = File.ReadAllText("players_PVC.txt");
             string userName = "";
-            string userName_NEW = "";
+            string createState = "";   // "empty" / "correct" / "uncorrect" / "the-same"
+            //string userName_NEW = "";
             bool isAtLeastValidSign = false;
-            char[] valid_CHAR = { 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 
+            char[] valid_CHAR_AR = { 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 
                                   'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 
                                   'π', 'Ê', 'Í', '≥', 'Ò', 'Û', 'ú', 'ø', 'ü',
                                   '•', '∆', ' ', '£', '—', '”', 'å', 'Ø', 'è',
-                                  '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
+                                  '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+                                  ' ' };   // UWAGA! Znak ' ' (nic) jest MEGA waøny, gdyø pÛüniej po walidaci odpowiednich znakÛw usuwamy nadmiar spacji i brak tego znaku
+                                           // w tej tablicy spowodowa≥by, iø nazwa gracza ze spacjπ nie przechodzi≥a by walidacji na poprawne znaki.
 
             Console.WriteLine("\n- - - - - - - - - - - - - -\n");
-            Console.Write("Create user: ");
+            Console.WriteLine("Create user. Available signs are letters and numbers.\n");
+            Console.Write("User name: ");
             userName = Console.ReadLine();
-            
-            // Zamiana " " na "_":
-            for (int i = 0; i < userName.Length; i++)
-            {
-                if (userName[i] != ' ')
-                {
-                    userName_NEW += userName[i];
-                }
-                else if (userName[i] == ' ')
-                {
-                    userName_NEW += "_";
-                }
-            }
-            userName = userName_NEW;
+            createState = "correct";
 
             // Sprawdzenie czy znajduje siÍ przynajmniej jeden dopuszczalny znak: | ChcÍ uzyskaÊ przekszta≥cenie: "   " = "" (czyli: nic)
             for (int i = 0; i < userName.Length; i++)
             {
-                if (userName[i] != '_')
+                if (userName[i] != ' ')
                 {
                     isAtLeastValidSign = true;
                     break;
@@ -235,26 +230,114 @@ namespace Page_PVC
             if (isAtLeastValidSign == false)
             {
                 userName = "";
+                createState = "empty";
+            }
+
+            if (createState == "correct")   // Sprawdzenie poprawnoúci znakÛw:
+            {
+                int isUncorrectSign_COUNTER = 0;
+                for (int i = 0; i < userName.Length; i++)
+                {
+                    for (int j = 0; j < valid_CHAR_AR.Length; j++)
+                    {
+                        if (userName[i] != valid_CHAR_AR[j])
+                        {
+                            isUncorrectSign_COUNTER++;
+                        }
+                    }
+                }
+                if (isUncorrectSign_COUNTER == valid_CHAR_AR.Length)
+                {
+                    createState = "un-correct";
+                }
+            }
+
+            string userName_NEW = "";
+            if (createState == "correct")   // Usuwanie nadmiaru spacji:
+            {
+                int startIDX = 0;
+                int endIDX = userName.Length;
+                // Ustalanie "poczπtku" w≥aúciwego stringa do pozbywania siÍ zbÍdnych spacji w jego úrodku:
+                for (int i = 0; i < userName.Length; i++)
+                {
+                    if (userName[i] != ' ')
+                    {
+                        break;
+                    }
+                    startIDX++;
+                }
+                // Ustalanie "koÒca" w≥aúciwego stringa do pozbywania siÍ zbÍdnych spacji w jego úrodku:
+                for (int i = userName.Length - 1; i >= 0; i--)
+                {
+                    if (userName[i] != ' ')
+                    {
+                        break;
+                    }
+                    endIDX--;
+                }
+                // Tworzenie w≥aúciwej nazwy uøytkownika bez zbÍdnych spacji:
+                int spaceOverflow_COUNTER = 0;
+                for (int i = startIDX; i < endIDX; i++)
+                {
+                    if (userName[i] == ' ')
+                    {
+                        spaceOverflow_COUNTER++;
+                        if (spaceOverflow_COUNTER == 1)
+                        {
+                            userName_NEW += userName[i];
+                        }
+                    }
+                    else if (userName[i] != ' ')
+                    {
+                        spaceOverflow_COUNTER = 0;
+                        userName_NEW += userName[i];
+                    }
+                }
+            }
+            userName = userName_NEW;
+
+            if (createState == "correct")   // Sprawdzenie czy tworzony uøytkownik nie znajduje siÍ juø w bazie danych uøytkownikÛw:
+            {
+                // createState == "the-same"
+                for (int i = 0; i < playersDetails_PARTS.Count; i++)
+                {
+                    for (int j = 0; j < playersDetails_PARTS[i].Count; j++)
+                    {
+                        if (userName == playersDetails_PARTS[0][j])
+                        {
+                            createState = "the-same";
+                        }
+                    }
+                }
             }
 
             // Sprawdzenie czy wystÍpujπ poprawne znaki w kaødym indeksie nazwy
 
-
-
-            if (userName != "")
+            switch  (createState)
             {
-                fileContent += "*" + userName + "#0#0#0#0%";
-                File.WriteAllText("players_PVC.txt", fileContent);
-                pagePVC.DownloadPlayers();   // Ponowne wczytanie zaktualizowanej bazy danych uøytkownikÛw.
-                Console.WriteLine("\n\nAdd new player."); ;
-                Console.WriteLine("\nClick ENTER to reload page.");
-                Console.ReadLine();
-            }
-            else
-            {
-                Console.WriteLine("\n\nUser has not been create, because you don't write user name.");
-                Console.WriteLine("\nClick ENTER to reload page.");
-                Console.ReadLine();
+                case "correct":
+                    fileContent += "*" + userName + "#0#0#0#0%";
+                    File.WriteAllText("players_PVC.txt", fileContent);
+                    pagePVC.DownloadPlayers();   // Ponowne wczytanie zaktualizowanej bazy danych uøytkownikÛw.
+                    Console.WriteLine("\n\nAdd new user: [" + userName + "]."); ;
+                    Console.WriteLine("\nClick ENTER to reload page.");
+                    Console.ReadLine();
+                    break;
+                case "empty":
+                    Console.WriteLine("\n\nUser has not been create, because you didn't write user name.");
+                    Console.WriteLine("\nClick ENTER to reload page.");
+                    Console.ReadLine();
+                    break;
+                case "uncorrect":
+                    Console.WriteLine("\n\nUser has not been create, because you write uncorrect sign/s. Write user name with correct signs");
+                    Console.WriteLine("\nClick ENTER to reload page.");
+                    Console.ReadLine();
+                    break;
+                case "the-same":
+                    Console.WriteLine("\n\nUser has not been create, because this user name is already hired.");
+                    Console.WriteLine("\nClick ENTER to reload page.");
+                    Console.ReadLine();
+                    break;
             }
         }
         public void deleteUser(List<List<string>> playersDetails_PARTS)
@@ -281,14 +364,14 @@ namespace Page_PVC
 
             if (correctUser != "")
             {
-                // Okreúlenie czy usuwany uøytkownik znajduje siÍ przed lub rÛwno z kursorem:
-
-                // Jeøeli nie, to: --PagePVC.isDeletedBELOW;   (odjπÊ 1)
-                // Jeøeli nie, to: PagePVC.isDeletedBELOW = PagePVC.isDeletedBELOW;   (zostawiamy)
-
-                if (PagePVC.player_IDX >= del_IDX)
+                // Okreúlenie czy usuwany uøytkownik znajduje siÍ przed, albo rÛwno z kursorem:
+                if (PagePVC.player_IDX > del_IDX)
                 {
-                    PagePVC.isDeletedBELOW = true;
+                    PagePVC.isDeletedDirection = "BELOW";
+                }
+                else if (PagePVC.player_IDX == del_IDX)
+                {
+                    PagePVC.isDeletedDirection = "CENTER";
                 }
 
                 // UsuniÍcie okreúlonej listy zagnieødøonej z listy nadrzÍdnej danych uøytkownikÛw:
