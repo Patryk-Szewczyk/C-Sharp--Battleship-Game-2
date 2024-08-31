@@ -23,11 +23,13 @@ namespace Page_Intro {
 
             // Test sortowania binarnego BinSorSpc:
             /*int[] arajek = new int[100];
-            for (int i = 0, j = 100; i < 100; i++, j=j+2) {
-                arajek[i] = j;
+            List<int> araj = new List<int>();
+            araj.Remove(44);
+            for (int i = 0; i < araj.Count; i++) {
+                araj.Add(i);
             }
-            int target = 156;
-            ValueTuple<string, string> tuple = GlobalMethod.BinSorSpc(arajek, target);
+            int target = 45;
+            ValueTuple<int, int> tuple = GlobalMethod.SearchRem(araj, target);
             Console.WriteLine("Znaleziona wartość: " + tuple.Item1 + " | Indeks tej wartości: " + tuple.Item2);*/
 
             // Test losowania statków:
@@ -38,6 +40,7 @@ namespace Page_Intro {
                 plansza.Add(i);
             }
             listaStatkow = GlobalMethod.RandShips(plansza, statki);
+            Console.WriteLine("\n\n");
             for (int i = 0; i < listaStatkow.Count; i++) {
                 for (int j = 0; j < listaStatkow[i].Count; j++) {
                     Console.Write(listaStatkow[i][j] + " ");
