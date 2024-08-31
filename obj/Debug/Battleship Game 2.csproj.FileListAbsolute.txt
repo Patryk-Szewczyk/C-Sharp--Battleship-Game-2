@@ -1,0 +1,39 @@
+C:\Users\zielo\OneDrive\Pulpit\Battleship Game 2\obj\Debug\Battleship Game 2.csproj.AssemblyReference.cache
+C:\Users\zielo\OneDrive\Pulpit\Battleship Game 2\obj\Debug\Battleship Game 2.csproj.CoreCompileInputs.cache
+C:\Users\zielo\OneDrive\Pulpit\Battleship Game 2\bin\Debug\Battleship Game 2.exe.config
+C:\Users\zielo\OneDrive\Pulpit\Battleship Game 2\bin\Debug\Battleship Game 2.exe
+C:\Users\zielo\OneDrive\Pulpit\Battleship Game 2\bin\Debug\Battleship Game 2.pdb
+C:\Users\zielo\OneDrive\Pulpit\Battleship Game 2\obj\Debug\Battleship Game 2.exe
+C:\Users\zielo\OneDrive\Pulpit\Battleship Game 2\obj\Debug\Battleship Game 2.pdb
+C:\Users\zielo\OneDrive\Pulpit\Backend\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\bin\Debug\Battleship Game 2.exe.config
+C:\Users\zielo\OneDrive\Pulpit\Backend\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\bin\Debug\Battleship Game 2.exe
+C:\Users\zielo\OneDrive\Pulpit\Backend\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\bin\Debug\Battleship Game 2.pdb
+C:\Users\zielo\OneDrive\Pulpit\Backend\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\obj\Debug\Battleship Game 2.csproj.AssemblyReference.cache
+C:\Users\zielo\OneDrive\Pulpit\Backend\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\obj\Debug\Battleship Game 2.csproj.CoreCompileInputs.cache
+C:\Users\zielo\OneDrive\Pulpit\Backend\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\obj\Debug\Battleship Game 2.exe
+C:\Users\zielo\OneDrive\Pulpit\Backend\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\obj\Debug\Battleship Game 2.pdb
+C:\Users\zielo\OneDrive\Pulpit\Backend\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\bin\Debug\Soundtracks\Menu\473915__xhale303__synthwave-loop.wav
+C:\Users\zielo\OneDrive\Pulpit\Języki obiektowe\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\bin\Debug\Soundtracks\Menu\473915__xhale303__synthwave-loop.wav
+C:\Users\zielo\OneDrive\Pulpit\Języki obiektowe\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\bin\Debug\Battleship Game 2.exe.config
+C:\Users\zielo\OneDrive\Pulpit\Języki obiektowe\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\bin\Debug\Battleship Game 2.exe
+C:\Users\zielo\OneDrive\Pulpit\Języki obiektowe\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\bin\Debug\Battleship Game 2.pdb
+C:\Users\zielo\OneDrive\Pulpit\Języki obiektowe\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\obj\Debug\Battleship Game 2.csproj.AssemblyReference.cache
+C:\Users\zielo\OneDrive\Pulpit\Języki obiektowe\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\obj\Debug\Battleship Game 2.csproj.CoreCompileInputs.cache
+C:\Users\zielo\OneDrive\Pulpit\Języki obiektowe\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\obj\Debug\Battleship Game 2.exe
+C:\Users\zielo\OneDrive\Pulpit\Języki obiektowe\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\obj\Debug\Battleship Game 2.pdb
+C:\Users\zielo\OneDrive\Pulpit\Języki obiektowe\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\bin\Debug\script.js
+C:\Users\zielo\OneDrive\Pulpit\Języki obiektowe\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\bin\Debug\style.css
+C:\Users\zielo\OneDrive\Pulpit\Języki obiektowe\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\bin\Debug\credits.html
+C:\Users\zielo\OneDrive\Pulpit\Języki obiektowe\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\bin\Debug\Soundtracks\Credits\stay-retro-124958.wav
+C:\Users\zielo\OneDrive\Pulpit\Coding\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\bin\Debug\credits.html
+C:\Users\zielo\OneDrive\Pulpit\Coding\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\bin\Debug\script.js
+C:\Users\zielo\OneDrive\Pulpit\Coding\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\bin\Debug\Soundtracks\Credits\stay-retro-124958.wav
+C:\Users\zielo\OneDrive\Pulpit\Coding\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\bin\Debug\Soundtracks\Menu\473915__xhale303__synthwave-loop.wav
+C:\Users\zielo\OneDrive\Pulpit\Coding\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\bin\Debug\style.css
+C:\Users\zielo\OneDrive\Pulpit\Coding\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\bin\Debug\Battleship Game 2.exe.config
+C:\Users\zielo\OneDrive\Pulpit\Coding\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\bin\Debug\Battleship Game 2.exe
+C:\Users\zielo\OneDrive\Pulpit\Coding\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\bin\Debug\Battleship Game 2.pdb
+C:\Users\zielo\OneDrive\Pulpit\Coding\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\obj\Debug\Battleship Game 2.csproj.AssemblyReference.cache
+C:\Users\zielo\OneDrive\Pulpit\Coding\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\obj\Debug\Battleship Game 2.csproj.CoreCompileInputs.cache
+C:\Users\zielo\OneDrive\Pulpit\Coding\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\obj\Debug\Battleship Game 2.exe
+C:\Users\zielo\OneDrive\Pulpit\Coding\C#\Projekty\W trakcie prac\Battleship Game 2 AI\Battleship Game 2\obj\Debug\Battleship Game 2.pdb

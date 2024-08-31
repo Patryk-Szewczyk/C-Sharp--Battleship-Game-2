@@ -2,29 +2,17 @@ using System;
 using Page_Menu;
 using Library_GlobalMethods;
 
-namespace Page_Instructions
-{
-    // KIEDY SKOÑCZYSZ GRÊ - SPRÓBUJ ZAAPLICOWAÆ "static" DO INTERFEJSÓW STRON!
-    interface IPageInstructions   // Mog³em opuœciæ interfejs, aby mieæ metody statyczne, ale u¿ywam go poniewa¿ chcê mieæ widoczne na górze nazwy wszystkich metody danej klasy:
-    {
-        void Instructions();   // Wyœwietlenie strony instrukcji.
-        void Page_Game();   // Wyœwietlenie instrukcji obs³ugi gry.
-        void Page_Ships();   // Wyœwietlenie informacji odnoœnie statków.
-        void Page_Board();   // Wyœwietlenie instrukcji postêpowania z plansz¹ w trakcie gry.
-    }
-    public class PageInstructions : IPageInstructions
-    {
-       // public static GlobalMethod globalMethod = new GlobalMethod();
+namespace Page_Instructions {
+    public class PageInstructions {
+        // public static GlobalMethod globalMethod = new GlobalMethod();
         public static bool isInstructionLoop = true;
         public static bool isCorrectSign = false;
         public static string[] instructionButtons = { "Game", "Ships", "Board"};
         public static int instructionButtNum = instructionButtons.Length;
-        public void Instructions()
-        {
+        public void Instructions() {
             System.ConsoleKey key = System.ConsoleKey.Backspace;   // Dowolny niew³aœciwy klawisz.
             System.ConsoleKeyInfo corr_key;
-            while (isInstructionLoop == true)
-            {
+            while (isInstructionLoop == true) {
                 Console.Clear();
                 Console.WriteLine("BB  BBBB  BB   BBBBBBB  BBBBBBBB  BBBBBBB   BB    BB   BBBBBBB  BBBBBBBB  BB   BBBBBB   BBBB  BB");
                 Console.WriteLine("BB  BB BB BB  BB           BB     BB    BB  BB    BB  BB           BB     BB  BB    BB  BB BB BB");
@@ -35,20 +23,15 @@ namespace Page_Instructions
                 Console.WriteLine("BB  BB  BBBB  BBBBBBB      BB     BB    BB   BBBBBB    BBBBBBB     BB     BB   BBBBBB   BB  BBBB");
                 Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
                 Console.WriteLine("INSTRUCTION: | Moving: arrows/[W][S] | Back to menu: [Backspace]\n");
-                for (int i = 0, j = instructionButtons.Length; i < instructionButtons.Length; i++, j--)
-                {
-                    if (j == instructionButtNum)
-                    {
+                for (int i = 0, j = instructionButtons.Length; i < instructionButtons.Length; i++, j--) {
+                    if (j == instructionButtNum) {
                         Console.WriteLine("> " + instructionButtons[i]);
-                    }
-                    else
-                    {
+                    } else {
                         Console.WriteLine("  " + instructionButtons[i]);
                     }
                 }
                 Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
-                switch (instructionButtNum)
-                {
+                switch (instructionButtNum) {
                     case 3:
                         PageInstructions game = new PageInstructions();
                         game.Page_Game();
@@ -61,36 +44,27 @@ namespace Page_Instructions
                         PageInstructions board = new PageInstructions();
                         board.Page_Board();
                         break;
-                }
-                while (isCorrectSign == false)   // Pêtla ta uniemo¿liwia prze³adowanie strony kiedy kliknie siê niew³aœciwy klawisz.
-                {
+                } while (isCorrectSign == false) {   // Pêtla ta uniemo¿liwia prze³adowanie strony kiedy kliknie siê niew³aœciwy klawisz.
                     corr_key = System.Console.ReadKey(true);
-                    if (corr_key.Key == System.ConsoleKey.W || corr_key.Key == System.ConsoleKey.S || corr_key.Key == System.ConsoleKey.UpArrow || corr_key.Key == System.ConsoleKey.DownArrow || corr_key.Key == System.ConsoleKey.Backspace)
-                    {
+                    if (corr_key.Key == System.ConsoleKey.W || corr_key.Key == System.ConsoleKey.S || corr_key.Key == System.ConsoleKey.UpArrow || corr_key.Key == System.ConsoleKey.DownArrow || corr_key.Key == System.ConsoleKey.Backspace) {
                         isCorrectSign = true;
                         key = corr_key.Key;
                     }
                 }
                 isCorrectSign = false;
                 // Poruszanie siê po przyciskach (obliczenia):
-                if (key == System.ConsoleKey.UpArrow || key == System.ConsoleKey.W)
-                {
+                if (key == System.ConsoleKey.UpArrow || key == System.ConsoleKey.W) {
                     instructionButtNum = (instructionButtNum < instructionButtons.Length) ? instructionButtNum += 1 : instructionButtNum;
-                }
-                else if (key == System.ConsoleKey.DownArrow || key == System.ConsoleKey.S)
-                {
+                } else if (key == System.ConsoleKey.DownArrow || key == System.ConsoleKey.S) {
                     instructionButtNum = (instructionButtNum > 1) ? instructionButtNum -= 1 : instructionButtNum;
-                }
-                else if (key == System.ConsoleKey.Backspace)
-                {
+                } else if (key == System.ConsoleKey.Backspace) {
                     isInstructionLoop = false;
                     MenuPage.isMenuButtonLoop = true;
                     MenuPage.Menu();
                 }
             }
         }
-        public void Page_Game()
-        {
+        public void Page_Game() {
             Console.WriteLine("Game instruction:" +
                 "\n1. Every player have a 7 ships." +
                 "\n2. Every player must set our every ship on our board." +
@@ -113,8 +87,7 @@ namespace Page_Instructions
                 "\n17. After battle, players see your scores and next they see appropriate game mode score ranking." +
                 "\n18. After game players can play game again or get in game credits.");
         }
-        public void Page_Ships()
-        {
+        public void Page_Ships() {
             Console.WriteLine("You have 5 ships, about these length:" +
                 "\n1 - patrol boat" +
                 "\n22 - frigate" +
@@ -123,8 +96,7 @@ namespace Page_Instructions
                 "\n55555 - aircraft carrier");
             Console.WriteLine("\nDestruction all ships indicate win these player who do it the opposite player.");
         }
-        public void Page_Board()  // NA PODSTAWIE PONI¯SZEGO ZAPISU ZAIMPLEMENTUJ DWIE PÊTLE, KTÓRE BÊD¥ ODPOWIEDZIALNE ZA WK£ADANIE ODPOWIEDNICH DANYCH Z IF'óW DO METODY "GlobalMethod.Color()"!!!
-        {
+        public void Page_Board() { // NA PODSTAWIE PONI¯SZEGO ZAPISU ZAIMPLEMENTUJ DWIE PÊTLE, KTÓRE BÊD¥ ODPOWIEDZIALNE ZA WK£ADANIE ODPOWIEDNICH DANYCH Z IF'óW DO METODY "GlobalMethod.Color()"!!!
             Console.Write("Cursor: ");
             GlobalMethod.Color("{ }", ConsoleColor.White);
             Console.Write(" | Sea area: ");

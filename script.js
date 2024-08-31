@@ -1,12 +1,11 @@
-console.log("hej!");
-var verticalSlider_FUN = {
-    vertSld: document.querySelector('div.vertical-slider'),
-    slideUp_MTD: function () {
-        verticalSlider_FUN.vertSld.style.top = ((verticalSlider_FUN.vertSld.getBoundingClientRect().height /* + window.innerHeight*/) * -1) + "px";
+const credits = {
+    sld: document.querySelector('div.vertical-slider'),
+    sldFun() {
+        credits.sld.style.top = ((credits.sld.getBoundingClientRect().height/* + window.innerHeight*/) * -1) + "px";
         // Nie muszę podawać window.innerHeight, gdyż zmieniam wartość właściwości .top, która wcześniej była ustawiona na 100% w kontekście pozycji
         // "absolute",więc znika mi ów 100% z top i różnica względem bazowego położenia znika i z tego właśnie powodu nie trzeba brać tam window.innerHeight.
-        verticalSlider_FUN.vertSld.style.transitionDuration = "160s"; // 200s
-        verticalSlider_FUN.vertSld.style.transitionTimingFunction = "linear";
+        credits.sld.style.transitionDuration = "160s";  // 200s
+        credits.sld.style.transitionTimingFunction = "linear";
     },
 };
-verticalSlider_FUN.slideUp_MTD();
+credits.sldFun();

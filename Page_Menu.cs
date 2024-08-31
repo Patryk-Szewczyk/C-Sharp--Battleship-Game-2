@@ -8,10 +8,8 @@ using Page_PVC;
 using Page_Ranking;
 using Page_Options;
 
-namespace Page_Menu
-{
-    public class MenuPage
-    {
+namespace Page_Menu {
+    public class MenuPage {
         public static SoundPlayer currentSoundtrack = new SoundPlayer();   // WEè TO SPR”BUJ PRZENIEå∆ DO MENU Z try/catch
         public static bool menuSoundtrack_PLAY = false;
         public static bool creditsSoundtrack_PLAY = false;
@@ -19,9 +17,7 @@ namespace Page_Menu
         public static bool isCorrectSign = false;
         public static string[] menuButtons = { "PVC Mode", "Instruction", "Ranking", "Options", "Credits", "Exit" };
         public static int menuButtNum = menuButtons.Length;   // Zawsze ostatni, bo chcÍ mieÊ kursor na gÛrze!
-
-        public static void Menu()
-        {
+        public static void Menu() {
             // Deklaracja obiektÛw:
             //PagePVP pvp = new PagePVP();
             PagePVC pvc = new PagePVC();
@@ -32,20 +28,16 @@ namespace Page_Menu
 
             System.ConsoleKey key = System.ConsoleKey.Backspace;   // Dowolny niew≥aúciwy klawisz.
             System.ConsoleKeyInfo corr_key;
-            if (MenuPage.menuSoundtrack_PLAY == false && MenuPage.creditsSoundtrack_PLAY == false)
-            {
+            if (MenuPage.menuSoundtrack_PLAY == false && MenuPage.creditsSoundtrack_PLAY == false) {
                 MenuPage.Soundtrack("Soundtracks/Menu/473915__xhale303__synthwave-loop.wav");
                 MenuPage.menuSoundtrack_PLAY = true;
-            }
-            else if (MenuPage.menuSoundtrack_PLAY == false && MenuPage.creditsSoundtrack_PLAY == true)
-            {
+            } else if (MenuPage.menuSoundtrack_PLAY == false && MenuPage.creditsSoundtrack_PLAY == true) {
                 MenuPage.currentSoundtrack.Stop();
                 MenuPage.creditsSoundtrack_PLAY = false;
                 MenuPage.Soundtrack("Soundtracks/Menu/473915__xhale303__synthwave-loop.wav");
                 MenuPage.menuSoundtrack_PLAY = true;
             }
-            while (isMenuButtonLoop == true)   // MENU
-            {
+            while (isMenuButtonLoop == true) {
                 Console.Clear();
                 Console.WriteLine("BBBBBBB     BBBB    BBBBBBBB  BBBBBBBB  BB        BBBBBBBB   BBBBBBB  BB    BB  BB  BBBBBBB      BBBBBB");
                 Console.WriteLine("BB    BB   BB  BB      BB        BB     BB        BB        BB        BB    BB  BB  BB    BB    BB    BB");
@@ -56,32 +48,24 @@ namespace Page_Menu
                 Console.WriteLine("BBBBBBB   BB    BB     BB        BB     BBBBBBBB  BBBBBBBB  BBBBBBB   BB    BB  BB  BB          BBBBBBBB");
                 Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
                 Console.WriteLine("MENU: | Moving: arrows/[W][S] | Click = ENTER\n");
-                for (int i = 0, j = menuButtons.Length; i < menuButtons.Length; i++, j--)
-                {
-                    if (j == menuButtNum)
-                    {
+                for (int i = 0, j = menuButtons.Length; i < menuButtons.Length; i++, j--) {
+                    if (j == menuButtNum) {
                         Console.WriteLine("> " + menuButtons[i]);
-                    }
-                    else
-                    {
+                    } else {
                         Console.WriteLine("  " + menuButtons[i]);
                     }
                 }
-                while (isCorrectSign == false)   // PÍtla ta uniemoøliwia prze≥adowanie strony kiedy kliknie siÍ niew≥aúciwy klawisz.
-                {
+                while (isCorrectSign == false)  {
                     corr_key = Console.ReadKey(true);
-                    if (corr_key.Key == System.ConsoleKey.W || corr_key.Key == System.ConsoleKey.S || corr_key.Key == System.ConsoleKey.UpArrow || corr_key.Key == System.ConsoleKey.DownArrow || corr_key.Key == System.ConsoleKey.Enter)
-                    {
+                    if (corr_key.Key == System.ConsoleKey.W || corr_key.Key == System.ConsoleKey.S || corr_key.Key == System.ConsoleKey.UpArrow || corr_key.Key == System.ConsoleKey.DownArrow || corr_key.Key == System.ConsoleKey.Enter) {
                         isCorrectSign = true;
                         key = corr_key.Key;
                     }
                 }
                 isCorrectSign = false;
-                if (key == System.ConsoleKey.Enter)
-                {
+                if (key == System.ConsoleKey.Enter) {
                     isMenuButtonLoop = false;
-                    switch (menuButtNum)
-                    {
+                    switch (menuButtNum) {
                         /*case 7:   // PVP
                             PagePVP.isPVPShipPositingLoop = true;
                             pvp.PVP();
@@ -112,20 +96,15 @@ namespace Page_Menu
                     }
                 }
                 // Poruszanie siÍ po przyciskach (obliczenia):
-                if (key == System.ConsoleKey.UpArrow || key == System.ConsoleKey.W)
-                {
+                if (key == System.ConsoleKey.UpArrow || key == System.ConsoleKey.W) {
                     menuButtNum = (menuButtNum < menuButtons.Length) ? menuButtNum += 1 : menuButtNum;
-                }
-                else if (key == System.ConsoleKey.DownArrow || key == System.ConsoleKey.S)
-                {
+                } else if (key == System.ConsoleKey.DownArrow || key == System.ConsoleKey.S) {
                     menuButtNum = (menuButtNum > 1) ? menuButtNum -= 1 : menuButtNum;
                 }
             }
         }
-        public static void Soundtrack(string filepath)
-        {
-            try   // W przypadku braku úcieøki døwiÍkowej, wyjπtek zostanie z≥apany, przez co program nie zakoÒczy dzia≥ania.
-            {
+        public static void Soundtrack(string filepath) {
+            try {   // W przypadku braku úcieøki døwiÍkowej, wyjπtek zostanie z≥apany, przez co program nie zakoÒczy dzia≥ania. 
                 MenuPage.currentSoundtrack.SoundLocation = filepath;
                 MenuPage.currentSoundtrack.PlayLooping();
                 //Console.WriteLine("STAN MUZYKI: Znaleziono\n\n" + filepath);
