@@ -82,6 +82,9 @@ namespace Library_GlobalMethods
                         limit = (Convert.ToString(initField).Length == 1) ? 9 : 9 + (10 * int.Parse(Convert.ToChar(Convert.ToString(initField)[0]).ToString()));
                         if (shipDist > limit) break;   // Jeżeli statek wychodzi poza planszę, losuj statki od nowa.
                         // Tworzenie statku:
+                        
+                        // BŁĄD: - - - - - - - - - - - - - - - - - - - -
+
                         if (shipsList[i].Count > 1) {   // Tworzenie pól długości dla statków powyżej 1 pola długości (2, 3, 4 ...).
                             for (int j = 1; j < shipsList[i].Count; j++) {
                                 isShip = false;
@@ -91,9 +94,13 @@ namespace Library_GlobalMethods
                                     shipsList[i][j] = initField + j;
                                     isShip = true;
                                 }
+                                if (isShip == false) break;   // Dlaczego dwa "break" i warunek? Normalnie wystarczyłby ten, ale ponieważ "break" ogranicza się do najbliższego "for", więc zrobiłem specjalny warunek, za pomocą którego będziemy kontrolować "break" pętli for wewnętrznej i "właściwej" nadrzędnej.
                             }
-                            if (isShip == false) break;
+                            if (!isShip) break;
                         }
+
+                        // - - - - - - - - - - - - - - - - - - - - - - -
+
                         shipsList[i][0] = initField;   // W sumie, zrób tak, żeby aktualizacja wszystkiego była na końcu. Inicjacyjna wartość współrzędnej nie ucieknie Ci :) Jest to na końcu aby nie wciskać wartości gdy reszta pól długości statku będzie miała nieprawidłowe współrzędne. Operacja ta zaoszczędza mocy obliczeniowej.
                     } else {
                         shipDist = (initField * 10) + ((shipsList[i].Count * 10) - 10);
@@ -108,8 +115,9 @@ namespace Library_GlobalMethods
                                     shipsList[i][j/10] = initField + j;
                                     isShip = true;
                                 }
+                                if (isShip == false) break;
                             }
-                            if (isShip == false) break;
+                            if (!isShip) break;
                         }
                         shipsList[i][0] = initField;
                     }
