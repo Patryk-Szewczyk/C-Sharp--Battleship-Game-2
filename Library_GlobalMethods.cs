@@ -51,10 +51,11 @@ namespace Library_GlobalMethods {
             int srchSpc = 0;
             int dirDist = 1, numSlice = 0, numVal = 10;
             int shipDist = 0, limit = 0;
-            double mathFloor = fleet.Length / 2, minBott = Math.Floor(mathFloor), bottCount = 0;
+            double mathFloor = shipsList.Count / 2, minBott = Math.Floor(mathFloor), bottCount = 0;
             bool isShip = false;
             while (!isCor) {
                 board = new List<int>(array);   // Dlaczego tak, a nie board = array ? Gdyż lista jest przekazywana nie kopią a referencją, w związku z czym odwołuję się do pierwotnie zadeklarowanej listy i zmniejszam ją w nieskończoność, zamiast tworzyć nową kopię.
+                bottCount = 0;
                 for (int i = 0; i < shipsList.Count; i++) {
                     initField = rand.Next(0, board.Count);
                     srchSpc = GlobalMethod.SearchRem(board, initField);
