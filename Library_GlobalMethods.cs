@@ -2,12 +2,9 @@
 using System.Collections.Generic;
 using System.Configuration;
 
-namespace Library_GlobalMethods
-{
-    public class GlobalMethod
-    {
-        public static void Color(string text, ConsoleColor color)   // Kolorowy tekst
-        {
+namespace Library_GlobalMethods {
+    public class GlobalMethod {
+        public static void Color(string text, ConsoleColor color) {   // Kolorowy tekst
             Console.ForegroundColor = color;
             Console.Write(text);
             Console.ResetColor();
@@ -45,92 +42,52 @@ namespace Library_GlobalMethods
                 }
             }
 
-            // Zapełnianie statków zawlidowanymi współrzędnymi:
             bool isCor = false;
             List<int> board = array;
             string dirVal = "";
             string[] dirAr = new string[2] { "toRight", "toBottom" };
             Random rand = new Random();
-            //Console.WriteLine("Random test: " + rand.Next(0, board.Count));   // (0, 100)
             int initField = 0;
             int srchSpc = 0;
-            int shipDist = 0;
-            int limit = 0;
+            int dirDist = 1, numSlice = 0, numVal = 10;
+            int shipDist = 0, limit = 0;
+            double mathFloor = fleet.Length / 2, minBott = Math.Floor(mathFloor), bottCount = 0;
             bool isShip = false;
-            while (isCor == false) {
-                //Console.Clear();   // SKASUJ PÓŹNIEJ TO!!!!!!!!!!!!!!!!!!
-                //Console.WriteLine("- - - - - - - - - - - - - - - - - -");
-                //Console.WriteLine("NOWY WHILE");
+            while (!isCor) {
                 board = new List<int>(array);   // Dlaczego tak, a nie board = array ? Gdyż lista jest przekazywana nie kopią a referencją, w związku z czym odwołuję się do pierwotnie zadeklarowanej listy i zmniejszam ją w nieskończoność, zamiast tworzyć nową kopię.
-                //Console.WriteLine("Board length: " + board.Count);
                 for (int i = 0; i < shipsList.Count; i++) {
-                    // Początkowe pole:
-                    dirVal = dirAr[rand.Next(0, dirAr.Length)];
-                    //dirNumGap = (dirVal == "toBottom") ? 10 : dirNumGap;
                     initField = rand.Next(0, board.Count);
                     srchSpc = GlobalMethod.SearchRem(board, initField);
                     if (srchSpc == -1) break;   // Kolizję pola początkowego nowego statku z już istniejącym.
                     board.Remove(srchSpc);
-                    //Console.WriteLine("- - - - - - - - - - - - - - - - - -");
-                    //Console.WriteLine("Board length: " + board.Count);
-                    //Console.WriteLine("initField: " +  initField);
-                    //Console.WriteLine("Długość: " + shipsList[i].Count + " | Kierunek: " + dirVal + " | Znaleziony: " + binSorSpc_tuple.Item1 + " | Index listy do usunięcia: " + binSorSpc_tuple.Item2);
-                    // Walidacja wychodzenia poza planszę:
-                    if (dirVal == "toRight") {
-                        // Inicjalizacja statku:
-                        shipDist = initField + (shipsList[i].Count - 1);
-                        limit = (Convert.ToString(initField).Length == 1) ? 9 : 9 + (10 * int.Parse(Convert.ToChar(Convert.ToString(initField)[0]).ToString()));
-                        if (shipDist > limit) break;   // Jeżeli statek wychodzi poza planszę, losuj statki od nowa.
-                        // Tworzenie statku:
-                        
-                        // BŁĄD: - - - - - - - - - - - - - - - - - - - -
-
-                        if (shipsList[i].Count > 1) {   // Tworzenie pól długości dla statków powyżej 1 pola długości (2, 3, 4 ...).
-                            for (int j = 1; j < shipsList[i].Count; j++) {
-                                isShip = false;
-                                srchSpc = GlobalMethod.SearchRem(board, initField + j);
-                                if (srchSpc != -1) {   // Jeżeli nie ma kolizji statku
-                                    board.Remove(srchSpc);
-                                    shipsList[i][j] = initField + j;
-                                    isShip = true;
-                                }
-                                if (isShip == false) break;   // Dlaczego dwa "break" i warunek? Normalnie wystarczyłby ten, ale ponieważ "break" ogranicza się do najbliższego "for", więc zrobiłem specjalny warunek, za pomocą którego będziemy kontrolować "break" pętli for wewnętrznej i "właściwej" nadrzędnej.
+                    dirVal = dirAr[rand.Next(0, dirAr.Length)];
+                    dirDist = (dirVal == "toRight") ? 1 : 10;
+                    numSlice = (dirVal == "toRight") ? 0 : 1;
+                    numVal = (dirVal == "toRight") ? 10 : 1;
+                    if (dirVal == "toBottom") bottCount++;
+                    shipDist = (initField * dirDist) + ((shipsList[i].Count * dirDist) - dirDist);   // Obliczanie długości statku na planszy.
+                    limit = (Convert.ToString(initField).Length == 1) ? (9 * dirDist) : (9 * dirDist) + (numVal * int.Parse(Convert.ToChar(Convert.ToString(initField)[numSlice]).ToString()));   // Jeżeli statek jest większy niż 1 pole długości - współrzędna inicjacyjna jest "ciachana" w celu dodania odpowiedniej jej częsci do bazowej liczby limitu, aby ostatecznie wyznaczyć odpowiedni limit dla statku znajdującym się w odpowiednim polu. Np. Dla statku o długości 3, w kierunku "toRight" bazawa wartość limitu wynosi 9, jeżeli współrzędna początkowa wynosi 54, to wycinana jest 5, mnożona przez 10 i dodawana do 9, w związku z czym mamy 59. Analogicznie jest w przypadku toBottom, tylko wartości są tak dostosowane aby dotyczyły NIE częsści dziesiętnej, a części jedności. Wówczas będziemy mięli 94.
+                    if (shipDist > limit) break;   // Jeżeli statek wychodzi poza planszę, losuj statki od nowa. Jeżeli np. mamy statek długości 3, "toRight", a współrzędną początkową 54, to limit wynosi 59, a "shipDist" wynosi [współrzędna początkowo] + [długość statku] - 1, czyli 56. Wówczas mamy 56 <= 59, co jest prawdą, więc tworzenie staatku przechodzi ten etap.
+                    if (shipsList[i].Count > 1) {   // Tworzenie pól długości dla statków powyżej 1 pola długości (2, 3, 4 ...).
+                        for (int j = 1 * dirDist; j < shipsList[i].Count * dirDist; j=j+dirDist) {
+                            isShip = false;
+                            srchSpc = GlobalMethod.SearchRem(board, initField + j);
+                            if (srchSpc != -1) {   // Jeżeli nie ma kolizji statku
+                                board.Remove(srchSpc);
+                                shipsList[i][j/dirDist] = initField + j;
+                                isShip = true;
                             }
-                            if (!isShip) break;
+                            if (!isShip) break;   // Dlaczego dwa "break" i warunek? Normalnie wystarczyłby ten, ale ponieważ "break" ogranicza się do najbliższego "for", więc zrobiłem specjalny warunek, za pomocą którego będziemy kontrolować "break" pętli for wewnętrznej i "właściwej" nadrzędnej.
                         }
-
-                        // - - - - - - - - - - - - - - - - - - - - - - -
-
-                        shipsList[i][0] = initField;   // W sumie, zrób tak, żeby aktualizacja wszystkiego była na końcu. Inicjacyjna wartość współrzędnej nie ucieknie Ci :) Jest to na końcu aby nie wciskać wartości gdy reszta pól długości statku będzie miała nieprawidłowe współrzędne. Operacja ta zaoszczędza mocy obliczeniowej.
-                    } else {
-                        shipDist = (initField * 10) + ((shipsList[i].Count * 10) - 10);
-                        limit = (Convert.ToString(initField).Length == 1) ? 90 : 90 + (1 * int.Parse(Convert.ToChar(Convert.ToString(initField)[1]).ToString()));
-                        if (shipDist > limit) break;
-                        if (shipsList[i].Count > 1) {
-                            for (int j = 10; j < shipsList[i].Count * 10; j=j+10) {
-                                isShip = false;
-                                srchSpc = GlobalMethod.SearchRem(board, initField + j);
-                                if (srchSpc != -1) {   // Jeżeli nie ma kolizji statku
-                                    board.Remove(srchSpc);
-                                    shipsList[i][j/10] = initField + j;
-                                    isShip = true;
-                                }
-                                if (isShip == false) break;
-                            }
-                            if (!isShip) break;
-                        }
-                        shipsList[i][0] = initField;
+                        if (!isShip) break;
                     }
-                    if (i == shipsList.Count - 1) isCor = true;
+                    shipsList[i][0] = initField;   // Jest to na końcu aby nie wciskać wartości gdy reszta pól długości statku będzie miała nieprawidłowe współrzędne. Operacja ta zaoszczędza mocy obliczeniowej.
+                    if (i == shipsList.Count - 1) {
+                        isCor = true;
+                        if (bottCount < minBott) isCor = false;
+                    }
                 }
-
-                // Pozostało: Ogarnięcie tworzenia statów od punktu początkowego, zapisywania ich współrzędnych statków
-
-                //Console.WriteLine("Kierunek: " + dirVal);
-                //Console.WriteLine("Odstęp: " + dirNumGap);
-                //Console.ReadLine();
             }
-            
             return shipsList;
         }
     }

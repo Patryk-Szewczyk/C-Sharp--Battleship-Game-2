@@ -21,20 +21,10 @@ namespace Page_Intro {
                 "\n\nTo continue, click ENTER key:\n");
 
 
-            // Test sortowania binarnego BinSorSpc:
-            /*int[] arajek = new int[100];
-            List<int> araj = new List<int>();
-            araj.Remove(44);
-            for (int i = 0; i < araj.Count; i++) {
-                araj.Add(i);
-            }
-            int target = 45;
-            ValueTuple<int, int> tuple = GlobalMethod.SearchRem(araj, target);
-            Console.WriteLine("Znaleziona wartość: " + tuple.Item1 + " | Indeks tej wartości: " + tuple.Item2);*/
 
             // Test losowania statków:
             List<int> plansza = new List<int>();
-            int[] statki = new int[7] { 2, 2, 3, 3, 3, 4, 5 };   // Limit [10] {10, ... n} | n = 9x 10
+            int[] statki = new int[5] { 2, 3, 3, 4, 5 };   // Limit [10] {10, ... n} | n = 9x 10
             List<List<int>> listaStatkow = new List<List<int>>();
             for (int i = 0; i < 100; i++) {
                 plansza.Add(i);
@@ -49,9 +39,10 @@ namespace Page_Intro {
             }
 
 
+
             System.ConsoleKeyInfo corr_key;
             bool isEnter = false;
-            while (isEnter == false) {
+            while (!isEnter) {
                 corr_key = Console.ReadKey(true);  // "ture", bo nie chcę widzieć znaku
                 if (corr_key.Key == System.ConsoleKey.Enter) {
                     isEnter = true;
