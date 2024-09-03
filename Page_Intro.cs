@@ -24,12 +24,15 @@ namespace Page_Intro {
 
             // Test losowania statków:
             List<int> plansza = new List<int>();
-            int[] statki = new int[5] { 2, 3, 3, 4, 5 };   // Limit [10] {10, ... n} | n = 9x 10
+            List<int> statki = new List<int> { 2, 2, 2, 3, 3, 4, 5 };   // Limit 10 statków o długości 10
             List<List<int>> listaStatkow = new List<List<int>>();
             for (int i = 0; i < 100; i++) {
                 plansza.Add(i);
             }
+            Console.Clear();
+            Console.WriteLine("Loading...");
             listaStatkow = GlobalMethod.RandShips(plansza, statki);
+            Console.Clear();
             Console.WriteLine("\n\n");
             for (int i = 0; i < listaStatkow.Count; i++) {
                 for (int j = 0; j < listaStatkow[i].Count; j++) {

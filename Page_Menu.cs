@@ -29,12 +29,12 @@ namespace Page_Menu {
             System.ConsoleKey key = System.ConsoleKey.Backspace;   // Dowolny niew³aœciwy klawisz.
             System.ConsoleKeyInfo corr_key;
             if (MenuPage.menuSoundtrack_PLAY == false && MenuPage.creditsSoundtrack_PLAY == false) {
-                MenuPage.Soundtrack("Soundtracks/Menu/473915__xhale303__synthwave-loop.wav");
+                MenuPage.Sound("Soundtracks/Menu/473915__xhale303__synthwave-loop.wav", true);
                 MenuPage.menuSoundtrack_PLAY = true;
             } else if (MenuPage.menuSoundtrack_PLAY == false && MenuPage.creditsSoundtrack_PLAY == true) {
                 MenuPage.currentSoundtrack.Stop();
                 MenuPage.creditsSoundtrack_PLAY = false;
-                MenuPage.Soundtrack("Soundtracks/Menu/473915__xhale303__synthwave-loop.wav");
+                MenuPage.Sound("Soundtracks/Menu/473915__xhale303__synthwave-loop.wav", true);
                 MenuPage.menuSoundtrack_PLAY = true;
             }
             while (isMenuButtonLoop == true) {
@@ -103,10 +103,10 @@ namespace Page_Menu {
                 }
             }
         }
-        public static void Soundtrack(string filepath) {
+        public static void Sound(string filepath, bool isLoop) {
             try {   // W przypadku braku œcie¿ki d¿wiêkowej, wyj¹tek zostanie z³apany, przez co program nie zakoñczy dzia³ania. 
                 MenuPage.currentSoundtrack.SoundLocation = filepath;
-                MenuPage.currentSoundtrack.PlayLooping();
+                if (isLoop) MenuPage.currentSoundtrack.PlayLooping();
                 //Console.WriteLine("STAN MUZYKI: Znaleziono\n\n" + filepath);
             } catch { }
             /*catch (Exception error)

@@ -10,12 +10,15 @@ namespace Page_Options {
         public static bool isCorrectSign = false;
         public static string[] optionsButtons = 
         { 
-            "Music:                            ON = [E], OFF = [D]",
-            "Sound effects:                    ON = [E], OFF = [D]",
-            "AI voice:                         ON = [E], OFF = [D]",
-            "AI subtitles:                     ON = [E], OFF = [D]",
-            "Delete ranking data:              moving = [O][L], choose = [I], delete = [P]",   // PVP || PVC
-            //"Delete Machine Learning data:     moving = [O][L], choose = [I], delete = [P]" 
+            "Music: - - - - - - - - - - - - - - - - [ON] - - - - - - ON = [E], OFF = [D]",
+            "Sound effects: - - - - - - - - - - - - [ON] - - - - - - ON = [E], OFF = [D]",
+            "Equal ships direction for AI:  - - - - [ON] - - - - - - ON = [E], OFF = [D]",
+            "Show only top 10 players in ranking: - [OFF]  - - - - - ON = [E], OFF = [D]",
+            "Delete PVC ranking data: - - - - - - - [DATA] - - - - - delete = [P]"
+            //"AI voice:                    [ON]                ON = [E], OFF = [D]",
+            //"AI subtitles:                [ON]                ON = [E], OFF = [D]",
+            //"Delete PVP ranking data:       [DATA]              delete = [P]",
+            //"Delete Machine Learning data:                moving = [O][L], choose = [I], delete = [P]" 
         };
         public static string[] toRankingButtons = { "PVP", "PVC" };   // EJJJJJJJJJJ!!! JESTEŒ NA TYM JAKBY CO!!!
         public static int optionsButtNum = optionsButtons.Length;
@@ -39,7 +42,7 @@ namespace Page_Options {
                         Console.WriteLine("  " + optionsButtons[i]);
                     }
                 }
-                Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
+                //Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
 
                 /*switch (optionsButtNum)
                 {

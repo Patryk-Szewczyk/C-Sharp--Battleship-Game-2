@@ -9,7 +9,7 @@ namespace Library_GlobalMethods {
             Console.Write(text);
             Console.ResetColor();
         }
-        public static int SearchRem(List<int> array, int target) {   // Szukanie wartości i jej indeksu (lokalizacji) w tablicy:
+        public static int SearchRemA(List<int> array, int target) {   // Szukanie wartości i jej indeksu (lokalizacji) w tablicy:
             int resultVal_Idx = -1;   // W kontekście losowania statków dla komputera, oznacza to kolizję pola począttkowego nowego statku z już istniejącym.
             for (int i = 0; i < array.Count; i++) {
                 if (target == array[i]) {
@@ -31,10 +31,10 @@ namespace Library_GlobalMethods {
             }
             return (resultVal, resultVal_Idx);
         }*/
-        public static List<List<int>> RandShips(List<int> array, int[] fleet) {
+        public static List<List<int>> RandShips(List<int> array, List<int> fleet) {
             // Deklaracja dopowiedniej grupy statków: Dzięki liście dynamicznej mogę tworzyć dowolnych rozmiarów grupę statków, kontrolowaną z poziomu przekazywania uprzednio ustalonych parametrów do metody.
             List<List<int>> shipsList = new List<List<int>>();
-            for (int i = 0; i < fleet.Length; i++) {
+            for (int i = 0; i < fleet.Count; i++) {
                 List<int> ship = new List<int>();
                 shipsList.Add(ship);
                 for (int j = 0; j < fleet[i]; j++) {
@@ -51,16 +51,17 @@ namespace Library_GlobalMethods {
             int srchSpc = 0;
             int dirDist = 1, numSlice = 0, numVal = 10;
             int shipDist = 0, limit = 0;
-            double mathFloor = shipsList.Count / 2, minBott = Math.Floor(mathFloor), bottCount = 0;
+            double minBott = shipsList.Count / 2, bottCount = 0;
+            minBott = (shipsList.Count % 2 == 1) ? minBott = Math.Floor(minBott) + rand.Next(0, 2) : minBott = shipsList.Count / 2;   // Jeżeli mam liczbę nieparzystą, to czy będzie więcej czy mniej statków "toBottom" o 1 zależy od losowości.
             bool isShip = false;
             while (!isCor) {
                 board = new List<int>(array);   // Dlaczego tak, a nie board = array ? Gdyż lista jest przekazywana nie kopią a referencją, w związku z czym odwołuję się do pierwotnie zadeklarowanej listy i zmniejszam ją w nieskończoność, zamiast tworzyć nową kopię.
                 bottCount = 0;
                 for (int i = 0; i < shipsList.Count; i++) {
                     initField = rand.Next(0, board.Count);
-                    srchSpc = GlobalMethod.SearchRem(board, initField);
+                    srchSpc = GlobalMethod.SearchRemA(board, initField);
                     if (srchSpc == -1) break;   // Kolizję pola początkowego nowego statku z już istniejącym.
-                    board.Remove(srchSpc);
+                    board.RemoveAt(srchSpc);
                     dirVal = dirAr[rand.Next(0, dirAr.Length)];
                     dirDist = (dirVal == "toRight") ? 1 : 10;
                     numSlice = (dirVal == "toRight") ? 0 : 1;
@@ -72,9 +73,9 @@ namespace Library_GlobalMethods {
                     if (shipsList[i].Count > 1) {   // Tworzenie pól długości dla statków powyżej 1 pola długości (2, 3, 4 ...).
                         for (int j = 1 * dirDist; j < shipsList[i].Count * dirDist; j=j+dirDist) {
                             isShip = false;
-                            srchSpc = GlobalMethod.SearchRem(board, initField + j);
+                            srchSpc = GlobalMethod.SearchRemA(board, initField + j);
                             if (srchSpc != -1) {   // Jeżeli nie ma kolizji statku
-                                board.Remove(srchSpc);
+                                board.RemoveAt(srchSpc);
                                 shipsList[i][j/dirDist] = initField + j;
                                 isShip = true;
                             }
@@ -83,9 +84,8 @@ namespace Library_GlobalMethods {
                         if (!isShip) break;
                     }
                     shipsList[i][0] = initField;   // Jest to na końcu aby nie wciskać wartości gdy reszta pól długości statku będzie miała nieprawidłowe współrzędne. Operacja ta zaoszczędza mocy obliczeniowej.
-                    if (i == shipsList.Count - 1) {
-                        isCor = true;
-                        if (bottCount < minBott) isCor = false;
+                    if (i == shipsList.Count - 1) {   // Jeżeli 7 statków uzyskało poprawne wspoółrzędne, przejdź dalej;
+                        if (bottCount == minBott) isCor = true;   // Jeżeli liczba statków "toBottom" jest właściwa, zakończ algorytm.
                     }
                 }
             }

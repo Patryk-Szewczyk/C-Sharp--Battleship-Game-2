@@ -3,34 +3,22 @@ using System.Diagnostics;
 using System.IO;
 using Page_Menu;
 
-namespace Page_Credits
-{
-
-    // KIEDY SKOÑCZYSZ GRÊ - SPRÓBUJ ZAAPLICOWAÆ "static" DO INTERFEJSÓW STRON!
-    interface IPageCredits   // Mog³em opuœciæ interfejs, aby mieæ metody statyczne, ale u¿ywam go poniewa¿ chcê mieæ widoczne na górze nazwy wszystkich metody danej klasy:
-    {
-        void Credits();   // Wyœwietlenie strony napisów koñcowych.
-    }
-    public class PageCredits
-    {
+namespace Page_Credits {
+    public class PageCredits {
         public static bool isCreditsLoop = true;
         public static bool isCorrectSign = false;
-        public void Credits()
-        {
-            if (MenuPage.menuSoundtrack_PLAY == true && MenuPage.creditsSoundtrack_PLAY == false)
-            {
+        public void Credits() {
+            if (MenuPage.menuSoundtrack_PLAY == true && MenuPage.creditsSoundtrack_PLAY == false) {
                 MenuPage.currentSoundtrack.Stop();
                 MenuPage.creditsSoundtrack_PLAY = true;
                 MenuPage.menuSoundtrack_PLAY = false;
             }
-            if (MenuPage.menuSoundtrack_PLAY == false && MenuPage.creditsSoundtrack_PLAY == true)
-            {
-                MenuPage.Soundtrack("Soundtracks/Credits/stay-retro-124958.wav");
+            if (MenuPage.menuSoundtrack_PLAY == false && MenuPage.creditsSoundtrack_PLAY == true) {
+                MenuPage.Sound("Soundtracks/Credits/stay-retro-124958.wav", true);
             }
 
             System.ConsoleKeyInfo key;
-            while (isCreditsLoop == true)
-            {
+            while (isCreditsLoop == true) {
                 Console.Clear();
                 Console.WriteLine(" BBBBBB     BBBB    BBBBBBBB  BBBBBBBB     BBBBBBB  BBBBBBB   BBBBBBBB  BBBBBB    BB  BBBBBBBB   BBBBBBB");
                 Console.WriteLine("BB    BB   BB  BB   BB BB BB  BB          BB        BB    BB  BB        BB   BB   BB     BB     BB      ");
@@ -46,12 +34,10 @@ namespace Page_Credits
                 string projectDirectory = Directory.GetParent(baseDirectory).Parent.Parent.FullName;
                 string htmlFilePath = Path.Combine(projectDirectory, "credits.html");
                 //Console.WriteLine("Œcie¿ka do pliku HTML: " + htmlFilePath);
-                if (File.Exists(htmlFilePath))
-                {
+                if (File.Exists(htmlFilePath)) {
                     //Console.WriteLine("Plik credits.html znaleziony. Otwieranie przegl¹darki...");
                     var process = new Process();
-                    process.StartInfo = new ProcessStartInfo
-                    {
+                    process.StartInfo = new ProcessStartInfo {
                         FileName = htmlFilePath,
                         UseShellExecute = true
                     };
@@ -63,11 +49,9 @@ namespace Page_Credits
                 }*/
                 
                 // Pêtla ta uniemo¿liwia prze³adowanie strony kiedy kliknie siê niew³aœciwy klawisz.
-                while (isCorrectSign == false)
-                {
+                while (isCorrectSign == false) {
                     key = System.Console.ReadKey(true);
-                    if (key.Key == System.ConsoleKey.Backspace)
-                    {
+                    if (key.Key == System.ConsoleKey.Backspace) {
                         isCorrectSign = true;
                         isCreditsLoop = false;
                         MenuPage.isMenuButtonLoop = true;
