@@ -3,13 +3,13 @@ using System.IO;
 using Page_Menu;
 
 namespace Page_Ranking {
-    public class PageRanking {
+    public class Ranking {
         public static bool isRankingLoop = true;
         public static bool isCorrectSign = false;
         public static string[] rankingButtons = { "PVC Mode" };
         public static int rankingButtNum = rankingButtons.Length;
         public static string playersLimit_OPTION = "no-limit";   // "no-limit" / "limit"
-        public void Ranking() {
+        public void RenderPage() {
             System.ConsoleKey key = System.ConsoleKey.Backspace;   // Dowolny niew³aœciwy klawisz.
             System.ConsoleKeyInfo corr_key;
             while (isRankingLoop == true) {
@@ -32,12 +32,7 @@ namespace Page_Ranking {
                 }
                 Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
                 switch (rankingButtNum) {
-                    /*case 2:
-                        PageRanking pvp = new PageRanking();
-                        pvp.Scores_PVP();
-                        break;*/
-                    case 1:
-                        PageRanking pvc = new PageRanking();
+                    case 1: Ranking pvc = new Ranking();
                         pvc.Scores_PVC();
                         break;
                 }
@@ -56,7 +51,7 @@ namespace Page_Ranking {
                     rankingButtNum = (rankingButtNum > 1) ? rankingButtNum -= 1 : rankingButtNum;
                 } else if (key == System.ConsoleKey.Backspace) {
                     isRankingLoop = false;
-                    MenuPage.isMenuButtonLoop = true;
+                    MenuPage.isMenu = true;
                     MenuPage.Menu();
                 }
             }
@@ -131,9 +126,9 @@ namespace Page_Ranking {
                 Console.WriteLine("|" + minus_TH + "---------------------------------------------------|");
                 Console.WriteLine("| PLACE | PLAYER"+ space_TH + " | SCORE | SUNKEN | LOSS | ACCURATE |");
                 Console.WriteLine("|" + minus_TH + "---------------------------------------------------|");
-                if (PageRanking.playersLimit_OPTION == "limit") {
+                if (Ranking.playersLimit_OPTION == "limit") {
                     playersLimit = (players.Length >= playersLimit) ? playersLimit : players.Length;   // Ograniczony limit wyœwietlania graczy w rankingu.
-                } else if (PageRanking.playersLimit_OPTION == "no-limit") {
+                } else if (Ranking.playersLimit_OPTION == "no-limit") {
                     playersLimit = players.Length;   // Wyœwietlanie graczy bez limitu.
                 }
                 for (int i = 0; i < playersLimit; i++) {

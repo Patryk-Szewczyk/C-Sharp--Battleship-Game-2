@@ -1,68 +1,45 @@
 using System;
-using System.Configuration;
 using System.IO;
-using System.Linq.Expressions;
 using Page_Menu;
 using System.Collections.Generic;
 
 namespace Page_PVC {
-
-    // KIEDY SKOŃCZYSZ GRĘ - SPRÓBUJ ZAAPLICOWAĆ "static" DO INTERFEJSÓW STRON!
-    /*interface IPagePVC   // Mogłem opuścić interfejs, aby mieć metody statyczne, ale używam go ponieważ chcę mieć widoczne na górze nazwy wszystkich metody danej klasy:
-    {
-        void PVC();   // Wyświetlenie strony PVC.
-        void SelectPlayer();   // Etap 1: Wybór gracza i tworzenie gracza.
-        void SetShips_PLAYER();   // Etap 2: Ustawienie statków gracza.
-        void SetShips_COMPUTER();   // Etap 3: Ustawienie statków dla komputera.
-        void BattleControl();   // Etap 4: Bitwa (panel kontrolny).
-        void Battle_PLAYER();   // Przekierowanie na gracza.
-        void Battle_COMPUTER();   // Przekierowanie na komputer.
-
-        void SubmitRanking();   // Etap 5: Wpisz wynik do rankingu i pokaż ranking.
-    }*/
-    public class PagePVC {/* : IPagePVC*/
+    public class PVC {
         public static bool isPVCLoop = true;
         public static string userName = "";
-        public static PagePVC pagePVC = new PagePVC();
-        public static List<List<string>> /*string[,]*/ playersDetails_PARTS = new List<List<string>>();
+        public static PVC pagePVC = new PVC();
+        public static List<List<string>> playersDetails_PARTS = new List<List<string>>();
         public static string isDeletedDirection = "ABOVE";   // Przy usuwaniu użytkowanika powyżej kursowa i równo z ni trzeba przy wyświetlaniu kursora przesunąć go w dół.
         public static int player_IDX = 0;
-        public void PVC() {
+        public void RenderPage() {   // Wyświetlenie strony PVC i zarazem panel kontrolny tej strony.
             bool isCorrectSign = false;   // Zmienna walidacji poprawnego klawisza.
             System.ConsoleKeyInfo mainKey = new ConsoleKeyInfo('v', ConsoleKey.V, false, false, false);
             bool isSelectPlayer = false;
-            bool isPVCGame = false;
+            //bool isPVCGame = false;
             bool isOption_CREATE = false, isOption_DELETE = false;
-            //int player_IDX = 0;
             pagePVC.DownloadPlayers();
 
             // Reset zmiennych poza-pętlowych strony: [gracz] | CHcę aby po wejściu na stronę wyboru użytkowników, kursor zawsze wskazywał pierwszego.
             player_IDX = 0;
-            PagePVC.userName = playersDetails_PARTS[0][0];
+            PVC.userName = playersDetails_PARTS[0][0];
 
-            while (PagePVC.isPVCLoop == true) {
-                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-                // Wyświetlenie informacji strony (stanu wyboru użytkownika):
+            while (PVC.isPVCLoop == true) {
                 if (isSelectPlayer == false) {
-                    pagePVC.SelectUserPart(PagePVC.playersDetails_PARTS, PagePVC.player_IDX);
+                    pagePVC.SelectUserPart(PVC.playersDetails_PARTS, PVC.player_IDX);
                     if (isOption_CREATE == true) {
                         isOption_CREATE = false;
-                        // Dodawanie użytkownika:
-                        pagePVC.addUser(PagePVC.playersDetails_PARTS);
-                        // Ponowne wyświetlenie stanu wyboru użytkownika:
-                        pagePVC.SelectUserPart(PagePVC.playersDetails_PARTS, PagePVC.player_IDX);
+                        pagePVC.addUser(PVC.playersDetails_PARTS);
+                        pagePVC.SelectUserPart(PVC.playersDetails_PARTS, PVC.player_IDX);
                     } else if (isOption_DELETE == true) {
                         isOption_DELETE = false;
-                        // Uwuwanie użytkownika:
-                        pagePVC.deleteUser(PagePVC.playersDetails_PARTS);
-                        // Ponowne wyświetlenie stanu wyboru użytkownika:
-                        pagePVC.SelectUserPart(PagePVC.playersDetails_PARTS, PagePVC.player_IDX);
+                        pagePVC.deleteUser(PVC.playersDetails_PARTS);
+                        pagePVC.SelectUserPart(PVC.playersDetails_PARTS, PVC.player_IDX);
                     }
                 }
                 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
                 // Operacja klawiszowe:
                 else if (isSelectPlayer == true) {
-                    pagePVC.SetShips_PLAYER(mainKey, PagePVC.userName);   // Ta medota musi być przrd metodą "Console.ReadKey()", ponieważ jej wynik musi być
+                    pagePVC.SetShips_PLAYER(mainKey, PVC.userName);   // Ta medota musi być przrd metodą "Console.ReadKey()", ponieważ jej wynik musi być
                     // wyswietlony po metodzie "Console.Clear()", której stan (stan wyświetlacza konsoli) jest zatrzymywany przez "Console.ReadKey()".
                 }
                 // Pętla ta uniemożliwia przeładowanie strony kiedy kliknie się niewłaściwy klawisz.
@@ -77,8 +54,8 @@ namespace Page_PVC {
                 isOption_CREATE = (mainKey.Key == System.ConsoleKey.C) ? true : false;
                 isOption_DELETE = (mainKey.Key == System.ConsoleKey.P) ? true : false;
                 if (mainKey.Key == System.ConsoleKey.Backspace) {
-                    PagePVC.isPVCLoop = false;
-                    MenuPage.isMenuButtonLoop = true;
+                    PVC.isPVCLoop = false;
+                    MenuPage.isMenu = true;
                     isSelectPlayer = false;
                     MenuPage.Menu();
                 }
@@ -88,16 +65,16 @@ namespace Page_PVC {
                 if (isSelectPlayer == false) {   // Poruszanie się po przyciskach (obliczenia):
                     if (mainKey.Key == System.ConsoleKey.UpArrow || mainKey.Key == System.ConsoleKey.W) {
                         //playerButtNum_POINTER = (playerButtNum_POINTER < PagePVC.playersDetails_PARTS.Count) ? playerButtNum_POINTER += 1 : playerButtNum_POINTER;
-                        if (PagePVC.player_IDX > 0) {
-                            PagePVC.player_IDX--;
-                            PagePVC.userName = PagePVC.playersDetails_PARTS[PagePVC.player_IDX][0];
+                        if (PVC.player_IDX > 0) {
+                            PVC.player_IDX--;
+                            PVC.userName = PVC.playersDetails_PARTS[PVC.player_IDX][0];
                         }
                     }
                     else if (mainKey.Key == System.ConsoleKey.DownArrow || mainKey.Key == System.ConsoleKey.S) {
                         //playerButtNum_POINTER = (playerButtNum_POINTER > 1) ? playerButtNum_POINTER -= 1 : playerButtNum_POINTER;
-                        if (PagePVC.player_IDX < PagePVC.playersDetails_PARTS.Count - 1) {
-                            PagePVC.player_IDX++;
-                            PagePVC.userName = PagePVC.playersDetails_PARTS[PagePVC.player_IDX][0];
+                        if (PVC.player_IDX < PVC.playersDetails_PARTS.Count - 1) {
+                            PVC.player_IDX++;
+                            PVC.userName = PVC.playersDetails_PARTS[PVC.player_IDX][0];
                         }
                     }
                 }
@@ -116,18 +93,18 @@ namespace Page_PVC {
             Console.WriteLine("\n- - - - - - - - - - - - - -\n");
             Console.WriteLine("PVC MODE: | Moving: arrows/[W][S] | Click = ENTER | Create player: [C] | Delete player: [P] | Back to menu: [Backspace]\n");
 
-            if (PagePVC.isDeletedDirection == "BELOW") {   // Kiedy usunięto użytkownika poniżej kursora, zmniejsza się wartość lokalizacji kursora względem wyświetlonych użytkowaników.
+            if (PVC.isDeletedDirection == "BELOW") {   // Kiedy usunięto użytkownika poniżej kursora, zmniejsza się wartość lokalizacji kursora względem wyświetlonych użytkowaników.
                 player_IDX = player_IDX - 1;
-                PagePVC.player_IDX = PagePVC.player_IDX - 1;
+                PVC.player_IDX = PVC.player_IDX - 1;
                 //Console.WriteLine("BELOW");
-            } else if (PagePVC.isDeletedDirection == "CENTER") {
-                PagePVC.userName = PagePVC.playersDetails_PARTS[PagePVC.player_IDX][0];
+            } else if (PVC.isDeletedDirection == "CENTER") {
+                PVC.userName = PVC.playersDetails_PARTS[PVC.player_IDX][0];
                 //Console.WriteLine("CENTER");
             } //else if (PagePVC.isDeletedDirection == "ABOVE") {
-                //Console.WriteLine("ABOVE");
-            //}
+              //Console.WriteLine("ABOVE");
+              //}
 
-            Console.WriteLine("Select player: [" + PagePVC.userName + "]");
+            Console.WriteLine("Select player: [" + PVC.userName + "]");
             if (playersDetails_PARTS != null) {
                 for (int i = 0, j = 0; i < playersDetails_PARTS.Count; i++, j++) {
                     if (j == player_IDX) {
@@ -137,26 +114,24 @@ namespace Page_PVC {
                     }
                 }
             }
-            PagePVC.isDeletedDirection = "ABOVE";
+            PVC.isDeletedDirection = "ABOVE";
         }
         public void DownloadPlayers() {   // Pobranie danych z pliku tekstowego użytkowaników: (nie zrobiłem globalnej tablicy jako listy i z tego powodu zrobiłem osobną metode do wyświetlania zaktualizowanej tablicy graczy)
-            // Odczytaj cały tekst z pliku
-            string fileContent = File.ReadAllText("players_PVC.txt");
+            string fileContent = File.ReadAllText("players_PVC.txt");   // Odczytaj cały tekst z pliku
             string[] players = fileContent.Split('*');
             string[,] playersDetails_PARTS_AR = new string[players.Length, 5];
             List<List<string>> playersDetails_PARTS_LT_Level_1 = new List<List<string>>();
             string[] playerDetails_BLOCK = null;
             for (int i = 0; i < players.Length; i++) {
                 List<string> playersDetails_PARTS_LT_Level_2 = new List<string>();
-                // Każdy gracz ma 5 informacji oddzielonych znakiem "#":
-                playerDetails_BLOCK = players[i].Split('#');
+                playerDetails_BLOCK = players[i].Split('#');   // Każdy gracz ma 5 informacji oddzielonych znakiem "#":
                 for (int j = 0; j < playerDetails_BLOCK.Length; j++) {
                     playersDetails_PARTS_AR[i, j] = playerDetails_BLOCK[j];
                     playersDetails_PARTS_LT_Level_2.Add(playerDetails_BLOCK[j]);
                 }
                 playersDetails_PARTS_LT_Level_1.Add(playersDetails_PARTS_LT_Level_2);
             }
-            PagePVC.playersDetails_PARTS = playersDetails_PARTS_LT_Level_1;   // Wcześniej: playersDetails_PARTS_AR
+            PVC.playersDetails_PARTS = playersDetails_PARTS_LT_Level_1;   // Wcześniej: playersDetails_PARTS_AR
             // Zapisz dane do pliku:
             /*try {
                 // Zapisz tekst do pliku
@@ -302,10 +277,10 @@ namespace Page_PVC {
 
             if (correctUser != "") {
                 // Określenie czy usuwany użytkownik znajduje się przed, albo równo z kursorem:
-                if (PagePVC.player_IDX > del_IDX) {
-                    PagePVC.isDeletedDirection = "BELOW";
-                } else if (PagePVC.player_IDX == del_IDX) {
-                    PagePVC.isDeletedDirection = "CENTER";
+                if (PVC.player_IDX > del_IDX) {
+                    PVC.isDeletedDirection = "BELOW";
+                } else if (PVC.player_IDX == del_IDX) {
+                    PVC.isDeletedDirection = "CENTER";
                 }
 
                 // Usunięcie określonej listy zagnieżdżonej z listy nadrzędnej danych użytkowników:
@@ -347,57 +322,29 @@ namespace Page_PVC {
         }
         public class SetShipsPVC {
             public static int cursor = 0;
-            public static int[] Up = new int[10] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-            public static int[] Down = new int[10] { 90, 91, 92, 93, 94, 95, 96, 97, 98, 99 };
-            public static int[] Right = new int[10] { 9, 19, 29, 39, 49, 59, 69, 79, 89, 99 };
-            public static int[] Left = new int[10] { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90 };
-            public static bool UpStop = false, DownStop = false, RightStop = false, LeftStop = false;
             public static int CursorNavigate(System.ConsoleKeyInfo key) {
-                SetShipsPVC.UpStop = false;
-                SetShipsPVC.DownStop = false;
-                SetShipsPVC.RightStop = false;
-                SetShipsPVC.LeftStop = false;
-                for (int i = 0; i < SetShipsPVC.Up.Length; i++) {
-                    if (SetShipsPVC.cursor == Up[i]) {
-                        SetShipsPVC.UpStop = true;
+                System.ConsoleKey[] direction_1 = new ConsoleKey[4] { System.ConsoleKey.UpArrow, System.ConsoleKey.DownArrow, System.ConsoleKey.RightArrow, System.ConsoleKey.LeftArrow };
+                System.ConsoleKey[] direction_2 = new ConsoleKey[4] { System.ConsoleKey.W, System.ConsoleKey.S, System.ConsoleKey.D, System.ConsoleKey.A };
+                int[] add = new int[4] { -10, 10, 1, -1 };
+                bool[] stop = new bool[4] { false, false, false, false };
+                int[,] valNum = new int[4, 10] {
+                    /*Up:*/    { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 },
+                    /*Down:*/  { 90, 91, 92, 93, 94, 95, 96, 97, 98, 99 },
+                    /*Right:*/ { 9, 19, 29, 39, 49, 59, 69, 79, 89, 99 },
+                    /*Left:*/  { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90 }
+                };
+                for (int i = 0; i < valNum.GetLength(0); i++) {
+                    stop[i] = false;
+                    for (int j = 0; j < valNum.GetLength(1); j++) {
+                        if (cursor == valNum[i,j]) stop[i] = true;
+                    }
+                    if (!stop[i]) {
+                        if (key.Key == direction_1[i] || key.Key == direction_2[i]) {
+                            cursor += add[i];
+                        }
                     }
                 }
-                if (SetShipsPVC.UpStop == false) {
-                    if (key.Key == System.ConsoleKey.UpArrow || key.Key == System.ConsoleKey.W) {
-                        cursor -= 10;
-                    }
-                }
-                for (int i = 0; i < SetShipsPVC.Down.Length; i++) {
-                    if (SetShipsPVC.cursor == Down[i]) {
-                        SetShipsPVC.DownStop = true;
-                    }
-                }
-                if (SetShipsPVC.DownStop == false) {
-                    if (key.Key == System.ConsoleKey.DownArrow || key.Key == System.ConsoleKey.S) {
-                        cursor += 10;
-                    }
-                }
-                for (int i = 0; i < SetShipsPVC.Right.Length; i++) {
-                    if (SetShipsPVC.cursor == Right[i]) {
-                        SetShipsPVC.RightStop = true;
-                    }
-                }
-                if (SetShipsPVC.RightStop == false) {
-                    if (key.Key == System.ConsoleKey.RightArrow || key.Key == System.ConsoleKey.D) {
-                        cursor += 1;
-                    }
-                }
-                for (int i = 0; i < SetShipsPVC.Left.Length; i++) {
-                    if (SetShipsPVC.cursor == Left[i]) {
-                        SetShipsPVC.LeftStop = true;
-                    }
-                }
-                if (SetShipsPVC.LeftStop == false) {
-                    if (key.Key == System.ConsoleKey.LeftArrow || key.Key == System.ConsoleKey.A) {
-                        cursor -= 1;
-                    }
-                }
-                return SetShipsPVC.cursor;
+                return cursor;
             }
         }
         public void SetShips_COMPUTER() {

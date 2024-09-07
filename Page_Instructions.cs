@@ -3,13 +3,13 @@ using Page_Menu;
 using Library_GlobalMethods;
 
 namespace Page_Instructions {
-    public class PageInstructions {
+    public class Instructions {
         // public static GlobalMethod globalMethod = new GlobalMethod();
         public static bool isInstructionLoop = true;
         public static bool isCorrectSign = false;
         public static string[] instructionButtons = { "Game", "Ships", "Board"};
         public static int instructionButtNum = instructionButtons.Length;
-        public void Instructions() {
+        public void RenderPage() {
             System.ConsoleKey key = System.ConsoleKey.Backspace;   // Dowolny niew≥aúciwy klawisz.
             System.ConsoleKeyInfo corr_key;
             while (isInstructionLoop == true) {
@@ -32,19 +32,11 @@ namespace Page_Instructions {
                 }
                 Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
                 switch (instructionButtNum) {
-                    case 3:
-                        PageInstructions game = new PageInstructions();
-                        game.Page_Game();
-                        break;
-                    case 2:
-                        PageInstructions ships = new PageInstructions();
-                        ships.Page_Ships();
-                        break;
-                    case 1:
-                        PageInstructions board = new PageInstructions();
-                        board.Page_Board();
-                        break;
-                } while (isCorrectSign == false) {   // PÍtla ta uniemoøliwia prze≥adowanie strony kiedy kliknie siÍ niew≥aúciwy klawisz.
+                    case 3: Instructions.Page_Game(); break;
+                    case 2: Instructions.Page_Ships(); break;
+                    case 1: Instructions.Page_Board(); break;
+                }
+                while (isCorrectSign == false) {   // PÍtla ta uniemoøliwia prze≥adowanie strony kiedy kliknie siÍ niew≥aúciwy klawisz.
                     corr_key = System.Console.ReadKey(true);
                     if (corr_key.Key == System.ConsoleKey.W || corr_key.Key == System.ConsoleKey.S || corr_key.Key == System.ConsoleKey.UpArrow || corr_key.Key == System.ConsoleKey.DownArrow || corr_key.Key == System.ConsoleKey.Backspace) {
                         isCorrectSign = true;
@@ -59,12 +51,12 @@ namespace Page_Instructions {
                     instructionButtNum = (instructionButtNum > 1) ? instructionButtNum -= 1 : instructionButtNum;
                 } else if (key == System.ConsoleKey.Backspace) {
                     isInstructionLoop = false;
-                    MenuPage.isMenuButtonLoop = true;
+                    MenuPage.isMenu = true;
                     MenuPage.Menu();
                 }
             }
         }
-        public void Page_Game() {
+        public static void Page_Game() {
             Console.WriteLine("Game instruction:" +
                 "\n1. Every player have a 7 ships." +
                 "\n2. Every player must set our every ship on our board." +
@@ -87,7 +79,7 @@ namespace Page_Instructions {
                 "\n17. After battle, players see your scores and next they see appropriate game mode score ranking." +
                 "\n18. After game players can play game again or get in game credits.");
         }
-        public void Page_Ships() {
+        public static void Page_Ships() {
             Console.WriteLine("You have 5 ships, about these length:" +
                 "\n1 - patrol boat" +
                 "\n22 - frigate" +
@@ -96,7 +88,7 @@ namespace Page_Instructions {
                 "\n55555 - aircraft carrier");
             Console.WriteLine("\nDestruction all ships indicate win these player who do it the opposite player.");
         }
-        public void Page_Board() { // NA PODSTAWIE PONIØSZEGO ZAPISU ZAIMPLEMENTUJ DWIE P TLE, KT”RE B D• ODPOWIEDZIALNE ZA WK£ADANIE ODPOWIEDNICH DANYCH Z IF'ÛW DO METODY "GlobalMethod.Color()"!!!
+        public static void Page_Board() { // NA PODSTAWIE PONIØSZEGO ZAPISU ZAIMPLEMENTUJ DWIE P TLE, KT”RE B D• ODPOWIEDZIALNE ZA WK£ADANIE ODPOWIEDNICH DANYCH Z IF'ÛW DO METODY "GlobalMethod.Color()"!!!
             Console.Write("Cursor: ");
             GlobalMethod.Color("{ }", ConsoleColor.White);
             Console.Write(" | Sea area: ");

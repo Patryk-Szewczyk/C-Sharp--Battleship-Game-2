@@ -4,16 +4,16 @@ using System.IO;
 using Page_Menu;
 
 namespace Page_Credits {
-    public class PageCredits {
+    public class Credits {
         public static bool isCreditsLoop = true;
         public static bool isCorrectSign = false;
-        public void Credits() {
-            if (MenuPage.menuSoundtrack_PLAY == true && MenuPage.creditsSoundtrack_PLAY == false) {
-                MenuPage.currentSoundtrack.Stop();
-                MenuPage.creditsSoundtrack_PLAY = true;
-                MenuPage.menuSoundtrack_PLAY = false;
+        public void RenderPage() {
+            if (MenuPage.PLAY_menu == true && MenuPage.PLAY_credits == false) {
+                MenuPage.currSound.Stop();
+                MenuPage.PLAY_credits = true;
+                MenuPage.PLAY_menu = false;
             }
-            if (MenuPage.menuSoundtrack_PLAY == false && MenuPage.creditsSoundtrack_PLAY == true) {
+            if (MenuPage.PLAY_menu == false && MenuPage.PLAY_credits == true) {
                 MenuPage.Sound("Soundtracks/Credits/stay-retro-124958.wav", true);
             }
 
@@ -54,7 +54,7 @@ namespace Page_Credits {
                     if (key.Key == System.ConsoleKey.Backspace) {
                         isCorrectSign = true;
                         isCreditsLoop = false;
-                        MenuPage.isMenuButtonLoop = true;
+                        MenuPage.isMenu = true;
                         MenuPage.Menu();
                     }
                 }

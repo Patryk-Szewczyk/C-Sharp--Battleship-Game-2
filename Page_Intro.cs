@@ -31,7 +31,7 @@ namespace Page_Intro {
             }
             Console.Clear();
             Console.WriteLine("Loading...");
-            listaStatkow = GlobalMethod.RandShips(plansza, statki);
+            listaStatkow = GlobalMethod.SetShips(plansza, statki);
             Console.Clear();
             Console.WriteLine("\n\n");
             for (int i = 0; i < listaStatkow.Count; i++) {
@@ -43,11 +43,11 @@ namespace Page_Intro {
 
 
 
-            System.ConsoleKeyInfo corr_key;
+            System.ConsoleKeyInfo corrKey;
             bool isEnter = false;
             while (!isEnter) {
-                corr_key = Console.ReadKey(true);  // "ture", bo nie chcę widzieć znaku
-                if (corr_key.Key == System.ConsoleKey.Enter) {
+                corrKey = Console.ReadKey(true);  // "ture", bo nie chcę widzieć znaku
+                if (corrKey.Key == System.ConsoleKey.Enter) {
                     isEnter = true;
                 }
             }

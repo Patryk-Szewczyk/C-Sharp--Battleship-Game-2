@@ -3,41 +3,38 @@ using System;
 using System.Media;
 using Page_Instructions;
 using Page_Credits;
-using Page_PVP;
 using Page_PVC;
 using Page_Ranking;
 using Page_Options;
 
 namespace Page_Menu {
     public class MenuPage {
-        public static SoundPlayer currentSoundtrack = new SoundPlayer();   // WEè TO SPR”BUJ PRZENIEå∆ DO MENU Z try/catch
-        public static bool menuSoundtrack_PLAY = false;
-        public static bool creditsSoundtrack_PLAY = false;
-        public static bool isMenuButtonLoop = true;
+        public static SoundPlayer currSound = new SoundPlayer();   // WEè TO SPR”BUJ PRZENIEå∆ DO MENU Z try/catch
+        public static bool PLAY_menu = false;
+        public static bool PLAY_credits = false;
+        public static bool isMenu = true;
         public static bool isCorrectSign = false;
-        public static string[] menuButtons = { "PVC Mode", "Instruction", "Ranking", "Options", "Credits", "Exit" };
-        public static int menuButtNum = menuButtons.Length;   // Zawsze ostatni, bo chcÍ mieÊ kursor na gÛrze!
+        public static string[] buttons = { "PVC Mode", "Instruction", "Ranking", "Options", "Credits", "Exit" };
+        public static int buttNum = buttons.Length;   // Zawsze ostatni, bo chcÍ mieÊ kursor na gÛrze!
         public static void Menu() {
-            // Deklaracja obiektÛw:
-            //PagePVP pvp = new PagePVP();
-            PagePVC pvc = new PagePVC();
-            PageInstructions instruction = new PageInstructions();
-            PageRanking ranking = new PageRanking();
-            PageOptions options = new PageOptions();
-            PageCredits credits = new PageCredits();
+            PVC pvc = new PVC();
+            Instructions instruction = new Instructions();
+            Ranking ranking = new Ranking();
+            Options options = new Options();
+            Credits credits = new Credits();
 
             System.ConsoleKey key = System.ConsoleKey.Backspace;   // Dowolny niew≥aúciwy klawisz.
             System.ConsoleKeyInfo corr_key;
-            if (MenuPage.menuSoundtrack_PLAY == false && MenuPage.creditsSoundtrack_PLAY == false) {
+            if (PLAY_menu == false && PLAY_credits == false) {
                 MenuPage.Sound("Soundtracks/Menu/473915__xhale303__synthwave-loop.wav", true);
-                MenuPage.menuSoundtrack_PLAY = true;
-            } else if (MenuPage.menuSoundtrack_PLAY == false && MenuPage.creditsSoundtrack_PLAY == true) {
-                MenuPage.currentSoundtrack.Stop();
-                MenuPage.creditsSoundtrack_PLAY = false;
+                PLAY_menu = true;
+            } else if (PLAY_menu == false && PLAY_credits == true) {
+                currSound.Stop();
+                PLAY_credits = false;
                 MenuPage.Sound("Soundtracks/Menu/473915__xhale303__synthwave-loop.wav", true);
-                MenuPage.menuSoundtrack_PLAY = true;
+                PLAY_menu = true;
             }
-            while (isMenuButtonLoop == true) {
+            while (isMenu == true) {
                 Console.Clear();
                 Console.WriteLine("BBBBBBB     BBBB    BBBBBBBB  BBBBBBBB  BB        BBBBBBBB   BBBBBBB  BB    BB  BB  BBBBBBB      BBBBBB");
                 Console.WriteLine("BB    BB   BB  BB      BB        BB     BB        BB        BB        BB    BB  BB  BB    BB    BB    BB");
@@ -48,11 +45,11 @@ namespace Page_Menu {
                 Console.WriteLine("BBBBBBB   BB    BB     BB        BB     BBBBBBBB  BBBBBBBB  BBBBBBB   BB    BB  BB  BB          BBBBBBBB");
                 Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
                 Console.WriteLine("MENU: | Moving: arrows/[W][S] | Click = ENTER\n");
-                for (int i = 0, j = menuButtons.Length; i < menuButtons.Length; i++, j--) {
-                    if (j == menuButtNum) {
-                        Console.WriteLine("> " + menuButtons[i]);
+                for (int i = 0, j = buttons.Length; i < buttons.Length; i++, j--) {
+                    if (j == buttNum) {
+                        Console.WriteLine("> " + buttons[i]);
                     } else {
-                        Console.WriteLine("  " + menuButtons[i]);
+                        Console.WriteLine("  " + buttons[i]);
                     }
                 }
                 while (isCorrectSign == false)  {
@@ -64,55 +61,49 @@ namespace Page_Menu {
                 }
                 isCorrectSign = false;
                 if (key == System.ConsoleKey.Enter) {
-                    isMenuButtonLoop = false;
-                    switch (menuButtNum) {
-                        /*case 7:   // PVP
-                            PagePVP.isPVPShipPositingLoop = true;
-                            pvp.PVP();
-                            break;*/
-                        case 6:   // PVC
-                            PagePVC.isPVCLoop = true;
-                            pvc.PVC();
+                    isMenu = false;
+                    switch (buttNum) {
+                        case 6:
+                            PVC.isPVCLoop = true;
+                            pvc.RenderPage();
                             break;
-                        case 5:   // Instruction
-                            PageInstructions.isInstructionLoop = true;
-                            instruction.Instructions();
+                        case 5:
+                            Instructions.isInstructionLoop = true;
+                            instruction.RenderPage();
                             break;
-                        case 4:   // Ranking
-                            PageRanking.isRankingLoop = true;
-                            ranking.Ranking();
+                        case 4:
+                            Ranking.isRankingLoop = true;
+                            ranking.RenderPage();
                             break;
-                        case 3:   // Options
-                            PageOptions.isOptionsLoop = true;
-                            options.Options();
+                        case 3:
+                            Options.isOptionsLoop = true;
+                            options.RenderPage();
                             break;
-                        case 2:   // Credits
-                            PageCredits.isCreditsLoop = true;
-                            credits.Credits();
+                        case 2:
+                            Credits.isCreditsLoop = true;
+                            credits.RenderPage();
                             break;
-                        case 1:   // Exit
-                            isMenuButtonLoop = false;
+                        case 1:
+                            isMenu = false;
                             break;
                     }
                 }
                 // Poruszanie siÍ po przyciskach (obliczenia):
                 if (key == System.ConsoleKey.UpArrow || key == System.ConsoleKey.W) {
-                    menuButtNum = (menuButtNum < menuButtons.Length) ? menuButtNum += 1 : menuButtNum;
+                    buttNum = (buttNum < buttons.Length) ? buttNum += 1 : buttNum;
                 } else if (key == System.ConsoleKey.DownArrow || key == System.ConsoleKey.S) {
-                    menuButtNum = (menuButtNum > 1) ? menuButtNum -= 1 : menuButtNum;
+                    buttNum = (buttNum > 1) ? buttNum -= 1 : buttNum;
                 }
             }
         }
         public static void Sound(string filepath, bool isLoop) {
             try {   // W przypadku braku úcieøki døwiÍkowej, wyjπtek zostanie z≥apany, przez co program nie zakoÒczy dzia≥ania. 
-                MenuPage.currentSoundtrack.SoundLocation = filepath;
-                if (isLoop) MenuPage.currentSoundtrack.PlayLooping();
+                MenuPage.currSound.SoundLocation = filepath;
+                if (isLoop) MenuPage.currSound.PlayLooping();
                 //Console.WriteLine("STAN MUZYKI: Znaleziono\n\n" + filepath);
-            } catch { }
-            /*catch (Exception error)
-            {
-                //Console.WriteLine("STAN MUZYKI: Nie znaleziono\n\n" + error);
-            }*/
+            } catch (Exception error) {
+                Console.WriteLine("STAN MUZYKI: Nie znaleziono\n\n" + error);
+            }
         }
     }
 }
