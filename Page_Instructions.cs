@@ -5,465 +5,482 @@ using Library_GlobalMethods;
 namespace Page_Instructions {
     public class Instructions {
         // public static GlobalMethod globalMethod = new GlobalMethod();
-        public static bool isInstructionLoop = true;
-        public static bool isCorrectSign = false;
+        public static bool isInstruction = true;
+        public static bool isCorrSign = false;
         public static string[] instructionButtons = { "Game", "Ships", "Board"};
         public static int instructionButtNum = instructionButtons.Length;
         public void RenderPage() {
             System.ConsoleKey key = System.ConsoleKey.Backspace;   // Dowolny niew³aœciwy klawisz.
-            System.ConsoleKeyInfo corr_key;
-            while (isInstructionLoop == true) {
+            System.ConsoleKeyInfo corr_key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false); ;   // Dowolna niew³aœciwa wartoœæ.
+            while (isInstruction == true) {
                 Console.Clear();
-                Console.WriteLine("BB  BBBB  BB   BBBBBBB  BBBBBBBB  BBBBBBB   BB    BB   BBBBBBB  BBBBBBBB  BB   BBBBBB   BBBB  BB");
-                Console.WriteLine("BB  BB BB BB  BB           BB     BB    BB  BB    BB  BB           BB     BB  BB    BB  BB BB BB");
-                Console.WriteLine("BB  BB BB BB  BB           BB     BB    BB  BB    BB  BB           BB     BB  BB    BB  BB BB BB");
-                Console.WriteLine("BB  BB BB BB   BBBBBB      BB     BBBBBBB   BB    BB  BB           BB     BB  BB    BB  BB BB BB");
-                Console.WriteLine("BB  BB BB BB        BB     BB     BB    BB  BB    BB  BB           BB     BB  BB    BB  BB BB BB");
-                Console.WriteLine("BB  BB BB BB        BB     BB     BB    BB  BB    BB  BB           BB     BB  BB    BB  BB BB BB");
-                Console.WriteLine("BB  BB  BBBB  BBBBBBB      BB     BB    BB   BBBBBB    BBBBBBB     BB     BB   BBBBBB   BB  BBBB");
-                Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
-                Console.WriteLine("INSTRUCTION: | Moving: arrows/[W][S] | Back to menu: [Backspace]\n");
-                for (int i = 0, j = instructionButtons.Length; i < instructionButtons.Length; i++, j--) {
-                    if (j == instructionButtNum) {
-                        Console.WriteLine("> " + instructionButtons[i]);
-                    } else {
-                        Console.WriteLine("  " + instructionButtons[i]);
-                    }
-                }
-                Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
-                switch (instructionButtNum) {
-                    case 3: Instructions.Page_Game(); break;
-                    case 2: Instructions.Page_Ships(); break;
-                    case 1: Instructions.Page_Board(); break;
-                }
-                while (isCorrectSign == false) {   // Pêtla ta uniemo¿liwia prze³adowanie strony kiedy kliknie siê niew³aœciwy klawisz.
-                    corr_key = System.Console.ReadKey(true);
-                    if (corr_key.Key == System.ConsoleKey.W || corr_key.Key == System.ConsoleKey.S || corr_key.Key == System.ConsoleKey.UpArrow || corr_key.Key == System.ConsoleKey.DownArrow || corr_key.Key == System.ConsoleKey.Backspace) {
-                        isCorrectSign = true;
-                        key = corr_key.Key;
-                    }
-                }
-                isCorrectSign = false;
-                // Poruszanie siê po przyciskach (obliczenia):
-                if (key == System.ConsoleKey.UpArrow || key == System.ConsoleKey.W) {
-                    instructionButtNum = (instructionButtNum < instructionButtons.Length) ? instructionButtNum += 1 : instructionButtNum;
-                } else if (key == System.ConsoleKey.DownArrow || key == System.ConsoleKey.S) {
-                    instructionButtNum = (instructionButtNum > 1) ? instructionButtNum -= 1 : instructionButtNum;
-                } else if (key == System.ConsoleKey.Backspace) {
-                    isInstructionLoop = false;
-                    MenuPage.isMenu = true;
-                    MenuPage.Menu();
-                }
+                RenderTitle();
+                RenderButtons();
+                RenderOption.RenderInfo(instructionButtNum);
+                key = LoopCorrectKey(key, corr_key);   // Pêtla ta uniemo¿liwia prze³adowanie strony kiedy kliknie siê niew³aœciwy klawisz.
+                MoveButtons(key);   // Poruszanie siê po przyciskach (obliczenia).
             }
         }
-        public static void Page_Game() {
-            Console.WriteLine("Game instruction:" +
-                "\n1. Every player have a 7 ships." +
-                "\n2. Every player must set our every ship on our board." +
-                "\n3. Each ship has a certain length and direction." +
-                "\n4. Ships can be placed on board in two types of positions: horizontal and vertical." +
-                "\n5. The player boards have dimensions of 10 x 10 fields." +
-                "\n6. When placing ships, ships canNOT leave the board and canNOT overlap each other." +
-                "\n7. After placing the ships on the boards, you can start the game." +
-                "\n8. At the beginning, all squares of the board are marked with the sign \"~\" on the board." +
-                "\n9. A hit ship is marked with a series of number from 1 to 7 according to ship number on the board." +
-                "\n10. The hit is marked with an \"X\" on the board." +
-                "\n11. The miss is marked with an \"O\" on the board." +
-                "\n12. If you sink enemy ship, this ship coordinates emerge under boards in players ships info." +
-                "\n13. To attack an opponent, the player must move your cursor {  } on area," +
-                "\n    which you wan attack by arrows or \"[W][S][A][D]\" keys." +
-                "\n14. Players shooting together by turns." +
-                "\n15. If some player hits your enemy, this player can shoot again. This activity repeat as much" +
-                "\n    times how many this player hits your enemy's ships." +
-                "\n16. The winner is this one who defeats his enemy." +
-                "\n17. After battle, players see your scores and next they see appropriate game mode score ranking." +
-                "\n18. After game players can play game again or get in game credits.");
+        public static void RenderTitle() {
+            Console.WriteLine("BB  BBBB  BB   BBBBBBB  BBBBBBBB  BBBBBBB   BB    BB   BBBBBBB  BBBBBBBB  BB   BBBBBB   BBBB  BB");
+            Console.WriteLine("BB  BB BB BB  BB           BB     BB    BB  BB    BB  BB           BB     BB  BB    BB  BB BB BB");
+            Console.WriteLine("BB  BB BB BB  BB           BB     BB    BB  BB    BB  BB           BB     BB  BB    BB  BB BB BB");
+            Console.WriteLine("BB  BB BB BB   BBBBBB      BB     BBBBBBB   BB    BB  BB           BB     BB  BB    BB  BB BB BB");
+            Console.WriteLine("BB  BB BB BB        BB     BB     BB    BB  BB    BB  BB           BB     BB  BB    BB  BB BB BB");
+            Console.WriteLine("BB  BB BB BB        BB     BB     BB    BB  BB    BB  BB           BB     BB  BB    BB  BB BB BB");
+            Console.WriteLine("BB  BB  BBBB  BBBBBBB      BB     BB    BB   BBBBBB    BBBBBBB     BB     BB   BBBBBB   BB  BBBB");
+            GlobalMethod.RenderDottedLine();
+            Console.WriteLine("INSTRUCTION: | Moving: arrows/[W][S] | Back to menu: [Backspace]\n");
         }
-        public static void Page_Ships() {
-            Console.WriteLine("You have 5 ships, about these length:" +
-                "\n1 - patrol boat" +
-                "\n22 - frigate" +
-                "\n333 - submarine" +
-                "\n4444 - destroyer" +
-                "\n55555 - aircraft carrier");
-            Console.WriteLine("\nDestruction all ships indicate win these player who do it the opposite player.");
+        public static void RenderButtons() {
+            for (int i = 0, j = instructionButtons.Length; i < instructionButtons.Length; i++, j--) {
+                if (j == instructionButtNum) {
+                    Console.WriteLine("> " + instructionButtons[i]);
+                } else {
+                    Console.WriteLine("  " + instructionButtons[i]);
+                }
+            }
+            GlobalMethod.RenderDottedLine();
         }
-        public static void Page_Board() { // NA PODSTAWIE PONI¯SZEGO ZAPISU ZAIMPLEMENTUJ DWIE PÊTLE, KTÓRE BÊD¥ ODPOWIEDZIALNE ZA WK£ADANIE ODPOWIEDNICH DANYCH Z IF'óW DO METODY "GlobalMethod.Color()"!!!
-            Console.Write("Cursor: ");
-            GlobalMethod.Color("{ }", ConsoleColor.White);
-            Console.Write(" | Sea area: ");
-            GlobalMethod.Color("~", ConsoleColor.Blue);
-            Console.Write(" | Hit: ");
-            GlobalMethod.Color("X", ConsoleColor.Red);
-            Console.Write(" | Miss: ");
-            GlobalMethod.Color("O", ConsoleColor.DarkYellow);
-            Console.Write(" | Sunken ships: (length numbers) - ");
-            GlobalMethod.Color("22", ConsoleColor.Gray);
-            Console.Write(", ");
-            GlobalMethod.Color("4444", ConsoleColor.Gray);
-            Console.WriteLine();
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            GlobalMethod.Color(" _______________________________________________       _______________________________________________ ", ConsoleColor.Green);
-            Console.WriteLine();
-            GlobalMethod.Color("|                                               |     |                                               |", ConsoleColor.Green);
-            Console.WriteLine();
-            GlobalMethod.Color("|                                               |     |                                               |", ConsoleColor.Green);
-            Console.WriteLine();
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 1:
-            // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
-            GlobalMethod.Color("|    ", ConsoleColor.Green);
-            GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);  // Ka¿dy tego typu element bêdzie mia³ dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
-            GlobalMethod.Color("    |", ConsoleColor.Green);
-            // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
-            Console.Write("     ");
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            // - - - - - - - - - - - - - - - - - - - - - - - PRAWO:
-            GlobalMethod.Color("|    ", ConsoleColor.Green);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
-            GlobalMethod.Color(" 5  ", ConsoleColor.Gray);
-            GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
-            GlobalMethod.Color("    |", ConsoleColor.Green);
-            // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
-            Console.WriteLine();
-            GlobalMethod.Color("|                                               |     |                                               |", ConsoleColor.Green);
-            Console.WriteLine();
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 2:
-            // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
-            GlobalMethod.Color("|    ", ConsoleColor.Green);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Ka¿dy tego typu element bêdzie mia³ dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
-            GlobalMethod.Color(" 2  ", ConsoleColor.Gray);
-            GlobalMethod.Color(" 2  ", ConsoleColor.Gray);
-            GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
-            GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
-            GlobalMethod.Color("    |", ConsoleColor.Green);
-            // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
-            Console.Write("     ");
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            // - - - - - - - - - - - - - - - - - - - - - - - PRAWO:
-            GlobalMethod.Color("|    ", ConsoleColor.Green);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" 5  ", ConsoleColor.Gray);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
-            GlobalMethod.Color("    |", ConsoleColor.Green);
-            // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
-            Console.WriteLine();
-            GlobalMethod.Color("|                                               |     |                                               |", ConsoleColor.Green);
-            Console.WriteLine();
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 3:
-            // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
-            GlobalMethod.Color("|    ", ConsoleColor.Green);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Ka¿dy tego typu element bêdzie mia³ dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
-            GlobalMethod.Color("    |", ConsoleColor.Green);
-            // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
-            Console.Write("     ");
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            // - - - - - - - - - - - - - - - - - - - - - - - PRAWO:
-            GlobalMethod.Color("|    ", ConsoleColor.Green);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" X  ", ConsoleColor.Red);
-            GlobalMethod.Color(" X  ", ConsoleColor.Red);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" 5  ", ConsoleColor.Gray);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" 1  ", ConsoleColor.Gray);
-            GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
-            GlobalMethod.Color("    |", ConsoleColor.Green);
-            // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
-            Console.WriteLine();
-            GlobalMethod.Color("|                                               |     |                                               |", ConsoleColor.Green);
-            Console.WriteLine();
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 4:
-            // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
-            GlobalMethod.Color("|    ", ConsoleColor.Green);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Ka¿dy tego typu element bêdzie mia³ dwie wersje. Pierwsza: " O  ". Druga: "O", gdzie przed jest "{", a po "} ".
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
-            GlobalMethod.Color(" 3  ", ConsoleColor.Gray);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
-            GlobalMethod.Color("    |", ConsoleColor.Green);
-            // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
-            Console.Write("     ");
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            // - - - - - - - - - - - - - - - - - - - - - - - PRAWO:
-            GlobalMethod.Color("|    ", ConsoleColor.Green);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" 5  ", ConsoleColor.Gray);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
-            GlobalMethod.Color("    |", ConsoleColor.Green);
-            // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
-            Console.WriteLine();
-            GlobalMethod.Color("|                                               |     |                                               |", ConsoleColor.Green);
-            Console.WriteLine();
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 5:
-            // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
-            GlobalMethod.Color("|    ", ConsoleColor.Green);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Ka¿dy tego typu element bêdzie mia³ dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
-            GlobalMethod.Color(" X  ", ConsoleColor.Red);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" 3  ", ConsoleColor.Gray);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
-            GlobalMethod.Color("    |", ConsoleColor.Green);
-            // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
-            Console.Write("     ");
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            // - - - - - - - - - - - - - - - - - - - - - - - PRAWO:
-            GlobalMethod.Color("|    ", ConsoleColor.Green);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" 5  ", ConsoleColor.Gray);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
-            GlobalMethod.Color("    |", ConsoleColor.Green);
-            // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
-            Console.WriteLine();
-            GlobalMethod.Color("|                                               |     |                                               |", ConsoleColor.Green);
-            Console.WriteLine();
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 6:
-            // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
-            GlobalMethod.Color("|    ", ConsoleColor.Green);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Ka¿dy tego typu element bêdzie mia³ dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
-            GlobalMethod.Color(" X  ", ConsoleColor.Red);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" 3  ", ConsoleColor.Gray);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
-            GlobalMethod.Color("    |", ConsoleColor.Green);
-            // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
-            Console.Write("     ");
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            // - - - - - - - - - - - - - - - - - - - - - - - PRAWO:
-            GlobalMethod.Color("|    ", ConsoleColor.Green);
-            // - - - - - - - - - - - - - - - - - - - - - ELSE IF: (Druga opcja, Pierwsza: to co zwykle [jedna linia "GlobalMethod()"])
-            GlobalMethod.Color("{", ConsoleColor.White);
-            GlobalMethod.Color("~", ConsoleColor.Blue);
-            GlobalMethod.Color("} ", ConsoleColor.White);
-            // - - - - - - - - - - - - - - - - - - - - -
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" 5  ", ConsoleColor.Gray);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
-            GlobalMethod.Color("    |", ConsoleColor.Green);
-            // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
-            Console.WriteLine();
-            GlobalMethod.Color("|                                               |     |                                               |", ConsoleColor.Green);
-            Console.WriteLine();
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 7:
-            // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
-            GlobalMethod.Color("|    ", ConsoleColor.Green);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Ka¿dy tego typu element bêdzie mia³ dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
-            GlobalMethod.Color(" X  ", ConsoleColor.Red);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
-            GlobalMethod.Color("    |", ConsoleColor.Green);
-            // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
-            Console.Write("     ");
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            // - - - - - - - - - - - - - - - - - - - - - - - PRAWO:
-            GlobalMethod.Color("|    ", ConsoleColor.Green);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" 2  ", ConsoleColor.Gray);
-            GlobalMethod.Color(" 2  ", ConsoleColor.Gray);
-            GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
-            GlobalMethod.Color("    |", ConsoleColor.Green);
-            // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
-            Console.WriteLine();
-            GlobalMethod.Color("|                                               |     |                                               |", ConsoleColor.Green);
-            Console.WriteLine();
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 8:
-            // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
-            GlobalMethod.Color("|    ", ConsoleColor.Green);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Ka¿dy tego typu element bêdzie mia³ dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
-            GlobalMethod.Color(" 4  ", ConsoleColor.Gray);
-            GlobalMethod.Color(" 4  ", ConsoleColor.Gray);
-            GlobalMethod.Color(" 4  ", ConsoleColor.Gray);
-            GlobalMethod.Color(" 4  ", ConsoleColor.Gray);
-            GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
-            GlobalMethod.Color("    |", ConsoleColor.Green);
-            // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
-            Console.Write("     ");
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            // - - - - - - - - - - - - - - - - - - - - - - - PRAWO:
-            GlobalMethod.Color("|    ", ConsoleColor.Green);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
-            GlobalMethod.Color("    |", ConsoleColor.Green);
-            // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
-            Console.WriteLine();
-            GlobalMethod.Color("|                                               |     |                                               |", ConsoleColor.Green);
-            Console.WriteLine();
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 9:
-            // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
-            GlobalMethod.Color("|    ", ConsoleColor.Green);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Ka¿dy tego typu element bêdzie mia³ dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
-            GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
-            GlobalMethod.Color("    |", ConsoleColor.Green);
-            // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
-            Console.Write("     ");
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            // - - - - - - - - - - - - - - - - - - - - - - - PRAWO:
-            GlobalMethod.Color("|    ", ConsoleColor.Green);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
-            GlobalMethod.Color("    |", ConsoleColor.Green);
-            // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
-            Console.WriteLine();
-            GlobalMethod.Color("|                                               |     |                                               |", ConsoleColor.Green);
-            Console.WriteLine();
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 10:
-            // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
-            GlobalMethod.Color("|    ", ConsoleColor.Green);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Ka¿dy tego typu element bêdzie mia³ dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
-            GlobalMethod.Color("    |", ConsoleColor.Green);
-            // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
-            Console.Write("     ");
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            // - - - - - - - - - - - - - - - - - - - - - - - PRAWO:
-            GlobalMethod.Color("|    ", ConsoleColor.Green);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
-            GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
-            GlobalMethod.Color("    |", ConsoleColor.Green);
-            // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
-            Console.WriteLine();
-            GlobalMethod.Color("|                                               |     |                                               |", ConsoleColor.Green);
-            Console.WriteLine();
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            GlobalMethod.Color("|_______________________________________________|     |_______________________________________________|", ConsoleColor.Green);
+        public static System.ConsoleKey LoopCorrectKey(System.ConsoleKey key, System.ConsoleKeyInfo corr_key) {
+            while (isCorrSign == false) {   // Pêtla ta uniemo¿liwia prze³adowanie strony kiedy kliknie siê niew³aœciwy klawisz.
+                corr_key = System.Console.ReadKey(true);
+                if (corr_key.Key == System.ConsoleKey.W || corr_key.Key == System.ConsoleKey.S || corr_key.Key == System.ConsoleKey.UpArrow || corr_key.Key == System.ConsoleKey.DownArrow || corr_key.Key == System.ConsoleKey.Backspace) {
+                    isCorrSign = true;
+                    key = corr_key.Key;
+                }
+            }
+            isCorrSign = false;
+            return key;
+        }
+        public static void MoveButtons(System.ConsoleKey key) {
+            if (key == System.ConsoleKey.UpArrow || key == System.ConsoleKey.W) {
+                instructionButtNum = (instructionButtNum < instructionButtons.Length) ? instructionButtNum += 1 : instructionButtNum;
+            } else if (key == System.ConsoleKey.DownArrow || key == System.ConsoleKey.S) {
+                instructionButtNum = (instructionButtNum > 1) ? instructionButtNum -= 1 : instructionButtNum;
+            } else if (key == System.ConsoleKey.Backspace) {
+                isInstruction = false;
+                MenuPage.isMenu = true;
+                MenuPage.Menu();
+            }
+        }
+        internal class RenderOption {
+            internal static void RenderInfo(int option) {   // Dlaczego "internal"? Poniewa¿ chcê ograniczyæ wykonywanie tej metody i innych w tej klasie do wy³¹cznie tego "namespace" (przestrzeñ nazw) w którym siê znajduje ("Page_Instructions"), aby nie wykonaæ jej przypadkiem w innych namespacach z plików do³¹czonych za pomoc¹ s³owa kluczowego "using". Mo¿na siê sprzeczaæ, ¿e jest to niepotrzebne, gdy¿ klasa ma ustawiony modyfikator dostêpu "internal", ale dla ostro¿noœci i czytelnoœci kodu lepiej trzymaæ siê estetyki.
+                switch (option) {
+                    case 3: RenderOption.RenderGameInfo(); break;
+                    case 2: RenderOption.RenderShipsInfo(); break;
+                    case 1: RenderOption.RenderBoardInfo(); break;
+                }
+            }
+            internal static void RenderGameInfo() {
+                Console.WriteLine("Game instruction:" +
+                    "\n1. Every player have a 7 ships." +
+                    "\n2. Every player must set our every ship on our board." +
+                    "\n3. Each ship has a certain length and direction." +
+                    "\n4. Ships can be placed on board in two types of positions: horizontal and vertical." +
+                    "\n5. The player boards have dimensions of 10 x 10 fields." +
+                    "\n6. When placing ships, ships canNOT leave the board and canNOT overlap each other." +
+                    "\n7. After placing the ships on the boards, you can start the game." +
+                    "\n8. At the beginning, all squares of the board are marked with the sign \"~\" on the board." +
+                    "\n9. A hit ship is marked with a series of number from 1 to 7 according to ship number on the board." +
+                    "\n10. The hit is marked with an \"X\" on the board." +
+                    "\n11. The miss is marked with an \"O\" on the board." +
+                    "\n12. If you sink enemy ship, this ship coordinates emerge under boards in players ships info." +
+                    "\n13. To attack an opponent, the player must move your cursor {  } on area," +
+                    "\n    which you wan attack by arrows or \"[W][S][A][D]\" keys." +
+                    "\n14. Players shooting together by turns." +
+                    "\n15. If some player hits your enemy, this player can shoot again. This activity repeat as much" +
+                    "\n    times how many this player hits your enemy's ships." +
+                    "\n16. The winner is this one who defeats his enemy." +
+                    "\n17. After battle, players see your scores and next they see appropriate game mode score ranking." +
+                    "\n18. After game players can play game again or get in game credits.");
+            }
+            internal static void RenderShipsInfo() {
+                Console.WriteLine("You have 5 ships, about these length:" +
+                    "\n1 - patrol boat" +
+                    "\n22 - frigate" +
+                    "\n333 - submarine" +
+                    "\n4444 - destroyer" +
+                    "\n55555 - aircraft carrier");
+                Console.WriteLine("\nDestruction all ships indicate win these player who do it the opposite player.");
+            }
+            internal static void RenderBoardInfo() { // NA PODSTAWIE PONI¯SZEGO ZAPISU ZAIMPLEMENTUJ DWIE PÊTLE, KTÓRE BÊD¥ ODPOWIEDZIALNE ZA WK£ADANIE ODPOWIEDNICH DANYCH Z IF'óW DO METODY "GlobalMethod.Color()"!!!
+                Console.Write("Cursor: ");
+                GlobalMethod.Color("{ }", ConsoleColor.White);
+                Console.Write(" | Sea area: ");
+                GlobalMethod.Color("~", ConsoleColor.Blue);
+                Console.Write(" | Hit: ");
+                GlobalMethod.Color("X", ConsoleColor.Red);
+                Console.Write(" | Miss: ");
+                GlobalMethod.Color("O", ConsoleColor.DarkYellow);
+                Console.Write(" | Sunken ships: (length numbers) - ");
+                GlobalMethod.Color("22", ConsoleColor.Gray);
+                Console.Write(", ");
+                GlobalMethod.Color("4444", ConsoleColor.Gray);
+                Console.WriteLine();
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                GlobalMethod.Color(" _______________________________________________       _______________________________________________ ", ConsoleColor.Green);
+                Console.WriteLine();
+                GlobalMethod.Color("|                                               |     |                                               |", ConsoleColor.Green);
+                Console.WriteLine();
+                GlobalMethod.Color("|                                               |     |                                               |", ConsoleColor.Green);
+                Console.WriteLine();
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 1:
+                // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
+                GlobalMethod.Color("|    ", ConsoleColor.Green);
+                GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);  // Ka¿dy tego typu element bêdzie mia³ dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
+                GlobalMethod.Color("    |", ConsoleColor.Green);
+                // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
+                Console.Write("     ");
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                // - - - - - - - - - - - - - - - - - - - - - - - PRAWO:
+                GlobalMethod.Color("|    ", ConsoleColor.Green);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
+                GlobalMethod.Color(" 5  ", ConsoleColor.Gray);
+                GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
+                GlobalMethod.Color("    |", ConsoleColor.Green);
+                // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
+                Console.WriteLine();
+                GlobalMethod.Color("|                                               |     |                                               |", ConsoleColor.Green);
+                Console.WriteLine();
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 2:
+                // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
+                GlobalMethod.Color("|    ", ConsoleColor.Green);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Ka¿dy tego typu element bêdzie mia³ dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
+                GlobalMethod.Color(" 2  ", ConsoleColor.Gray);
+                GlobalMethod.Color(" 2  ", ConsoleColor.Gray);
+                GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
+                GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
+                GlobalMethod.Color("    |", ConsoleColor.Green);
+                // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
+                Console.Write("     ");
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                // - - - - - - - - - - - - - - - - - - - - - - - PRAWO:
+                GlobalMethod.Color("|    ", ConsoleColor.Green);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" 5  ", ConsoleColor.Gray);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
+                GlobalMethod.Color("    |", ConsoleColor.Green);
+                // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
+                Console.WriteLine();
+                GlobalMethod.Color("|                                               |     |                                               |", ConsoleColor.Green);
+                Console.WriteLine();
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 3:
+                // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
+                GlobalMethod.Color("|    ", ConsoleColor.Green);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Ka¿dy tego typu element bêdzie mia³ dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
+                GlobalMethod.Color("    |", ConsoleColor.Green);
+                // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
+                Console.Write("     ");
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                // - - - - - - - - - - - - - - - - - - - - - - - PRAWO:
+                GlobalMethod.Color("|    ", ConsoleColor.Green);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" X  ", ConsoleColor.Red);
+                GlobalMethod.Color(" X  ", ConsoleColor.Red);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" 5  ", ConsoleColor.Gray);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" 1  ", ConsoleColor.Gray);
+                GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
+                GlobalMethod.Color("    |", ConsoleColor.Green);
+                // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
+                Console.WriteLine();
+                GlobalMethod.Color("|                                               |     |                                               |", ConsoleColor.Green);
+                Console.WriteLine();
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 4:
+                // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
+                GlobalMethod.Color("|    ", ConsoleColor.Green);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Ka¿dy tego typu element bêdzie mia³ dwie wersje. Pierwsza: " O  ". Druga: "O", gdzie przed jest "{", a po "} ".
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
+                GlobalMethod.Color(" 3  ", ConsoleColor.Gray);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
+                GlobalMethod.Color("    |", ConsoleColor.Green);
+                // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
+                Console.Write("     ");
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                // - - - - - - - - - - - - - - - - - - - - - - - PRAWO:
+                GlobalMethod.Color("|    ", ConsoleColor.Green);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" 5  ", ConsoleColor.Gray);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
+                GlobalMethod.Color("    |", ConsoleColor.Green);
+                // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
+                Console.WriteLine();
+                GlobalMethod.Color("|                                               |     |                                               |", ConsoleColor.Green);
+                Console.WriteLine();
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 5:
+                // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
+                GlobalMethod.Color("|    ", ConsoleColor.Green);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Ka¿dy tego typu element bêdzie mia³ dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
+                GlobalMethod.Color(" X  ", ConsoleColor.Red);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" 3  ", ConsoleColor.Gray);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
+                GlobalMethod.Color("    |", ConsoleColor.Green);
+                // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
+                Console.Write("     ");
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                // - - - - - - - - - - - - - - - - - - - - - - - PRAWO:
+                GlobalMethod.Color("|    ", ConsoleColor.Green);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" 5  ", ConsoleColor.Gray);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
+                GlobalMethod.Color("    |", ConsoleColor.Green);
+                // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
+                Console.WriteLine();
+                GlobalMethod.Color("|                                               |     |                                               |", ConsoleColor.Green);
+                Console.WriteLine();
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 6:
+                // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
+                GlobalMethod.Color("|    ", ConsoleColor.Green);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Ka¿dy tego typu element bêdzie mia³ dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
+                GlobalMethod.Color(" X  ", ConsoleColor.Red);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" 3  ", ConsoleColor.Gray);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
+                GlobalMethod.Color("    |", ConsoleColor.Green);
+                // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
+                Console.Write("     ");
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                // - - - - - - - - - - - - - - - - - - - - - - - PRAWO:
+                GlobalMethod.Color("|    ", ConsoleColor.Green);
+                // - - - - - - - - - - - - - - - - - - - - - ELSE IF: (Druga opcja, Pierwsza: to co zwykle [jedna linia "GlobalMethod()"])
+                GlobalMethod.Color("{", ConsoleColor.White);
+                GlobalMethod.Color("~", ConsoleColor.Blue);
+                GlobalMethod.Color("} ", ConsoleColor.White);
+                // - - - - - - - - - - - - - - - - - - - - -
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" 5  ", ConsoleColor.Gray);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
+                GlobalMethod.Color("    |", ConsoleColor.Green);
+                // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
+                Console.WriteLine();
+                GlobalMethod.Color("|                                               |     |                                               |", ConsoleColor.Green);
+                Console.WriteLine();
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 7:
+                // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
+                GlobalMethod.Color("|    ", ConsoleColor.Green);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Ka¿dy tego typu element bêdzie mia³ dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
+                GlobalMethod.Color(" X  ", ConsoleColor.Red);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
+                GlobalMethod.Color("    |", ConsoleColor.Green);
+                // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
+                Console.Write("     ");
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                // - - - - - - - - - - - - - - - - - - - - - - - PRAWO:
+                GlobalMethod.Color("|    ", ConsoleColor.Green);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" 2  ", ConsoleColor.Gray);
+                GlobalMethod.Color(" 2  ", ConsoleColor.Gray);
+                GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
+                GlobalMethod.Color("    |", ConsoleColor.Green);
+                // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
+                Console.WriteLine();
+                GlobalMethod.Color("|                                               |     |                                               |", ConsoleColor.Green);
+                Console.WriteLine();
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 8:
+                // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
+                GlobalMethod.Color("|    ", ConsoleColor.Green);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Ka¿dy tego typu element bêdzie mia³ dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
+                GlobalMethod.Color(" 4  ", ConsoleColor.Gray);
+                GlobalMethod.Color(" 4  ", ConsoleColor.Gray);
+                GlobalMethod.Color(" 4  ", ConsoleColor.Gray);
+                GlobalMethod.Color(" 4  ", ConsoleColor.Gray);
+                GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
+                GlobalMethod.Color("    |", ConsoleColor.Green);
+                // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
+                Console.Write("     ");
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                // - - - - - - - - - - - - - - - - - - - - - - - PRAWO:
+                GlobalMethod.Color("|    ", ConsoleColor.Green);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
+                GlobalMethod.Color("    |", ConsoleColor.Green);
+                // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
+                Console.WriteLine();
+                GlobalMethod.Color("|                                               |     |                                               |", ConsoleColor.Green);
+                Console.WriteLine();
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 9:
+                // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
+                GlobalMethod.Color("|    ", ConsoleColor.Green);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Ka¿dy tego typu element bêdzie mia³ dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
+                GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
+                GlobalMethod.Color("    |", ConsoleColor.Green);
+                // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
+                Console.Write("     ");
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                // - - - - - - - - - - - - - - - - - - - - - - - PRAWO:
+                GlobalMethod.Color("|    ", ConsoleColor.Green);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
+                GlobalMethod.Color("    |", ConsoleColor.Green);
+                // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
+                Console.WriteLine();
+                GlobalMethod.Color("|                                               |     |                                               |", ConsoleColor.Green);
+                Console.WriteLine();
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 10:
+                // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
+                GlobalMethod.Color("|    ", ConsoleColor.Green);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Ka¿dy tego typu element bêdzie mia³ dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
+                GlobalMethod.Color("    |", ConsoleColor.Green);
+                // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
+                Console.Write("     ");
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                // - - - - - - - - - - - - - - - - - - - - - - - PRAWO:
+                GlobalMethod.Color("|    ", ConsoleColor.Green);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
+                GlobalMethod.Color(" ~ ", ConsoleColor.Blue);
+                GlobalMethod.Color("    |", ConsoleColor.Green);
+                // - - - - - - - - - - - - - - - - - - - - - - - DODATEK:
+                Console.WriteLine();
+                GlobalMethod.Color("|                                               |     |                                               |", ConsoleColor.Green);
+                Console.WriteLine();
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                GlobalMethod.Color("|_______________________________________________|     |_______________________________________________|", ConsoleColor.Green);
+            }
 
 
             //"\n _______________________________________________ " + "     " + " _______________________________________________ " +

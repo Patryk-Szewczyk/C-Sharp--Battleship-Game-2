@@ -13,7 +13,7 @@ namespace Page_Menu {
         public static bool PLAY_menu = false;
         public static bool PLAY_credits = false;
         public static bool isMenu = true;
-        public static bool isCorrectSign = false;
+        public static bool isCorrSign = false;
         public static string[] buttons = { "PVC Mode", "Instruction", "Ranking", "Options", "Credits", "Exit" };
         public static int buttNum = buttons.Length;   // Zawsze ostatni, bo chcê mieæ kursor na górze!
         public static void Menu() {
@@ -52,35 +52,35 @@ namespace Page_Menu {
                         Console.WriteLine("  " + buttons[i]);
                     }
                 }
-                while (isCorrectSign == false)  {
+                while (isCorrSign == false)  {
                     corr_key = Console.ReadKey(true);
                     if (corr_key.Key == System.ConsoleKey.W || corr_key.Key == System.ConsoleKey.S || corr_key.Key == System.ConsoleKey.UpArrow || corr_key.Key == System.ConsoleKey.DownArrow || corr_key.Key == System.ConsoleKey.Enter) {
-                        isCorrectSign = true;
+                        isCorrSign = true;
                         key = corr_key.Key;
                     }
                 }
-                isCorrectSign = false;
+                isCorrSign = false;
                 if (key == System.ConsoleKey.Enter) {
                     isMenu = false;
                     switch (buttNum) {
                         case 6:
-                            PVC.isPVCLoop = true;
+                            PVC.isPVC = true;
                             pvc.RenderPage();
                             break;
                         case 5:
-                            Instructions.isInstructionLoop = true;
+                            Instructions.isInstruction = true;
                             instruction.RenderPage();
                             break;
                         case 4:
-                            Ranking.isRankingLoop = true;
+                            Ranking.isRanking = true;
                             ranking.RenderPage();
                             break;
                         case 3:
-                            Options.isOptionsLoop = true;
+                            Options.isOptions = true;
                             options.RenderPage();
                             break;
                         case 2:
-                            Credits.isCreditsLoop = true;
+                            Credits.isCredits = true;
                             credits.RenderPage();
                             break;
                         case 1:

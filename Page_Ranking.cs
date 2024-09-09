@@ -4,15 +4,15 @@ using Page_Menu;
 
 namespace Page_Ranking {
     public class Ranking {
-        public static bool isRankingLoop = true;
-        public static bool isCorrectSign = false;
+        public static bool isRanking = true;
+        public static bool isCorrSign = false;
         public static string[] rankingButtons = { "PVC Mode" };
         public static int rankingButtNum = rankingButtons.Length;
         public static string playersLimit_OPTION = "no-limit";   // "no-limit" / "limit"
         public void RenderPage() {
             System.ConsoleKey key = System.ConsoleKey.Backspace;   // Dowolny niew³aœciwy klawisz.
             System.ConsoleKeyInfo corr_key;
-            while (isRankingLoop == true) {
+            while (isRanking == true) {
                 Console.Clear();
                 Console.WriteLine("BBBBBBB     BBBB    BBBB  BB  BB    BB  BB  BBBB  BB   BBBBBB ");
                 Console.WriteLine("BB    BB   BB  BB   BB BB BB  BB   BB   BB  BB BB BB  BB    BB");
@@ -36,21 +36,21 @@ namespace Page_Ranking {
                         pvc.Scores_PVC();
                         break;
                 }
-                while (isCorrectSign == false) {   // Pêtla ta uniemo¿liwia prze³adowanie strony kiedy kliknie siê niew³aœciwy klawisz.
+                while (isCorrSign == false) {   // Pêtla ta uniemo¿liwia prze³adowanie strony kiedy kliknie siê niew³aœciwy klawisz.
                     corr_key = Console.ReadKey(true);
                     if (corr_key.Key == System.ConsoleKey.W || corr_key.Key == System.ConsoleKey.S || corr_key.Key == System.ConsoleKey.UpArrow || corr_key.Key == System.ConsoleKey.DownArrow || corr_key.Key == System.ConsoleKey.Backspace) {
-                        isCorrectSign = true;
+                        isCorrSign = true;
                         key = corr_key.Key;
                     }
                 }
-                isCorrectSign = false;
+                isCorrSign = false;
                 // Poruszanie siê po przyciskach (obliczenia):
                 if (key == System.ConsoleKey.UpArrow || key == System.ConsoleKey.W) {
                     rankingButtNum = (rankingButtNum < rankingButtons.Length) ? rankingButtNum += 1 : rankingButtNum;
                 } else if (key == System.ConsoleKey.DownArrow || key == System.ConsoleKey.S) {
                     rankingButtNum = (rankingButtNum > 1) ? rankingButtNum -= 1 : rankingButtNum;
                 } else if (key == System.ConsoleKey.Backspace) {
-                    isRankingLoop = false;
+                    isRanking = false;
                     MenuPage.isMenu = true;
                     MenuPage.Menu();
                 }

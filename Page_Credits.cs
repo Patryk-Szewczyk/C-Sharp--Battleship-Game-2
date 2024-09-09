@@ -5,8 +5,8 @@ using Page_Menu;
 
 namespace Page_Credits {
     public class Credits {
-        public static bool isCreditsLoop = true;
-        public static bool isCorrectSign = false;
+        public static bool isCredits = true;
+        public static bool isCorrSign = false;
         public void RenderPage() {
             if (MenuPage.PLAY_menu == true && MenuPage.PLAY_credits == false) {
                 MenuPage.currSound.Stop();
@@ -18,7 +18,7 @@ namespace Page_Credits {
             }
 
             System.ConsoleKeyInfo key;
-            while (isCreditsLoop == true) {
+            while (isCredits == true) {
                 Console.Clear();
                 Console.WriteLine(" BBBBBB     BBBB    BBBBBBBB  BBBBBBBB     BBBBBBB  BBBBBBB   BBBBBBBB  BBBBBB    BB  BBBBBBBB   BBBBBBB");
                 Console.WriteLine("BB    BB   BB  BB   BB BB BB  BB          BB        BB    BB  BB        BB   BB   BB     BB     BB      ");
@@ -43,22 +43,21 @@ namespace Page_Credits {
                     };
                     process.Start();
                 }
-                /*else
-                {
+                else {
                     Console.WriteLine("Plik credits.html nie zosta³ znaleziony.");
-                }*/
+                }
                 
                 // Pêtla ta uniemo¿liwia prze³adowanie strony kiedy kliknie siê niew³aœciwy klawisz.
-                while (isCorrectSign == false) {
+                while (isCorrSign == false) {
                     key = System.Console.ReadKey(true);
                     if (key.Key == System.ConsoleKey.Backspace) {
-                        isCorrectSign = true;
-                        isCreditsLoop = false;
+                        isCorrSign = true;
+                        isCredits = false;
                         MenuPage.isMenu = true;
                         MenuPage.Menu();
                     }
                 }
-                isCorrectSign = false;
+                isCorrSign = false;
             }
         }
     }

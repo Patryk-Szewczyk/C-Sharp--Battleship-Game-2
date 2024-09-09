@@ -5,8 +5,8 @@ using Page_Ranking;
 
 namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM ZAPISUJESZ I ZAMIENIASZ DANE ODNOŒNIE OPCJI!!!
     public class Options {
-        public static bool isOptionsLoop = true;
-        public static bool isCorrectSign = false;
+        public static bool isOptions = true;
+        public static bool isCorrSign = false;
         public static string[] buttons = { 
             "Music:                                 [ON]              ON = [E], OFF = [D]",
             "Sound effects:                         [ON]              ON = [E], OFF = [D]",
@@ -18,7 +18,7 @@ namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM
         public static int buttNum = buttons.Length;
         public void RenderPage() {
             System.ConsoleKey key = System.ConsoleKey.Backspace;   // Dowolny niew³aœciwy klawisz.
-            while (isOptionsLoop == true) {
+            while (isOptions == true) {
                 Console.Clear();
                 Console.WriteLine(" BBBBBB   BBBBBBB   BBBBBBBB  BB   BBBBBB   BBBB  BB   BBBBBBB");
                 Console.WriteLine("BB    BB  BB    BB     BB     BB  BB    BB  BB BB BB  BB      ");
@@ -42,21 +42,22 @@ namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM
                 {
                     // INFORMACJE O STANIE POSZCZEGÓLNYCH OPCJI, np. Music: OFF
                 }*/
-                while (isCorrectSign == false) {  // Pêtla ta uniemo¿liwia prze³adowanie strony kiedy kliknie siê niew³aœciwy klawisz.
+
+                while (isCorrSign == false) {  // Pêtla ta uniemo¿liwia prze³adowanie strony kiedy kliknie siê niew³aœciwy klawisz.
                     System.ConsoleKeyInfo corr_key = Console.ReadKey(true);
                     if (corr_key.Key == System.ConsoleKey.W || corr_key.Key == System.ConsoleKey.S || corr_key.Key == System.ConsoleKey.UpArrow || corr_key.Key == System.ConsoleKey.DownArrow || corr_key.Key == System.ConsoleKey.Backspace) {
-                        isCorrectSign = true;
+                        isCorrSign = true;
                         key = corr_key.Key;
                     }
                 }
-                isCorrectSign = false;
+                isCorrSign = false;
                 // Poruszanie siê po przyciskach (obliczenia):
                 if (key == System.ConsoleKey.UpArrow || key == System.ConsoleKey.W) {
                     buttNum = (buttNum < buttons.Length) ? buttNum += 1 : buttNum;
                 } else if (key == System.ConsoleKey.DownArrow || key == System.ConsoleKey.S) {
                     buttNum = (buttNum > 1) ? buttNum -= 1 : buttNum;
                 } else if (key == System.ConsoleKey.Backspace) {
-                    isOptionsLoop = false;
+                    isOptions = false;
                     MenuPage.isMenu = true;
                     MenuPage.Menu();
                 }

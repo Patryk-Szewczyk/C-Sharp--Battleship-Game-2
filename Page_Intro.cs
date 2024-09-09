@@ -5,6 +5,32 @@ using System.Collections.Generic;
 namespace Page_Intro {
     public class IntroPage {
         public static void Intro() {
+            IntroPage.RenderPage();
+
+
+            // Test losowania statków:
+            List<int> plansza = new List<int>();
+            List<int> statki = new List<int> { 2, 2, 2, 3, 3, 4, 5 };   // Limit 10 statków o długości 10
+            List<List<int>> listaStatkow = new List<List<int>>();
+            for (int i = 0; i < 100; i++) {
+                plansza.Add(i);
+            }
+            Console.Clear();
+            Console.WriteLine("Loading...");
+            listaStatkow = GlobalMethod.RandomShips(plansza, GlobalMethod.PrepareShips(statki));
+            Console.Clear();
+            Console.WriteLine("\n\n");
+            for (int i = 0; i < listaStatkow.Count; i++) {
+                for (int j = 0; j < listaStatkow[i].Count; j++) {
+                    Console.Write(listaStatkow[i][j] + " ");
+                }
+                Console.WriteLine();
+            }
+
+
+            IntroPage.MainLoop();
+        }
+        private static void RenderPage() {
             Console.WriteLine("\nBattleship 2 AI [Version 1.00]" +
                 "\nCopyright (c) Patryk Szewczyk 20841 | 2 INF, AHNS. All rights reserved." +
                 "\n\nBattleship Game is simple game which depend of sunking ships between players." +
@@ -19,30 +45,8 @@ namespace Page_Intro {
                 "\nselect a browser. Additionally maximize your browser window." +
                 "\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" +
                 "\n\nTo continue, click ENTER key:\n");
-
-
-
-            // Test losowania statków:
-            List<int> plansza = new List<int>();
-            List<int> statki = new List<int> { 2, 2, 2, 3, 3, 4, 5 };   // Limit 10 statków o długości 10
-            List<List<int>> listaStatkow = new List<List<int>>();
-            for (int i = 0; i < 100; i++) {
-                plansza.Add(i);
-            }
-            Console.Clear();
-            Console.WriteLine("Loading...");
-            listaStatkow = GlobalMethod.SetShips(plansza, statki);
-            Console.Clear();
-            Console.WriteLine("\n\n");
-            for (int i = 0; i < listaStatkow.Count; i++) {
-                for (int j = 0; j < listaStatkow[i].Count; j++) {
-                    Console.Write(listaStatkow[i][j] + " ");
-                }
-                Console.WriteLine();
-            }
-
-
-
+        }
+        private static void MainLoop() {
             System.ConsoleKeyInfo corrKey;
             bool isEnter = false;
             while (!isEnter) {

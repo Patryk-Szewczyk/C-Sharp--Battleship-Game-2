@@ -1,14 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Library_GlobalMethods {
     public class GlobalMethod {   // Metody o zasięgu globalnym, które mają niezmiennną formę i mogą przydać się wszędzie.
+        public static void RenderDottedLine() {
+            Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
+        }
         public static void Color(string text, ConsoleColor color) {   // Kolorowy tekst
             Console.ForegroundColor = color;
             Console.Write(text);
             Console.ResetColor();
         }
-        public static int SearchRemA(List<int> array, int target) {   // Szukanie wartości i jej indeksu (lokalizacji) w tablicy:
+        public static int SearchRemoveAt(List<int> array, int target) {   // Szukanie wartości i jej indeksu (lokalizacji) w tablicy:
             int result = -1;   // W kontekście losowania statków dla komputera, oznacza to kolizję pola począttkowego nowego statku z już istniejącym.
             for (int i = 0; i < array.Count; i++) {
                 if (target == array[i]) {
@@ -18,16 +22,54 @@ namespace Library_GlobalMethods {
             }
             return result;
         }
-        public static List<List<int>> SetShips(List<int> array, List<int> fleet) {
-            // Deklaracja dopowiedniej grupy statków: Dzięki liście dynamicznej mogę tworzyć dowolnych rozmiarów grupę statków, kontrolowaną z poziomu przekazywania uprzednio ustalonych parametrów do metody.
+        public class Board {
+            public static void Top() {
+                Color(" _______________________________________________       _______________________________________________ ", ConsoleColor.Green);
+                Console.WriteLine();
+            }
+            public static void Bottom() {
+                Color("|_______________________________________________|     |_______________________________________________|", ConsoleColor.Green);
+            }
+            public static void SpaceVertical() {
+                Color("|                                               |     |                                               |", ConsoleColor.Green);
+                Console.WriteLine();
+            }
+            public static void SpaceHorizontal() {
+                Console.Write("     ");
+            }
+            public static void Left() {
+                Color("|    ", ConsoleColor.Green);
+            }
+            public static void Right() {
+                Color("    |", ConsoleColor.Green);
+            }
+            public static void Sign(string sign, bool isCursor) {
+                string text = (isCursor) ? sign : " " + sign + "  ";
+                Console.WriteLine(text);
+            }
+            public static void Cursor(string sign) {
+                Console.WriteLine("{");
+                Sign(sign, true);
+                Console.WriteLine("}");
+            }
+            public static void RenderBoard(List<int> board, string mode, string[,] data) {   // 3 parametr jest "jako wzór, zastanów się jak to ogarnąć..."
+                // Algorytm wyświetlający planszę dla instrukcji, ustawiania statków gracza i bitwy.
+            }
+        }
+
+        // Przenieś to do PVC:
+        public static List<List<int>> PrepareShips(List<int> shipsInfo) {
             List<List<int>> shipsList = new List<List<int>>();
-            for (int i = 0; i < fleet.Count; i++) {
+            for (int i = 0; i < shipsInfo.Count; i++) {
                 List<int> ship = new List<int>();
                 shipsList.Add(ship);
-                for (int j = 0; j < fleet[i]; j++) {
+                for (int j = 0; j < shipsInfo[i]; j++) {
                     shipsList[i].Add(i + 1);
                 }
             }
+            return shipsList;
+        }
+        public static List<List<int>> RandomShips(List<int> array, List<List<int>> shipsList) {   // Zrób klasę RandomShips - w której zadeklarujesz zmienne globalne aby później ich już nie deklarować
             bool isCor = false;
             List<int> board = array;
             string dirVal = "";
@@ -45,7 +87,7 @@ namespace Library_GlobalMethods {
                 bottCount = 0;
                 for (int i = 0; i < shipsList.Count; i++) {
                     init = rand.Next(0, board.Count);
-                    rem = GlobalMethod.SearchRemA(board, init);
+                    rem = GlobalMethod.SearchRemoveAt(board, init);
                     if (rem == -1) break;   // Kolizję pola początkowego nowego statku z już istniejącym.
                     board.RemoveAt(rem);
                     dirVal = dirAr[rand.Next(0, dirAr.Length)];
@@ -59,7 +101,7 @@ namespace Library_GlobalMethods {
                     if (shipsList[i].Count > 1) {   // Tworzenie pól długości dla statków powyżej 1 pola długości (2, 3, 4 ...).
                         for (int j = 1 * dirDist; j < shipsList[i].Count * dirDist; j=j+dirDist) {
                             isShip = false;
-                            rem = GlobalMethod.SearchRemA(board, init + j);
+                            rem = GlobalMethod.SearchRemoveAt(board, init + j);
                             if (rem != -1) {   // Jeżeli nie ma kolizji statku
                                 board.RemoveAt(rem);
                                 shipsList[i][j/dirDist] = init + j;
@@ -75,5 +117,8 @@ namespace Library_GlobalMethods {
             }
             return shipsList;
         }
+
+
+        
     }
 }

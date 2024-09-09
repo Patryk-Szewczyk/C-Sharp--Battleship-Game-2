@@ -5,14 +5,14 @@ using System.Collections.Generic;
 
 namespace Page_PVC {
     public class PVC {
-        public static bool isPVCLoop = true;
+        public static bool isPVC = true;
         public static string userName = "";
         public static PVC pagePVC = new PVC();
         public static List<List<string>> playersDetails_PARTS = new List<List<string>>();
         public static string isDeletedDirection = "ABOVE";   // Przy usuwaniu użytkowanika powyżej kursowa i równo z ni trzeba przy wyświetlaniu kursora przesunąć go w dół.
         public static int player_IDX = 0;
         public void RenderPage() {   // Wyświetlenie strony PVC i zarazem panel kontrolny tej strony.
-            bool isCorrectSign = false;   // Zmienna walidacji poprawnego klawisza.
+            bool isCorrSign = false;   // Zmienna walidacji poprawnego klawisza.
             System.ConsoleKeyInfo mainKey = new ConsoleKeyInfo('v', ConsoleKey.V, false, false, false);
             bool isSelectPlayer = false;
             //bool isPVCGame = false;
@@ -23,7 +23,7 @@ namespace Page_PVC {
             player_IDX = 0;
             PVC.userName = playersDetails_PARTS[0][0];
 
-            while (PVC.isPVCLoop == true) {
+            while (PVC.isPVC == true) {
                 if (isSelectPlayer == false) {
                     pagePVC.SelectUserPart(PVC.playersDetails_PARTS, PVC.player_IDX);
                     if (isOption_CREATE == true) {
@@ -43,18 +43,18 @@ namespace Page_PVC {
                     // wyswietlony po metodzie "Console.Clear()", której stan (stan wyświetlacza konsoli) jest zatrzymywany przez "Console.ReadKey()".
                 }
                 // Pętla ta uniemożliwia przeładowanie strony kiedy kliknie się niewłaściwy klawisz.
-                while (isCorrectSign == false) {
+                while (isCorrSign == false) {
                     mainKey = Console.ReadKey(true);
                     if (mainKey.Key == System.ConsoleKey.W || mainKey.Key == System.ConsoleKey.S || mainKey.Key == System.ConsoleKey.D || mainKey.Key == System.ConsoleKey.A || mainKey.Key == System.ConsoleKey.UpArrow || mainKey.Key == System.ConsoleKey.DownArrow || mainKey.Key == System.ConsoleKey.LeftArrow || mainKey.Key == System.ConsoleKey.RightArrow || mainKey.Key == System.ConsoleKey.C || mainKey.Key == System.ConsoleKey.P || mainKey.Key == System.ConsoleKey.Enter || mainKey.Key == System.ConsoleKey.Backspace) {
-                        isCorrectSign = true;
+                        isCorrSign = true;
                     }
                 }
-                isCorrectSign = false;
+                isCorrSign = false;
                 // Akcje na klawisze:
                 isOption_CREATE = (mainKey.Key == System.ConsoleKey.C) ? true : false;
                 isOption_DELETE = (mainKey.Key == System.ConsoleKey.P) ? true : false;
                 if (mainKey.Key == System.ConsoleKey.Backspace) {
-                    PVC.isPVCLoop = false;
+                    PVC.isPVC = false;
                     MenuPage.isMenu = true;
                     isSelectPlayer = false;
                     MenuPage.Menu();
