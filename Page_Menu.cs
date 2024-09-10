@@ -6,103 +6,103 @@ using Page_Credits;
 using Page_PVC;
 using Page_Ranking;
 using Page_Options;
+using Library_GlobalMethods;
 
 namespace Page_Menu {
     public class MenuPage {
         public static SoundPlayer currSound = new SoundPlayer();   // WEè TO SPR”BUJ PRZENIEå∆ DO MENU Z try/catch
         public static bool PLAY_menu = false;
         public static bool PLAY_credits = false;
-        public static bool isMenu = true;
+        public static bool isPage = true;
         public static bool isCorrSign = false;
         public static string[] buttons = { "PVC Mode", "Instruction", "Ranking", "Options", "Credits", "Exit" };
-        public static int buttNum = buttons.Length;   // Zawsze ostatni, bo chcÍ mieÊ kursor na gÛrze!
+        public static int currentButton = buttons.Length;   // Zawsze ostatni, bo chcÍ mieÊ kursor na gÛrze!
         public static void Menu() {
-            PVC pvc = new PVC();
-            Instructions instruction = new Instructions();
-            Ranking ranking = new Ranking();
-            Options options = new Options();
-            Credits credits = new Credits();
-
-            System.ConsoleKey key = System.ConsoleKey.Backspace;   // Dowolny niew≥aúciwy klawisz.
-            System.ConsoleKeyInfo corr_key;
+            Tuple<PVC, Instructions, Ranking, Options, Credits> pages = new Tuple<PVC, Instructions, Ranking, Options, Credits>(
+                new PVC(),
+                new Instructions(),
+                new Ranking(),
+                new Options(),
+                new Credits()
+            );
+            SoundSwitch();
+            System.ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);   // Dowolna niew≥aúciwa wartoúÊ.
+            while (isPage == true) {
+                Console.Clear();
+                RenderTitle();
+                GlobalMethod.RenderButtons(buttons, currentButton);
+                key = LoopCorrectKey(key);   // PÍtla ta uniemoøliwia prze≥adowanie strony kiedy kliknie siÍ niew≥aúciwy klawisz.
+                RenderPage(key, pages);
+                MoveButtons(key);   // Poruszanie siÍ po przyciskach (obliczenia):
+            }
+        }
+        public static void SoundSwitch() {
             if (PLAY_menu == false && PLAY_credits == false) {
-                MenuPage.Sound("Soundtracks/Menu/473915__xhale303__synthwave-loop.wav", true);
+                GlobalMethod.PlaySound("Soundtracks/Menu/473915__xhale303__synthwave-loop.wav", true);
                 PLAY_menu = true;
             } else if (PLAY_menu == false && PLAY_credits == true) {
                 currSound.Stop();
                 PLAY_credits = false;
-                MenuPage.Sound("Soundtracks/Menu/473915__xhale303__synthwave-loop.wav", true);
+                GlobalMethod.PlaySound("Soundtracks/Menu/473915__xhale303__synthwave-loop.wav", true);
                 PLAY_menu = true;
             }
-            while (isMenu == true) {
-                Console.Clear();
-                Console.WriteLine("BBBBBBB     BBBB    BBBBBBBB  BBBBBBBB  BB        BBBBBBBB   BBBBBBB  BB    BB  BB  BBBBBBB      BBBBBB");
-                Console.WriteLine("BB    BB   BB  BB      BB        BB     BB        BB        BB        BB    BB  BB  BB    BB    BB    BB");
-                Console.WriteLine("BB    BB  BB    BB     BB        BB     BB        BB        BB        BB    BB  BB  BB    BB         BB");
-                Console.WriteLine("BBBBBBBB  BBBBBBBB     BB        BB     BB        BBBBBBBB   BBBBBB   BBBBBBBB  BB  BBBBBBB        BBB");
-                Console.WriteLine("BB    BB  BB    BB     BB        BB     BB        BB              BB  BB    BB  BB  BB            BB");
-                Console.WriteLine("BB    BB  BB    BB     BB        BB     BB        BB              BB  BB    BB  BB  BB           BB");
-                Console.WriteLine("BBBBBBB   BB    BB     BB        BB     BBBBBBBB  BBBBBBBB  BBBBBBB   BB    BB  BB  BB          BBBBBBBB");
-                Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
-                Console.WriteLine("MENU: | Moving: arrows/[W][S] | Click = ENTER\n");
-                for (int i = 0, j = buttons.Length; i < buttons.Length; i++, j--) {
-                    if (j == buttNum) {
-                        Console.WriteLine("> " + buttons[i]);
-                    } else {
-                        Console.WriteLine("  " + buttons[i]);
-                    }
+        }
+        public static void RenderTitle() {
+            Console.WriteLine("BBBBBBB     BBBB    BBBBBBBB  BBBBBBBB  BB        BBBBBBBB   BBBBBBB  BB    BB  BB  BBBBBBB      BBBBBB");
+            Console.WriteLine("BB    BB   BB  BB      BB        BB     BB        BB        BB        BB    BB  BB  BB    BB    BB    BB");
+            Console.WriteLine("BB    BB  BB    BB     BB        BB     BB        BB        BB        BB    BB  BB  BB    BB         BB");
+            Console.WriteLine("BBBBBBBB  BBBBBBBB     BB        BB     BB        BBBBBBBB   BBBBBB   BBBBBBBB  BB  BBBBBBB        BBB");
+            Console.WriteLine("BB    BB  BB    BB     BB        BB     BB        BB              BB  BB    BB  BB  BB            BB");
+            Console.WriteLine("BB    BB  BB    BB     BB        BB     BB        BB              BB  BB    BB  BB  BB           BB");
+            Console.WriteLine("BBBBBBB   BB    BB     BB        BB     BBBBBBBB  BBBBBBBB  BBBBBBB   BB    BB  BB  BB          BBBBBBBB");
+            GlobalMethod.RenderDottedLine(105);
+            Console.WriteLine("MENU: | Moving: arrows/[W][S] | Click = ENTER\n");
+        }
+        public static System.ConsoleKeyInfo LoopCorrectKey(System.ConsoleKeyInfo key) {
+            while (isCorrSign == false) {
+                key = Console.ReadKey(true);
+                if (key.Key == System.ConsoleKey.W || key.Key == System.ConsoleKey.S || key.Key == System.ConsoleKey.UpArrow || key.Key == System.ConsoleKey.DownArrow || key.Key == System.ConsoleKey.Enter) {
+                    isCorrSign = true;
                 }
-                while (isCorrSign == false)  {
-                    corr_key = Console.ReadKey(true);
-                    if (corr_key.Key == System.ConsoleKey.W || corr_key.Key == System.ConsoleKey.S || corr_key.Key == System.ConsoleKey.UpArrow || corr_key.Key == System.ConsoleKey.DownArrow || corr_key.Key == System.ConsoleKey.Enter) {
-                        isCorrSign = true;
-                        key = corr_key.Key;
-                    }
-                }
-                isCorrSign = false;
-                if (key == System.ConsoleKey.Enter) {
-                    isMenu = false;
-                    switch (buttNum) {
-                        case 6:
-                            PVC.isPVC = true;
-                            pvc.RenderPage();
-                            break;
-                        case 5:
-                            Instructions.isInstruction = true;
-                            instruction.RenderPage();
-                            break;
-                        case 4:
-                            Ranking.isRanking = true;
-                            ranking.RenderPage();
-                            break;
-                        case 3:
-                            Options.isOptions = true;
-                            options.RenderPage();
-                            break;
-                        case 2:
-                            Credits.isCredits = true;
-                            credits.RenderPage();
-                            break;
-                        case 1:
-                            isMenu = false;
-                            break;
-                    }
-                }
-                // Poruszanie siÍ po przyciskach (obliczenia):
-                if (key == System.ConsoleKey.UpArrow || key == System.ConsoleKey.W) {
-                    buttNum = (buttNum < buttons.Length) ? buttNum += 1 : buttNum;
-                } else if (key == System.ConsoleKey.DownArrow || key == System.ConsoleKey.S) {
-                    buttNum = (buttNum > 1) ? buttNum -= 1 : buttNum;
+            }
+            isCorrSign = false;
+            return key;
+        }
+        public static void RenderPage(System.ConsoleKeyInfo key, Tuple<PVC, Instructions, Ranking, Options, Credits> pages) {
+            if (key.Key == System.ConsoleKey.Enter) {
+                isPage = false;
+                switch (currentButton) {
+                    case 6:
+                        PVC.isPage = true;
+                        pages.Item1.RenderPage();
+                        break;
+                    case 5:
+                        Instructions.isPage = true;
+                        pages.Item2.RenderPage();
+                        break;
+                    case 4:
+                        Ranking.isPage = true;
+                        pages.Item3.RenderPage();
+                        break;
+                    case 3:
+                        Options.isPage = true;
+                        pages.Item4.RenderPage();
+                        break;
+                    case 2:
+                        Credits.isPage = true;
+                        pages.Item5.RenderPage();
+                        break;
+                    case 1:
+                        isPage = false;
+                        break;
                 }
             }
         }
-        public static void Sound(string filepath, bool isLoop) {
-            try {   // W przypadku braku úcieøki døwiÍkowej, wyjπtek zostanie z≥apany, przez co program nie zakoÒczy dzia≥ania. 
-                MenuPage.currSound.SoundLocation = filepath;
-                if (isLoop) MenuPage.currSound.PlayLooping();
-                //Console.WriteLine("STAN MUZYKI: Znaleziono\n\n" + filepath);
-            } catch (Exception error) {
-                Console.WriteLine("STAN MUZYKI: Nie znaleziono\n\n" + error);
+        public static void MoveButtons(System.ConsoleKeyInfo key) {
+            if (key.Key == System.ConsoleKey.UpArrow || key.Key == System.ConsoleKey.W) {
+                currentButton = (currentButton < buttons.Length) ? currentButton += 1 : currentButton;
+            } else if (key.Key == System.ConsoleKey.DownArrow || key.Key == System.ConsoleKey.S) {
+                currentButton = (currentButton > 1) ? currentButton -= 1 : currentButton;
             }
         }
     }

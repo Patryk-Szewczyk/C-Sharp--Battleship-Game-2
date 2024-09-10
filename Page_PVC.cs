@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Page_PVC {
     public class PVC {
-        public static bool isPVC = true;
+        public static bool isPage = true;
         public static string userName = "";
         public static PVC pagePVC = new PVC();
         public static List<List<string>> playersDetails_PARTS = new List<List<string>>();
@@ -23,7 +23,7 @@ namespace Page_PVC {
             player_IDX = 0;
             PVC.userName = playersDetails_PARTS[0][0];
 
-            while (PVC.isPVC == true) {
+            while (isPage == true) {
                 if (isSelectPlayer == false) {
                     pagePVC.SelectUserPart(PVC.playersDetails_PARTS, PVC.player_IDX);
                     if (isOption_CREATE == true) {
@@ -54,8 +54,8 @@ namespace Page_PVC {
                 isOption_CREATE = (mainKey.Key == System.ConsoleKey.C) ? true : false;
                 isOption_DELETE = (mainKey.Key == System.ConsoleKey.P) ? true : false;
                 if (mainKey.Key == System.ConsoleKey.Backspace) {
-                    PVC.isPVC = false;
-                    MenuPage.isMenu = true;
+                    isPage = false;
+                    MenuPage.isPage = true;
                     isSelectPlayer = false;
                     MenuPage.Menu();
                 }

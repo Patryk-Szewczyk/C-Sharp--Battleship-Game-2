@@ -1,11 +1,34 @@
-﻿using System;
+﻿using Page_Menu;
+using System;
 using System.Collections.Generic;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Library_GlobalMethods {
     public class GlobalMethod {   // Metody o zasięgu globalnym, które mają niezmiennną formę i mogą przydać się wszędzie.
-        public static void RenderDottedLine() {
-            Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
+        public static void PlaySound(string filepath, bool isLoop) {
+            try {
+                MenuPage.currSound.SoundLocation = filepath;
+                if (isLoop) MenuPage.currSound.PlayLooping();
+                //Console.WriteLine("Music state: Found and active.\n\n" + filepath);
+            }
+            catch (Exception error) {
+                Console.WriteLine("Music state: Not found. Check your filepath.\n\n" + error);
+            }
+        }
+        public static void RenderDottedLine(int length) {
+            string text = "";
+            for (int i = 0; i < length; i=i+2) {
+                text += (i == length - 2) ? "-" : "- "; 
+            }
+            Console.WriteLine("\n" + text + "\n");
+        }
+        public static void RenderButtons(string[] buttons, int currentButton) {
+            for (int i = 0, j = buttons.Length; i < buttons.Length; i++, j--) {
+                if (j == currentButton) {
+                    Console.WriteLine("> " + buttons[i]);
+                } else {
+                    Console.WriteLine("  " + buttons[i]);
+                }
+            }
         }
         public static void Color(string text, ConsoleColor color) {   // Kolorowy tekst
             Console.ForegroundColor = color;
@@ -47,15 +70,18 @@ namespace Library_GlobalMethods {
                 string text = (isCursor) ? sign : " " + sign + "  ";
                 Console.WriteLine(text);
             }
-            public static void Cursor(string sign) {
+            public static void Cursor(string sign, bool isCursor) {
                 Console.WriteLine("{");
-                Sign(sign, true);
+                Sign(sign, isCursor);
                 Console.WriteLine("}");
+                isCursor = false;
             }
-            public static void RenderBoard(List<int> board, string mode, string[,] data) {   // 3 parametr jest "jako wzór, zastanów się jak to ogarnąć..."
+            public static void Render(List<int> board, string mode, string[,] data) {   // 3 parametr jest "jako wzór, zastanów się jak to ogarnąć..."
                 // Algorytm wyświetlający planszę dla instrukcji, ustawiania statków gracza i bitwy.
             }
         }
+
+
 
         // Przenieś to do PVC:
         public static List<List<int>> PrepareShips(List<int> shipsInfo) {
@@ -116,9 +142,9 @@ namespace Library_GlobalMethods {
                 }
             }
             return shipsList;
-        }
-
-
-        
+        } 
+    
+    
+    
     }
 }

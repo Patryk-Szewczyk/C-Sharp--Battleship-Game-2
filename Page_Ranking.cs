@@ -4,7 +4,7 @@ using Page_Menu;
 
 namespace Page_Ranking {
     public class Ranking {
-        public static bool isRanking = true;
+        public static bool isPage = true;
         public static bool isCorrSign = false;
         public static string[] rankingButtons = { "PVC Mode" };
         public static int rankingButtNum = rankingButtons.Length;
@@ -12,7 +12,7 @@ namespace Page_Ranking {
         public void RenderPage() {
             System.ConsoleKey key = System.ConsoleKey.Backspace;   // Dowolny niew³aœciwy klawisz.
             System.ConsoleKeyInfo corr_key;
-            while (isRanking == true) {
+            while (isPage == true) {
                 Console.Clear();
                 Console.WriteLine("BBBBBBB     BBBB    BBBB  BB  BB    BB  BB  BBBB  BB   BBBBBB ");
                 Console.WriteLine("BB    BB   BB  BB   BB BB BB  BB   BB   BB  BB BB BB  BB    BB");
@@ -50,8 +50,8 @@ namespace Page_Ranking {
                 } else if (key == System.ConsoleKey.DownArrow || key == System.ConsoleKey.S) {
                     rankingButtNum = (rankingButtNum > 1) ? rankingButtNum -= 1 : rankingButtNum;
                 } else if (key == System.ConsoleKey.Backspace) {
-                    isRanking = false;
-                    MenuPage.isMenu = true;
+                    isPage = false;
+                    MenuPage.isPage = true;
                     MenuPage.Menu();
                 }
             }

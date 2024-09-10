@@ -5,19 +5,19 @@ using Library_GlobalMethods;
 namespace Page_Instructions {
     public class Instructions {
         // public static GlobalMethod globalMethod = new GlobalMethod();
-        public static bool isInstruction = true;
+        public static bool isPage = true;
         public static bool isCorrSign = false;
-        public static string[] instructionButtons = { "Game", "Ships", "Board"};
-        public static int instructionButtNum = instructionButtons.Length;
+        public static string[] buttons = { "Game", "Ships", "Board"};
+        public static int currentButton = buttons.Length;
         public void RenderPage() {
-            System.ConsoleKey key = System.ConsoleKey.Backspace;   // Dowolny niew³aœciwy klawisz.
-            System.ConsoleKeyInfo corr_key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false); ;   // Dowolna niew³aœciwa wartoœæ.
-            while (isInstruction == true) {
+            System.ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);   // Dowolna niew³aœciwa wartoœæ.
+            while (isPage == true) {
                 Console.Clear();
                 RenderTitle();
-                RenderButtons();
-                RenderOption.RenderInfo(instructionButtNum);
-                key = LoopCorrectKey(key, corr_key);   // Pêtla ta uniemo¿liwia prze³adowanie strony kiedy kliknie siê niew³aœciwy klawisz.
+                GlobalMethod.RenderButtons(buttons, currentButton);
+                GlobalMethod.RenderDottedLine(97);
+                RenderOption.RenderInfo(currentButton);
+                key = LoopCorrectKey(key);   // Pêtla ta uniemo¿liwia prze³adowanie strony kiedy kliknie siê niew³aœciwy klawisz.
                 MoveButtons(key);   // Poruszanie siê po przyciskach (obliczenia).
             }
         }
@@ -29,40 +29,31 @@ namespace Page_Instructions {
             Console.WriteLine("BB  BB BB BB        BB     BB     BB    BB  BB    BB  BB           BB     BB  BB    BB  BB BB BB");
             Console.WriteLine("BB  BB BB BB        BB     BB     BB    BB  BB    BB  BB           BB     BB  BB    BB  BB BB BB");
             Console.WriteLine("BB  BB  BBBB  BBBBBBB      BB     BB    BB   BBBBBB    BBBBBBB     BB     BB   BBBBBB   BB  BBBB");
-            GlobalMethod.RenderDottedLine();
+            GlobalMethod.RenderDottedLine(97);
             Console.WriteLine("INSTRUCTION: | Moving: arrows/[W][S] | Back to menu: [Backspace]\n");
         }
-        public static void RenderButtons() {
-            for (int i = 0, j = instructionButtons.Length; i < instructionButtons.Length; i++, j--) {
-                if (j == instructionButtNum) {
-                    Console.WriteLine("> " + instructionButtons[i]);
-                } else {
-                    Console.WriteLine("  " + instructionButtons[i]);
-                }
-            }
-            GlobalMethod.RenderDottedLine();
-        }
-        public static System.ConsoleKey LoopCorrectKey(System.ConsoleKey key, System.ConsoleKeyInfo corr_key) {
+        public static System.ConsoleKeyInfo LoopCorrectKey(System.ConsoleKeyInfo key) {
             while (isCorrSign == false) {   // Pêtla ta uniemo¿liwia prze³adowanie strony kiedy kliknie siê niew³aœciwy klawisz.
-                corr_key = System.Console.ReadKey(true);
-                if (corr_key.Key == System.ConsoleKey.W || corr_key.Key == System.ConsoleKey.S || corr_key.Key == System.ConsoleKey.UpArrow || corr_key.Key == System.ConsoleKey.DownArrow || corr_key.Key == System.ConsoleKey.Backspace) {
+                key = System.Console.ReadKey(true);
+                if (key.Key == System.ConsoleKey.W || key.Key == System.ConsoleKey.S || key.Key == System.ConsoleKey.UpArrow || key.Key == System.ConsoleKey.DownArrow || key.Key == System.ConsoleKey.Backspace) {
                     isCorrSign = true;
-                    key = corr_key.Key;
                 }
             }
             isCorrSign = false;
+            if (key.Key == System.ConsoleKey.Backspace) MenuReturn();
             return key;
         }
-        public static void MoveButtons(System.ConsoleKey key) {
-            if (key == System.ConsoleKey.UpArrow || key == System.ConsoleKey.W) {
-                instructionButtNum = (instructionButtNum < instructionButtons.Length) ? instructionButtNum += 1 : instructionButtNum;
-            } else if (key == System.ConsoleKey.DownArrow || key == System.ConsoleKey.S) {
-                instructionButtNum = (instructionButtNum > 1) ? instructionButtNum -= 1 : instructionButtNum;
-            } else if (key == System.ConsoleKey.Backspace) {
-                isInstruction = false;
-                MenuPage.isMenu = true;
-                MenuPage.Menu();
+        public static void MoveButtons(System.ConsoleKeyInfo key) {
+            if (key.Key == System.ConsoleKey.UpArrow || key.Key == System.ConsoleKey.W) {
+                currentButton = (currentButton < buttons.Length) ? currentButton += 1 : currentButton;
+            } else if (key.Key == System.ConsoleKey.DownArrow || key.Key == System.ConsoleKey.S) {
+                currentButton = (currentButton > 1) ? currentButton -= 1 : currentButton;
             }
+        }
+        public static void MenuReturn() {
+            isPage = false;
+            MenuPage.isPage = true;
+            MenuPage.Menu();
         }
         internal class RenderOption {
             internal static void RenderInfo(int option) {   // Dlaczego "internal"? Poniewa¿ chcê ograniczyæ wykonywanie tej metody i innych w tej klasie do wy³¹cznie tego "namespace" (przestrzeñ nazw) w którym siê znajduje ("Page_Instructions"), aby nie wykonaæ jej przypadkiem w innych namespacach z plików do³¹czonych za pomoc¹ s³owa kluczowego "using". Mo¿na siê sprzeczaæ, ¿e jest to niepotrzebne, gdy¿ klasa ma ustawiony modyfikator dostêpu "internal", ale dla ostro¿noœci i czytelnoœci kodu lepiej trzymaæ siê estetyki.
@@ -481,32 +472,31 @@ namespace Page_Instructions {
                 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                 GlobalMethod.Color("|_______________________________________________|     |_______________________________________________|", ConsoleColor.Green);
             }
-
-
-            //"\n _______________________________________________ " + "     " + " _______________________________________________ " +
-            //"\n|                                               |" + "     " + "|                                               |" +
-            //"\n|                                               |" + "     " + "|                                               |" +
-            //"\n|     O   ~   ~   ~   ~   ~   ~   O   ~   ~     |" + "     " + "|     ~   ~   ~   ~   ~   O   5   O   ~   ~     |" +
-            //"\n|                                               |" + "     " + "|                                               |" +
-            //"\n|     ~   ~   ~   ~   ~   O   2   2   O   ~     |" + "     " + "|     ~   O   ~   ~   ~   ~   5   ~   ~   ~     |" +
-            //"\n|                                               |" + "     " + "|                                               |" +
-            //"\n|     ~   ~   ~   O   ~   ~   ~   ~   ~   ~     |" + "     " + "|     ~   ~   ~   ~   ~   ~   5   ~   1   ~     |" +
-            //"\n|                                               |" + "     " + "|                                               |" +
-            //"\n|     ~   ~   O   3   ~   ~   ~   O   ~   ~     |" + "     " + "|     ~   ~   ~   ~   ~   ~   5   ~   ~   ~     |" +
-            //"\n|                                               |" + "     " + "|                                               |" +
-            //"\n|     ~   ~   ~   3   ~   ~   ~   O   ~   ~     |" + "     " + "|     ~   ~   O   ~   ~   ~   5   ~   ~   ~     |" +
-            //"\n|                                               |" + "     " + "|                                               |" +
-            //"\n|     ~   X   ~   3   ~   ~   ~   ~   ~   ~     |" + "     " + "|    {~}  X   X   O   ~   ~   ~   ~   ~   ~     |" +
-            //"\n|                                               |" + "     " + "|                                               |" +
-            //"\n|     ~   X   ~   ~   ~   O   ~   ~   ~   ~     |" + "     " + "|     ~   O   ~   ~   ~   2   2   O   ~   ~     |" +
-            //"\n|                                               |" + "     " + "|                                               |" +
-            //"\n|     ~   ~   ~   ~   O   4   4   4   4   ~     |" + "     " + "|     ~   ~   ~   ~   ~   ~   ~   ~   ~   ~     |" +
-            //"\n|                                               |" + "     " + "|                                               |" +
-            //"\n|     ~   O   ~   ~   ~   ~   ~   ~   ~   ~     |" + "     " + "|     ~   ~   ~   ~   ~   ~   O   ~   ~   ~     |" +
-            //"\n|                                               |" + "     " + "|                                               |" +
-            //"\n|     ~   ~   ~   ~   ~   ~   ~   ~   ~   ~     |" + "     " + "|     ~   ~   ~   ~   ~   ~   ~   ~   ~   ~     |" +
-            //"\n|                                               |" + "     " + "|                                               |" +
-            //"\n|_______________________________________________|" + "     " + "|_______________________________________________|");
         }
     }
 }
+
+//"\n _______________________________________________ " + "     " + " _______________________________________________ " +
+//"\n|                                               |" + "     " + "|                                               |" +
+//"\n|                                               |" + "     " + "|                                               |" +
+//"\n|     O   ~   ~   ~   ~   ~   ~   O   ~   ~     |" + "     " + "|     ~   ~   ~   ~   ~   O   5   O   ~   ~     |" +
+//"\n|                                               |" + "     " + "|                                               |" +
+//"\n|     ~   ~   ~   ~   ~   O   2   2   O   ~     |" + "     " + "|     ~   O   ~   ~   ~   ~   5   ~   ~   ~     |" +
+//"\n|                                               |" + "     " + "|                                               |" +
+//"\n|     ~   ~   ~   O   ~   ~   ~   ~   ~   ~     |" + "     " + "|     ~   ~   ~   ~   ~   ~   5   ~   1   ~     |" +
+//"\n|                                               |" + "     " + "|                                               |" +
+//"\n|     ~   ~   O   3   ~   ~   ~   O   ~   ~     |" + "     " + "|     ~   ~   ~   ~   ~   ~   5   ~   ~   ~     |" +
+//"\n|                                               |" + "     " + "|                                               |" +
+//"\n|     ~   ~   ~   3   ~   ~   ~   O   ~   ~     |" + "     " + "|     ~   ~   O   ~   ~   ~   5   ~   ~   ~     |" +
+//"\n|                                               |" + "     " + "|                                               |" +
+//"\n|     ~   X   ~   3   ~   ~   ~   ~   ~   ~     |" + "     " + "|    {~}  X   X   O   ~   ~   ~   ~   ~   ~     |" +
+//"\n|                                               |" + "     " + "|                                               |" +
+//"\n|     ~   X   ~   ~   ~   O   ~   ~   ~   ~     |" + "     " + "|     ~   O   ~   ~   ~   2   2   O   ~   ~     |" +
+//"\n|                                               |" + "     " + "|                                               |" +
+//"\n|     ~   ~   ~   ~   O   4   4   4   4   ~     |" + "     " + "|     ~   ~   ~   ~   ~   ~   ~   ~   ~   ~     |" +
+//"\n|                                               |" + "     " + "|                                               |" +
+//"\n|     ~   O   ~   ~   ~   ~   ~   ~   ~   ~     |" + "     " + "|     ~   ~   ~   ~   ~   ~   O   ~   ~   ~     |" +
+//"\n|                                               |" + "     " + "|                                               |" +
+//"\n|     ~   ~   ~   ~   ~   ~   ~   ~   ~   ~     |" + "     " + "|     ~   ~   ~   ~   ~   ~   ~   ~   ~   ~     |" +
+//"\n|                                               |" + "     " + "|                                               |" +
+//"\n|_______________________________________________|" + "     " + "|_______________________________________________|");

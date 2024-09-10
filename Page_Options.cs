@@ -5,7 +5,7 @@ using Page_Ranking;
 
 namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM ZAPISUJESZ I ZAMIENIASZ DANE ODNOŒNIE OPCJI!!!
     public class Options {
-        public static bool isOptions = true;
+        public static bool isPage = true;
         public static bool isCorrSign = false;
         public static string[] buttons = { 
             "Music:                                 [ON]              ON = [E], OFF = [D]",
@@ -18,7 +18,7 @@ namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM
         public static int buttNum = buttons.Length;
         public void RenderPage() {
             System.ConsoleKey key = System.ConsoleKey.Backspace;   // Dowolny niew³aœciwy klawisz.
-            while (isOptions == true) {
+            while (isPage == true) {
                 Console.Clear();
                 Console.WriteLine(" BBBBBB   BBBBBBB   BBBBBBBB  BB   BBBBBB   BBBB  BB   BBBBBBB");
                 Console.WriteLine("BB    BB  BB    BB     BB     BB  BB    BB  BB BB BB  BB      ");
@@ -57,8 +57,8 @@ namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM
                 } else if (key == System.ConsoleKey.DownArrow || key == System.ConsoleKey.S) {
                     buttNum = (buttNum > 1) ? buttNum -= 1 : buttNum;
                 } else if (key == System.ConsoleKey.Backspace) {
-                    isOptions = false;
-                    MenuPage.isMenu = true;
+                    isPage = false;
+                    MenuPage.isPage = true;
                     MenuPage.Menu();
                 }
             }
