@@ -10,7 +10,7 @@ namespace Page_Instructions {
         public static string[] buttons = { "Game", "Ships", "Board"};
         public static int currentButton = buttons.Length;
         public void RenderPage() {
-            System.ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);   // Dowolna niew³aœciwa wartoœæ.
+            ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);   // Dowolna niew³aœciwa wartoœæ.
             while (isPage == true) {
                 Console.Clear();
                 RenderTitle();
@@ -32,21 +32,21 @@ namespace Page_Instructions {
             GlobalMethod.RenderDottedLine(97);
             Console.WriteLine("INSTRUCTION: | Moving: arrows/[W][S] | Back to menu: [Backspace]\n");
         }
-        public static System.ConsoleKeyInfo LoopCorrectKey(System.ConsoleKeyInfo key) {
+        public static ConsoleKeyInfo LoopCorrectKey(ConsoleKeyInfo key) {
             while (isCorrSign == false) {   // Pêtla ta uniemo¿liwia prze³adowanie strony kiedy kliknie siê niew³aœciwy klawisz.
-                key = System.Console.ReadKey(true);
-                if (key.Key == System.ConsoleKey.W || key.Key == System.ConsoleKey.S || key.Key == System.ConsoleKey.UpArrow || key.Key == System.ConsoleKey.DownArrow || key.Key == System.ConsoleKey.Backspace) {
+                key = Console.ReadKey(true);
+                if (key.Key == ConsoleKey.W || key.Key == ConsoleKey.S || key.Key == ConsoleKey.UpArrow || key.Key == ConsoleKey.DownArrow || key.Key == ConsoleKey.Backspace) {
                     isCorrSign = true;
                 }
             }
             isCorrSign = false;
-            if (key.Key == System.ConsoleKey.Backspace) MenuReturn();
+            if (key.Key == ConsoleKey.Backspace) MenuReturn();
             return key;
         }
-        public static void MoveButtons(System.ConsoleKeyInfo key) {
-            if (key.Key == System.ConsoleKey.UpArrow || key.Key == System.ConsoleKey.W) {
+        public static void MoveButtons(ConsoleKeyInfo key) {
+            if (key.Key == ConsoleKey.UpArrow || key.Key == ConsoleKey.W) {
                 currentButton = (currentButton < buttons.Length) ? currentButton += 1 : currentButton;
-            } else if (key.Key == System.ConsoleKey.DownArrow || key.Key == System.ConsoleKey.S) {
+            } else if (key.Key == ConsoleKey.DownArrow || key.Key == ConsoleKey.S) {
                 currentButton = (currentButton > 1) ? currentButton -= 1 : currentButton;
             }
         }

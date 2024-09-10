@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.IO;
 using Library_GlobalMethods;
 using Page_Menu;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Page_Credits {
     public class Credits {
@@ -12,7 +11,7 @@ namespace Page_Credits {
         public void RenderPage() {
             SoundSwitch();
             RenderTitle();
-            System.ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);
+            ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);
             while (isPage == true) {
                 Console.Clear();
                 RenderTitle();
@@ -56,12 +55,12 @@ namespace Page_Credits {
                 Console.WriteLine("Plik credits.html nie zosta³ znaleziony.");
             }
         }
-        public static void LoopCorrectKey(System.ConsoleKeyInfo key) {
+        public static void LoopCorrectKey(ConsoleKeyInfo key) {
             while (isCorrSign == false) {
-                key = System.Console.ReadKey(true);
-                if (key.Key == System.ConsoleKey.Backspace) break;
+                key = Console.ReadKey(true);
+                if (key.Key == ConsoleKey.Backspace) break;
             }
-            if (key.Key == System.ConsoleKey.Backspace) MenuReturn();
+            if (key.Key == ConsoleKey.Backspace) MenuReturn();
         }
         public static void MenuReturn() {
             isPage = false;

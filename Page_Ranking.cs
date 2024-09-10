@@ -1,105 +1,124 @@
 using System;
+using System.Collections.Generic;
+using System.Diagnostics.SymbolStore;
 using System.IO;
+using Library_GlobalMethods;
 using Page_Menu;
 
 namespace Page_Ranking {
     public class Ranking {
         public static bool isPage = true;
         public static bool isCorrSign = false;
-        public static string[] rankingButtons = { "PVC Mode" };
-        public static int rankingButtNum = rankingButtons.Length;
+        public static string[] buttons = { "PVC Mode" };
+        public static int currentButton = buttons.Length;
         public static string playersLimit_OPTION = "no-limit";   // "no-limit" / "limit"
+        public static List<string> players = new List<string>();
+        public static List<List<string>> playersInfo = new List<List<string>>();
         public void RenderPage() {
-            System.ConsoleKey key = System.ConsoleKey.Backspace;   // Dowolny niew³aœciwy klawisz.
-            System.ConsoleKeyInfo corr_key;
+            ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);
             while (isPage == true) {
                 Console.Clear();
-                Console.WriteLine("BBBBBBB     BBBB    BBBB  BB  BB    BB  BB  BBBB  BB   BBBBBB ");
-                Console.WriteLine("BB    BB   BB  BB   BB BB BB  BB   BB   BB  BB BB BB  BB    BB");
-                Console.WriteLine("BB    BB  BB    BB  BB BB BB  BB  BB    BB  BB BB BB  BB      ");
-                Console.WriteLine("BBBBBBB   BBBBBBBB  BB BB BB  BBBBB     BB  BB BB BB  BB  BBB ");
-                Console.WriteLine("BB    BB  BB    BB  BB BB BB  BB  BB    BB  BB BB BB  BB  B BB");
-                Console.WriteLine("BB    BB  BB    BB  BB BB BB  BB   BB   BB  BB BB BB  BB    BB");
-                Console.WriteLine("BB    BB  BB    BB  BB  BBBB  BB    BB  BB  BB  BBBB   BBBBBB ");
-                Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
-                Console.WriteLine("RANKING: | Moving: arrows/[W][S] | Back to menu: [Backspace]\n");
-                for (int i = 0, j = rankingButtons.Length; i < rankingButtons.Length; i++, j--) {
-                    if (j == rankingButtNum) {
-                        Console.WriteLine("> " + rankingButtons[i]);
-                    } else {
-                        Console.WriteLine("  " + rankingButtons[i]);
-                    }
-                }
-                Console.WriteLine("\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n");
-                switch (rankingButtNum) {
-                    case 1: Ranking pvc = new Ranking();
-                        pvc.Scores_PVC();
-                        break;
-                }
-                while (isCorrSign == false) {   // Pêtla ta uniemo¿liwia prze³adowanie strony kiedy kliknie siê niew³aœciwy klawisz.
-                    corr_key = Console.ReadKey(true);
-                    if (corr_key.Key == System.ConsoleKey.W || corr_key.Key == System.ConsoleKey.S || corr_key.Key == System.ConsoleKey.UpArrow || corr_key.Key == System.ConsoleKey.DownArrow || corr_key.Key == System.ConsoleKey.Backspace) {
-                        isCorrSign = true;
-                        key = corr_key.Key;
-                    }
-                }
-                isCorrSign = false;
-                // Poruszanie siê po przyciskach (obliczenia):
-                if (key == System.ConsoleKey.UpArrow || key == System.ConsoleKey.W) {
-                    rankingButtNum = (rankingButtNum < rankingButtons.Length) ? rankingButtNum += 1 : rankingButtNum;
-                } else if (key == System.ConsoleKey.DownArrow || key == System.ConsoleKey.S) {
-                    rankingButtNum = (rankingButtNum > 1) ? rankingButtNum -= 1 : rankingButtNum;
-                } else if (key == System.ConsoleKey.Backspace) {
-                    isPage = false;
-                    MenuPage.isPage = true;
-                    MenuPage.Menu();
-                }
+                RenderTitle();
+                GlobalMethod.RenderButtons(buttons, currentButton);
+                GlobalMethod.RenderDottedLine(64);
+                RenderInfo(currentButton);
+                key = LoopCorrectKey(key);
+                MoveButtons(key);
             }
         }
-        public void Scores_PVC() {
-            string filePath = "players_PVC.txt";
-            try
-            {
-                // Odczytaj ca³y tekst z pliku
-                string fileContent = File.ReadAllText(filePath);
-                string[] players = fileContent.Split('*');
-                string[,] playersNested = new string[players.Length, 5];
-                string[] playerDetails = null;
-                for (int i = 0; i < players.Length; i++) {
-                    // Ka¿dy gracz ma 5 informacji oddzielonych znakiem "#":
-                    playerDetails = players[i].Split('#');
-                    for (int j = 0; j < playerDetails.Length; j++) {
-                        playersNested[i, j] = playerDetails[j];
+        public static void RenderTitle() {
+            Console.WriteLine("BBBBBBB     BBBB    BBBB  BB  BB    BB  BB  BBBB  BB   BBBBBB ");
+            Console.WriteLine("BB    BB   BB  BB   BB BB BB  BB   BB   BB  BB BB BB  BB    BB");
+            Console.WriteLine("BB    BB  BB    BB  BB BB BB  BB  BB    BB  BB BB BB  BB      ");
+            Console.WriteLine("BBBBBBB   BBBBBBBB  BB BB BB  BBBBB     BB  BB BB BB  BB  BBB ");
+            Console.WriteLine("BB    BB  BB    BB  BB BB BB  BB  BB    BB  BB BB BB  BB  B BB");
+            Console.WriteLine("BB    BB  BB    BB  BB BB BB  BB   BB   BB  BB BB BB  BB    BB");
+            Console.WriteLine("BB    BB  BB    BB  BB  BBBB  BB    BB  BB  BB  BBBB   BBBBBB ");
+            GlobalMethod.RenderDottedLine(64);
+            Console.WriteLine("RANKING: | Moving: arrows/[W][S] | Back to menu: [Backspace]\n");
+        }
+        public static void RenderInfo(int currentButton) {
+            switch (currentButton) {
+                case 1: PVC.ShowRanking(); break;
+            }
+        }
+        public static void MenuReturn() {
+            isPage = false;
+            MenuPage.isPage = true;
+            MenuPage.Menu();
+        }
+        public static ConsoleKeyInfo LoopCorrectKey(ConsoleKeyInfo key) {
+            while (isCorrSign == false) {   // Pêtla ta uniemo¿liwia prze³adowanie strony kiedy kliknie siê niew³aœciwy klawisz.
+                key = Console.ReadKey(true);
+                if (key.Key == ConsoleKey.W || key.Key == ConsoleKey.S || key.Key == ConsoleKey.UpArrow || key.Key == ConsoleKey.DownArrow || key.Key == ConsoleKey.Backspace) {
+                    isCorrSign = true;
+                }
+            }
+            isCorrSign = false;
+            if (key.Key == ConsoleKey.Backspace) MenuReturn();
+            return key;
+        }
+        public static void MoveButtons(ConsoleKeyInfo key) {
+            if (key.Key == ConsoleKey.UpArrow || key.Key == ConsoleKey.W) {   // Poruszanie siê po przyciskach (obliczenia):
+                currentButton = (currentButton < buttons.Length) ? currentButton += 1 : currentButton;
+            } else if (key.Key == ConsoleKey.DownArrow || key.Key == ConsoleKey.S) {
+                currentButton = (currentButton > 1) ? currentButton -= 1 : currentButton;
+            }
+        }
+
+        public class PVC {
+            public static void ShowRanking() {
+                bool isFile = UploadFile("players_PVC.txt");
+                if (isFile == true) {
+                    Sort();
+                    RenderRanking();
+                    // WA¯NE: Zrób w opcjach tak, aby mo¿na by³o sprawdziæ wyniki wszystkich graczy lub 10 najlepszych
+                    // i dostosujpod tym wzglêdem sprawdzenie d³ugoœci nazwy najd³usz¿ego gracza pod tym wzglêdem!
+                }
+            }
+            public static bool UploadFile(string filePath) {
+                players.Clear();
+                playersInfo.Clear();
+                bool isFile = false;
+                try {
+                    isFile = true;
+                    string fileContent = File.ReadAllText(filePath);
+                    string[] playerDetails = null;
+                    players = new List<string>(fileContent.Split('*'));
+                    for (int i = 0; i < players.Count; i++) {   // Ka¿dy gracz ma 5 informacji oddzielonych znakiem "#":
+                        playerDetails = players[i].Split('#');
+                        playersInfo.Add(new List<string>());
+                        for (int j = 0; j < playerDetails.Length; j++) {
+                            playersInfo[i].Add(playerDetails[j]);
+                        }
                     }
                 }
-                // Sortowanie graczy wzglêdem iloœci zdobytych punktów:
+                catch (IOException ex) {
+                    isFile = false;
+                    Console.WriteLine("An error has been detected while reading the file:\n");
+                    Console.WriteLine(ex.Message);
+                }
+                return isFile;
+            }
+            public static void Sort() {
                 bool isEnd = false;
-                while (isEnd == false) {
+                while (isEnd == false) {   // Sortowanie graczy wzglêdem iloœci zdobytych punktów.
                     isEnd = true;
-                    for (int i = 0; i < players.Length - 1; i++) {
+                    for (int i = 0; i < playersInfo.Count - 1; i++) {
                         // Porównujemy po iloœci zdobytych punktów (kolumna 1), zmieniamy warunek na < 0
-                        if (int.Parse(playersNested[i, 1]) < int.Parse(playersNested[i + 1, 1])) {
+                        if (int.Parse(playersInfo[i][1]) < int.Parse(playersInfo[i + 1][1])) {
                             // Zamiana miejscami ca³ego wiersza
-                            for (int j = 0; j < playersNested.GetLength(1); j++) {
-                                string cell = playersNested[i, j];
-                                playersNested[i, j] = playersNested[i + 1, j];
-                                playersNested[i + 1, j] = cell;
+                            for (int j = 0; j < playersInfo[i].Count; j++) {
+                                string cell = playersInfo[i][j];
+                                playersInfo[i][j] = playersInfo[i + 1][j];
+                                playersInfo[i + 1][j] = cell;
                             }
                             isEnd = false;
                         }
                     }
                 };
-                // Odczytaj ca³y tekst z pliku | OK
-                /*for (int i = 0; i < players.Length; i++)
-                {
-                    Console.Write(playersNested[i, 0]);
-                    Console.WriteLine();
-                }*/
-                // Wyœwietlanie zawartoœci playersName dla sprawdzenia
-                
-                // WA¯NE: Zrób w opcjach tak, aby mo¿na by³o sprawdziæ wyniki wszystkich graczy lub 10 najlepszych /////////////////////////////////////////
-                // i dostosujpod tym wzglêdem sprawdzenie d³ugoœci nazwy najd³usz¿ego gracza pod tym wzglêdem! /////////////////////////////////////////////
-                
+            }
+            public static void RenderRanking() {
                 string space_TH = "";
                 string minus_TH = "";
                 string space_TD = "";
@@ -109,9 +128,8 @@ namespace Page_Ranking {
                 int longestFirstCol = 0;
                 int firstColAdd = 0;
                 int playersLimit = 10;   // Limit wyœwietlanych graczy.
-                for (int i = 0; i < players.Length; i++) {                  // Najpierw posortuje ich, bo ja ci z najd³u¿sz¹ nazw¹ zostali dodani na pocz¹tku,
-                                                                            // to bêd¹ uwzglêdnieni, nawet pomimo ich ni¿szego wyniku ni¿ TOP 10.
-                    playerLength = playersNested[i, 0].Length;
+                for (int i = 0; i < players.Count; i++) {                  // Najpierw posortuje ich, bo ja ci z najd³u¿sz¹ nazw¹ zostali dodani na pocz¹tku, to bêd¹ uwzglêdnieni, nawet pomimo ich ni¿szego wyniku ni¿ TOP 10.
+                    playerLength = playersInfo[i][0].Length;
                     if (playerLength > longestSpace) {
                         longestSpace = playerLength;
                     }
@@ -124,12 +142,12 @@ namespace Page_Ranking {
                     minus_TH += "-";
                 }
                 Console.WriteLine("|" + minus_TH + "---------------------------------------------------|");
-                Console.WriteLine("| PLACE | PLAYER"+ space_TH + " | SCORE | SUNKEN | LOSS | ACCURATE |");
+                Console.WriteLine("| PLACE | PLAYER" + space_TH + " | SCORE | SUNKEN | LOSS | ACCURATE |");
                 Console.WriteLine("|" + minus_TH + "---------------------------------------------------|");
-                if (Ranking.playersLimit_OPTION == "limit") {
-                    playersLimit = (players.Length >= playersLimit) ? playersLimit : players.Length;   // Ograniczony limit wyœwietlania graczy w rankingu.
-                } else if (Ranking.playersLimit_OPTION == "no-limit") {
-                    playersLimit = players.Length;   // Wyœwietlanie graczy bez limitu.
+                if (playersLimit_OPTION == "limit") {
+                    playersLimit = (players.Count >= playersLimit) ? playersLimit : players.Count;   // Ograniczony limit wyœwietlania graczy w rankingu.
+                } else if (playersLimit_OPTION == "no-limit") {
+                    playersLimit = players.Count;   // Wyœwietlanie graczy bez limitu.
                 }
                 for (int i = 0; i < playersLimit; i++) {
                     Console.Write("| ");
@@ -143,37 +161,33 @@ namespace Page_Ranking {
                             }
                             Console.Write(space_TD + place + " | ");
                             space_TD = "";
-                            firstColAdd = longestFirstCol - playersNested[i, j].Length;
+                            firstColAdd = longestFirstCol - playersInfo[i][j].Length;
                             for (int k = 0; k < firstColAdd; k++) {
                                 space_TD += " ";
                             }
-                            Console.Write(playersNested[i, j] + space_TD + " | ");
+                            Console.Write(playersInfo[i][j] + space_TD + " | ");
                         } else if (j == 1) {
                             space_TD = "";
-                            firstColAdd = 5 - playersNested[i, j].Length;   // 5 - Score
+                            firstColAdd = 5 - playersInfo[i][j].Length;   // 5 - Score
                             for (int k = 0; k < firstColAdd; k++) {
                                 space_TD += " ";
                             }
-                            Console.Write(space_TD + playersNested[i, j] + " | ");
+                            Console.Write(space_TD + playersInfo[i][j] + " | ");
                         } else if (j == 2) {
-                            Console.Write("     " + playersNested[i, j] + " | ");
+                            Console.Write("     " + playersInfo[i][j] + " | ");
                         } else if (j == 3) {
-                            Console.Write("   " + playersNested[i, j] + " | ");
+                            Console.Write("   " + playersInfo[i][j] + " | ");
                         } else if (j == 4) {
                             space_TD = "";
-                            firstColAdd = 8 - playersNested[i, j].Length;   // 8 - ACCURATE
+                            firstColAdd = 8 - playersInfo[i][j].Length;   // 8 - ACCURATE
                             for (int k = 0; k < firstColAdd; k++) {
                                 space_TD += " ";
                             }
-                            Console.Write(space_TD + playersNested[i, j] + " | ");
+                            Console.Write(space_TD + playersInfo[i][j] + " | ");
                         }
                     }
                     Console.WriteLine("\n|" + minus_TH + "---------------------------------------------------|");
                 }
-            } catch (IOException ex)
-            {
-                Console.WriteLine("An error has been detected while reading the file:");
-                Console.WriteLine(ex.Message);
             }
         }
     }

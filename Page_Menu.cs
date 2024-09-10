@@ -26,7 +26,7 @@ namespace Page_Menu {
                 new Credits()
             );
             SoundSwitch();
-            System.ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);   // Dowolna niew³aœciwa wartoœæ.
+            ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);   // Dowolna niew³aœciwa wartoœæ.
             while (isPage == true) {
                 Console.Clear();
                 RenderTitle();
@@ -58,18 +58,18 @@ namespace Page_Menu {
             GlobalMethod.RenderDottedLine(105);
             Console.WriteLine("MENU: | Moving: arrows/[W][S] | Click = ENTER\n");
         }
-        public static System.ConsoleKeyInfo LoopCorrectKey(System.ConsoleKeyInfo key) {
+        public static ConsoleKeyInfo LoopCorrectKey(ConsoleKeyInfo key) {
             while (isCorrSign == false) {
                 key = Console.ReadKey(true);
-                if (key.Key == System.ConsoleKey.W || key.Key == System.ConsoleKey.S || key.Key == System.ConsoleKey.UpArrow || key.Key == System.ConsoleKey.DownArrow || key.Key == System.ConsoleKey.Enter) {
+                if (key.Key == ConsoleKey.W || key.Key == ConsoleKey.S || key.Key == ConsoleKey.UpArrow || key.Key == ConsoleKey.DownArrow || key.Key == ConsoleKey.Enter) {
                     isCorrSign = true;
                 }
             }
             isCorrSign = false;
             return key;
         }
-        public static void RenderPage(System.ConsoleKeyInfo key, Tuple<PVC, Instructions, Ranking, Options, Credits> pages) {
-            if (key.Key == System.ConsoleKey.Enter) {
+        public static void RenderPage(ConsoleKeyInfo key, Tuple<PVC, Instructions, Ranking, Options, Credits> pages) {
+            if (key.Key == ConsoleKey.Enter) {
                 isPage = false;
                 switch (currentButton) {
                     case 6:
@@ -98,10 +98,10 @@ namespace Page_Menu {
                 }
             }
         }
-        public static void MoveButtons(System.ConsoleKeyInfo key) {
-            if (key.Key == System.ConsoleKey.UpArrow || key.Key == System.ConsoleKey.W) {
+        public static void MoveButtons(ConsoleKeyInfo key) {
+            if (key.Key == ConsoleKey.UpArrow || key.Key == ConsoleKey.W) {
                 currentButton = (currentButton < buttons.Length) ? currentButton += 1 : currentButton;
-            } else if (key.Key == System.ConsoleKey.DownArrow || key.Key == System.ConsoleKey.S) {
+            } else if (key.Key == ConsoleKey.DownArrow || key.Key == ConsoleKey.S) {
                 currentButton = (currentButton > 1) ? currentButton -= 1 : currentButton;
             }
         }
