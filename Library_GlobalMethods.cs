@@ -15,6 +15,19 @@ namespace Library_GlobalMethods {
                 Console.WriteLine("Music state: Not found. Check your filepath.\n\n" + error);
             }
         }
+        public static (bool, string, string) UploadFile(string filePath) {
+            (bool, string, string) fileInfo = (false, filePath, "");   // Krotkę nienazwaną można modyfikować, a nazwaną nie.
+            try {
+                fileInfo.Item1 = true;
+                string fileContent = File.ReadAllText(filePath);
+                fileInfo.Item2 = filePath;
+            }
+            catch (IOException error) {
+                fileInfo.Item1 = false;
+                fileInfo.Item3 = "An error has been detected while reading the file:\n\n" + error.Message;
+            }
+            return fileInfo;
+        }
         public static void Color(string text, ConsoleColor color) {   // Kolorowy tekst
             Console.ForegroundColor = color;
             Console.Write(text);
