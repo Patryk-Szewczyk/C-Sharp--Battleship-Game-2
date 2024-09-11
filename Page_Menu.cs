@@ -16,7 +16,7 @@ namespace Page_Menu {
         public static bool isPage = true;
         public static bool isCorrSign = false;
         public static string[] buttons = { "PVC Mode", "Instruction", "Ranking", "Options", "Credits", "Exit" };
-        public static int currentButton = buttons.Length;   // Zawsze ostatni, bo chcê mieæ kursor na górze!
+        public static int currentButton = 0;   // Zawsze pierwszy, bo chcê mieæ kursor na górze!
         public static void Menu() {
             Tuple<PVC, Instructions, Ranking, Options, Credits> pages = new Tuple<PVC, Instructions, Ranking, Options, Credits>(
                 new PVC(),
@@ -33,7 +33,7 @@ namespace Page_Menu {
                 GlobalMethod.RenderButtons(buttons, currentButton);
                 key = LoopCorrectKey(key);   // Pêtla ta uniemo¿liwia prze³adowanie strony kiedy kliknie siê niew³aœciwy klawisz.
                 RenderPage(key, pages);
-                MoveButtons(key);   // Poruszanie siê po przyciskach (obliczenia):
+                currentButton = GlobalMethod.MoveButtons(buttons, currentButton, key);   // Poruszanie siê po przyciskach (obliczenia):
             }
         }
         public static void SoundSwitch() {
@@ -72,15 +72,15 @@ namespace Page_Menu {
             if (key.Key == ConsoleKey.Enter) {
                 isPage = false;
                 switch (currentButton) {
-                    case 6:
+                    case 0:
                         PVC.isPage = true;
                         pages.Item1.RenderPage();
                         break;
-                    case 5:
+                    case 1:
                         Instructions.isPage = true;
                         pages.Item2.RenderPage();
                         break;
-                    case 4:
+                    case 2:
                         Ranking.isPage = true;
                         pages.Item3.RenderPage();
                         break;
@@ -88,21 +88,14 @@ namespace Page_Menu {
                         Options.isPage = true;
                         pages.Item4.RenderPage();
                         break;
-                    case 2:
+                    case 4:
                         Credits.isPage = true;
                         pages.Item5.RenderPage();
                         break;
-                    case 1:
+                    case 5:
                         isPage = false;
                         break;
                 }
-            }
-        }
-        public static void MoveButtons(ConsoleKeyInfo key) {
-            if (key.Key == ConsoleKey.UpArrow || key.Key == ConsoleKey.W) {
-                currentButton = (currentButton < buttons.Length) ? currentButton += 1 : currentButton;
-            } else if (key.Key == ConsoleKey.DownArrow || key.Key == ConsoleKey.S) {
-                currentButton = (currentButton > 1) ? currentButton -= 1 : currentButton;
             }
         }
     }

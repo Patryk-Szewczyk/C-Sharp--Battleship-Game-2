@@ -8,7 +8,7 @@ namespace Page_Instructions {
         public static bool isPage = true;
         public static bool isCorrSign = false;
         public static string[] buttons = { "Game", "Ships", "Board"};
-        public static int currentButton = buttons.Length;
+        public static int currentButton = 0;   // Zawsze pierwszy, bo chcê mieæ kursor na górze!
         public void RenderPage() {
             ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);   // Dowolna niew³aœciwa wartoœæ.
             while (isPage == true) {
@@ -16,9 +16,9 @@ namespace Page_Instructions {
                 RenderTitle();
                 GlobalMethod.RenderButtons(buttons, currentButton);
                 GlobalMethod.RenderDottedLine(97);
-                RenderOption.RenderInfo(currentButton);
+                RenderOption.RenderContent(currentButton);
                 key = LoopCorrectKey(key);   // Pêtla ta uniemo¿liwia prze³adowanie strony kiedy kliknie siê niew³aœciwy klawisz.
-                MoveButtons(key);   // Poruszanie siê po przyciskach (obliczenia).
+                currentButton = GlobalMethod.MoveButtons(buttons, currentButton, key);   // Poruszanie siê po przyciskach (obliczenia).
             }
         }
         public static void RenderTitle() {
@@ -43,24 +43,17 @@ namespace Page_Instructions {
             if (key.Key == ConsoleKey.Backspace) MenuReturn();
             return key;
         }
-        public static void MoveButtons(ConsoleKeyInfo key) {
-            if (key.Key == ConsoleKey.UpArrow || key.Key == ConsoleKey.W) {
-                currentButton = (currentButton < buttons.Length) ? currentButton += 1 : currentButton;
-            } else if (key.Key == ConsoleKey.DownArrow || key.Key == ConsoleKey.S) {
-                currentButton = (currentButton > 1) ? currentButton -= 1 : currentButton;
-            }
-        }
         public static void MenuReturn() {
             isPage = false;
             MenuPage.isPage = true;
             MenuPage.Menu();
         }
         internal class RenderOption {
-            internal static void RenderInfo(int option) {   // Dlaczego "internal"? Poniewa¿ chcê ograniczyæ wykonywanie tej metody i innych w tej klasie do wy³¹cznie tego "namespace" (przestrzeñ nazw) w którym siê znajduje ("Page_Instructions"), aby nie wykonaæ jej przypadkiem w innych namespacach z plików do³¹czonych za pomoc¹ s³owa kluczowego "using". Mo¿na siê sprzeczaæ, ¿e jest to niepotrzebne, gdy¿ klasa ma ustawiony modyfikator dostêpu "internal", ale dla ostro¿noœci i czytelnoœci kodu lepiej trzymaæ siê estetyki.
+            internal static void RenderContent(int option) {   // Dlaczego "internal"? Poniewa¿ chcê ograniczyæ wykonywanie tej metody i innych w tej klasie do wy³¹cznie tego "namespace" (przestrzeñ nazw) w którym siê znajduje ("Page_Instructions"), aby nie wykonaæ jej przypadkiem w innych namespacach z plików do³¹czonych za pomoc¹ s³owa kluczowego "using". Mo¿na siê sprzeczaæ, ¿e jest to niepotrzebne, gdy¿ klasa ma ustawiony modyfikator dostêpu "internal", ale dla ostro¿noœci i czytelnoœci kodu lepiej trzymaæ siê estetyki.
                 switch (option) {
-                    case 3: RenderOption.RenderGameInfo(); break;
-                    case 2: RenderOption.RenderShipsInfo(); break;
-                    case 1: RenderOption.RenderBoardInfo(); break;
+                    case 0: RenderOption.RenderGameInfo(); break;
+                    case 1: RenderOption.RenderShipsInfo(); break;
+                    case 2: RenderOption.RenderBoardInfo(); break;
                 }
             }
             internal static void RenderGameInfo() {

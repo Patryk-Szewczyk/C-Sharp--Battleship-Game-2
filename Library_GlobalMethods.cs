@@ -15,6 +15,11 @@ namespace Library_GlobalMethods {
                 Console.WriteLine("Music state: Not found. Check your filepath.\n\n" + error);
             }
         }
+        public static void Color(string text, ConsoleColor color) {   // Kolorowy tekst
+            Console.ForegroundColor = color;
+            Console.Write(text);
+            Console.ResetColor();
+        }
         public static void RenderDottedLine(int length) {
             string text = "";
             for (int i = 0; i < length; i=i+2) {
@@ -23,18 +28,21 @@ namespace Library_GlobalMethods {
             Console.WriteLine("\n" + text + "\n");
         }
         public static void RenderButtons(string[] buttons, int currentButton) {
-            for (int i = 0, j = buttons.Length; i < buttons.Length; i++, j--) {
-                if (j == currentButton) {
+            for (int i = 0, button = 0; i < buttons.Length; i++, button++) {
+                if (button == currentButton) {
                     Console.WriteLine("> " + buttons[i]);
                 } else {
                     Console.WriteLine("  " + buttons[i]);
                 }
             }
         }
-        public static void Color(string text, ConsoleColor color) {   // Kolorowy tekst
-            Console.ForegroundColor = color;
-            Console.Write(text);
-            Console.ResetColor();
+        public static int MoveButtons(string[] buttons, int currentButton, ConsoleKeyInfo key) {
+            if (key.Key == ConsoleKey.UpArrow || key.Key == ConsoleKey.W) {   // Pierwszy element ma index 0, a ostatni 5, więc jeżeli idziemy do góry, czyli do pierwszego, musimy odejmować.
+                currentButton = (currentButton > 0) ? currentButton - 1 : currentButton;
+            } else if (key.Key == ConsoleKey.DownArrow || key.Key == ConsoleKey.S) {
+                currentButton = (currentButton < buttons.Length - 1) ? currentButton + 1 : currentButton;   // Pierwszy element ma index 0, a ostatni 5, więc jeżeli idziemy do dołu, czyli do szóstego, musimy dodawać.
+            }
+            return currentButton;
         }
         public static int SearchRemoveAt(List<int> array, int target) {   // Szukanie wartości i jej indeksu (lokalizacji) w tablicy:
             int result = -1;   // W kontekście losowania statków dla komputera, oznacza to kolizję pola począttkowego nowego statku z już istniejącym.
