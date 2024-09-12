@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 
 namespace Page_Intro {
-    public class IntroPage {
-        public static void Intro() {
-            IntroPage.RenderPage();
+    public class Intro {
+        public static void RenderPage() {
+            Intro.Info();
 
 
             // Test losowania statków:
@@ -28,9 +28,9 @@ namespace Page_Intro {
             }
 
 
-            IntroPage.MainLoop();
+            Intro.LoopCorrectKey();
         }
-        private static void RenderPage() {
+        private static void Info() {
             Console.WriteLine("\nBattleship 2 AI [Version 1.00]" +
                 "\nCopyright (c) Patryk Szewczyk 20841 | 2 INF, AHNS. All rights reserved." +
                 "\n\nBattleship Game is simple game which depend of sunking ships between players." +
@@ -46,7 +46,7 @@ namespace Page_Intro {
                 "\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" +
                 "\n\nTo continue, click ENTER key:\n");
         }
-        private static void MainLoop() {
+        private static void LoopCorrectKey() {
             System.ConsoleKeyInfo corrKey;
             bool isEnter = false;
             while (!isEnter) {

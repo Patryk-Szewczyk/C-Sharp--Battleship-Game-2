@@ -5,7 +5,8 @@ using System.Collections.Generic;
 
 namespace Page_PVC {
     public class PVC {
-        public static bool isPage = true;
+        public static int ID = 0;
+        public static bool isPage = false;
         public static string userName = "";
         public static PVC pagePVC = new PVC();
         public static List<List<string>> playersDetails_PARTS = new List<List<string>>();
@@ -55,9 +56,9 @@ namespace Page_PVC {
                 isOption_DELETE = (mainKey.Key == System.ConsoleKey.P) ? true : false;
                 if (mainKey.Key == System.ConsoleKey.Backspace) {
                     isPage = false;
-                    MenuPage.isPage = true;
+                    Menu.isPage = true;
                     isSelectPlayer = false;
-                    MenuPage.Menu();
+                    Menu.RenderPage();
                 }
                 else if (mainKey.Key == System.ConsoleKey.Enter && (isOption_CREATE == false || isOption_DELETE == false)) {
                     isSelectPlayer = true;

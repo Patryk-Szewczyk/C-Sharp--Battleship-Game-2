@@ -8,8 +8,8 @@ using Page_Ranking;
 
 namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM ZAPISUJESZ I ZAMIENIASZ DANE ODNOŒNIE OPCJI!!!
     public class Options {
-        public static bool isPage = true;
-        public static bool isCorrSign = false;
+        public static int page_ID = 3;
+        public static bool isPage = false;
         /*public static string[] options = new string[6] {
             "[ON]",
             "[ON]",
@@ -35,36 +35,18 @@ namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM
             "Delete PVC ranking data:               "
         };
         public static int currentButton = 0;   // Zawsze pierwszy, bo chcê mieæ kursor na górze!
+        public static List<ConsoleKey> usingKeys = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace };
         public void RenderPage() {
             System.ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);   // Dowolny niew³aœciwy klawisz.
-            //PrepareButtons();
             while (isPage == true) {
                 Console.Clear();
                 RenderTitle();
-                GlobalMethod.RenderButtons(buttons, currentButton);
-                GlobalMethod.RenderDottedLine(90);
-                RenderContent(currentButton);
-                key = LoopCorrectKey(key);
-                currentButton = GlobalMethod.MoveButtons(buttons, currentButton, key);
+                GlobalMethod.Page.RenderButtons(buttons, currentButton);
+                GlobalMethod.Page.RenderDottedLine(90);
+                Data.ShowOption(currentButton);
+                key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys);
+                currentButton = GlobalMethod.Page.MoveButtons(buttons, currentButton, key);
             }
-        }
-        public class Upload {
-            /*public static void ShowOptions() {   // Panel kontrolny
-                (bool, string) isFile = GlobalMethod.UploadFile("options.txt");
-                if (isFile.Item1 == true) {
-                    string[] options = UploadData(isFile.Item2);
-                    Sort(options);
-                    Render(options);
-                }
-            }*/
-            /*public static string[] UploadData() {
-
-            }
-            public static void PrepareButtons() {
-                for (int i = 0; i < buttons.Length; i++) {
-                    buttons[i] += options[i];
-                }
-            }*/
         }
         public static void RenderTitle() {
             Console.WriteLine(" BBBBBB   BBBBBBB   BBBBBBBB  BB   BBBBBB   BBBB  BB   BBBBBBB");
@@ -74,27 +56,16 @@ namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM
             Console.WriteLine("BB    BB  BB           BB     BB  BB    BB  BB BB BB        BB");
             Console.WriteLine("BB    BB  BB           BB     BB  BB    BB  BB BB BB        BB");
             Console.WriteLine(" BBBBBB   BB           BB     BB   BBBBBB   BB  BBBB  BBBBBBB ");
-            GlobalMethod.RenderDottedLine(90);
+            GlobalMethod.Page.RenderDottedLine(90);
             Console.WriteLine("OPTIONS: | Moving: arrows/[W][S] | Back to menu: [Backspace]\n");
         }
-        public static void RenderContent(int currentButton) {
-            //Console.WriteLine(buttons[currentButton]);
+        public class Upload {
+            
         }
-        public static ConsoleKeyInfo LoopCorrectKey(ConsoleKeyInfo key) {
-            while (isCorrSign == false) {   // Pêtla ta uniemo¿liwia prze³adowanie strony kiedy kliknie siê niew³aœciwy klawisz.
-                key = Console.ReadKey(true);
-                if (key.Key == ConsoleKey.W || key.Key == ConsoleKey.S || key.Key == ConsoleKey.UpArrow || key.Key == ConsoleKey.DownArrow || key.Key == ConsoleKey.Backspace) {
-                    isCorrSign = true;
-                }
+        public class Data {
+            public static void ShowOption(int currentButton) {
+
             }
-            isCorrSign = false; 
-            if (key.Key == ConsoleKey.Backspace) MenuReturn();
-            return key;
-        }
-        public static void MenuReturn() {
-            isPage = false;
-            MenuPage.isPage = true;
-            MenuPage.Menu();
         }
     }
 }

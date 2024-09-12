@@ -7,25 +7,27 @@ using Page_Menu;
 
 namespace Page_Ranking {
     public class Ranking {
-        public static bool isPage = true;
-        public static bool isCorrSign = false;
-        public static string[] buttons = { "PVC Mode" };
+        public static int page_ID = 2;
+        public static bool isPage = false;
+        public static string[] buttons = { "PVC Mode", "PVP Mode"};
         public static int currentButton = 0;   // Zawsze pierwszy, bo chcê mieæ kursor na górze!
+        public static List<ConsoleKey> usingKeys = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace };
         public static string playersLimit_OPTION = "no-limit";   // "no-limit" / "limit"
         public static List<bool> isFile = new List<bool>();  // plik = index
         public static List<string> error = new List<string>();  // b³¹d odczutu bie¿¹cego pliku = index
         public static List<List<List<string>>> modePlayersInfo = new List<List<List<string>>>();
         public void RenderPage() {
             ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);
-            Upload.UploadRanking("players_PVC.txt");
+            Upload.UploadRanking("players_PVC.txt");   // Je¿eli chcesz podpi¹æ kolejny ranking jedyne co trzeba zrobiæ, to dodaæ nazwê przycisku i skopiowaæ t¹ metodê z podaniem nazwy pliku z rozszerzeniem.
+            Upload.UploadRanking("players_PVP.txt");
             while (isPage == true) {
                 Console.Clear();
                 RenderTitle();
-                GlobalMethod.RenderButtons(buttons, currentButton);
-                GlobalMethod.RenderDottedLine(64);
-                Upload.ShowRanking(currentButton);
-                key = LoopCorrectKey(key);
-                currentButton = GlobalMethod.MoveButtons(buttons, currentButton, key);
+                GlobalMethod.Page.RenderButtons(buttons, currentButton);
+                GlobalMethod.Page.RenderDottedLine(64);
+                ShowRanking(currentButton);
+                key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys);
+                currentButton = GlobalMethod.Page.MoveButtons(buttons, currentButton, key);
             }
         }
         public static void RenderTitle() {
@@ -36,27 +38,19 @@ namespace Page_Ranking {
             Console.WriteLine("BB    BB  BB    BB  BB BB BB  BB  BB    BB  BB BB BB  BB  B BB");
             Console.WriteLine("BB    BB  BB    BB  BB BB BB  BB   BB   BB  BB BB BB  BB    BB");
             Console.WriteLine("BB    BB  BB    BB  BB  BBBB  BB    BB  BB  BB  BBBB   BBBBBB ");
-            GlobalMethod.RenderDottedLine(64);
+            GlobalMethod.Page.RenderDottedLine(64);
             Console.WriteLine("RANKING: | Moving: arrows/[W][S] | Back to menu: [Backspace]\n");
         }
-        public static ConsoleKeyInfo LoopCorrectKey(ConsoleKeyInfo key) {
-            while (isCorrSign == false) {   // Pêtla ta uniemo¿liwia prze³adowanie strony kiedy kliknie siê niew³aœciwy klawisz.
-                key = Console.ReadKey(true);
-                if (key.Key == ConsoleKey.W || key.Key == ConsoleKey.S || key.Key == ConsoleKey.UpArrow || key.Key == ConsoleKey.DownArrow || key.Key == ConsoleKey.Backspace) {
-                    isCorrSign = true;
-                }
+        public static void ShowRanking(int mode) {   // Panel kontrolny
+            if (isFile[currentButton] == true) {   // Tutaj bierzemy "currentButton", poniewa¿ nie dodajemy na bierz¹co kolejnych zmienneych dla listy dynamicznej "isFile", sk¹d (tam) mogliœmy od razu walidowaæ obs³ugê metody "UploadData".
+                Data.SortData(mode);
+                Data.RenderData(mode);
+            } else {
+                Console.WriteLine(error[currentButton]);
             }
-            isCorrSign = false;
-            if (key.Key == ConsoleKey.Backspace) MenuReturn();
-            return key;
-        }
-        public static void MenuReturn() {
-            isPage = false;
-            MenuPage.isPage = true;
-            MenuPage.Menu();
         }
     }
-    public class Upload : Ranking {   // Dlaczego zdecydowa³em siê na dziedziczenie? Poniewa¿ dwie medoty z tej klasy s¹ wywo³ywane w klasie "Ranking" w ró¿nych miejscach. Aby nie zdezorientowaæ programistê umieœci³em t¹ klasê za klas¹ "Ranking" bezpoœrednio w tej samej przestrzeni nazw.
+    public class Upload : Ranking {   // Dziedziczenie, bo te metody korzystaj¹ ze zmiennej/nych z klasy "Ranking". (Chocia¿ mo¿na umieœciæ te klasy wewn¹trz klasy "Ranking" i efekt taki sam. Chcia³em aby przez dziedziczenie nakierowaæ, ¿e te klasy potrzebuj¹ zmiennych z klasy "Ranking") Dlaczego dziedziczenie i klasa nie znajduje siê na zwen¹trz? Nie wewn¹trz klasy "Ranking", dla lepszej czytelnoœci i ta klasa dziedziczy klasê "Ranking", poniewa¿ u¿yta jej zmiennych statycznik i tym samym nie chcê niepotrzebnie tworzyæ instancji klasy "Ranking".
         public static void UploadRanking(string filePath) {   // Panel kontrolny
             (bool, string, string) fileInfo = GlobalMethod.UploadFile(filePath);
             isFile.Add(fileInfo.Item1);
@@ -80,14 +74,8 @@ namespace Page_Ranking {
             }
             modePlayersInfo.Add(playersInfo);
         }
-        public static void ShowRanking(int mode) {   // Panel kontrolny
-            if (isFile[currentButton] == true) {   // Tutaj bierzemy "currentButton", poniewa¿ nie dodajemy na bierz¹co kolejnych zmienneych dla listy dynamicznej "isFile", sk¹d (tam) mogliœmy od razu walidowaæ obs³ugê metody "UploadData".
-                SortData(mode);
-                RenderData(mode);
-            } else {
-                Console.WriteLine(error[currentButton]);
-            }
-        }
+    }
+    public class Data : Ranking {
         public static void SortData(int mode) {
             bool isEnd = false;
             string cell = "";

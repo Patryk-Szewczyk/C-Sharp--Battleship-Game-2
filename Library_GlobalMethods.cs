@@ -2,13 +2,20 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using Page_Credits;
+using Page_Instructions;
+using Page_Options;
+using Page_PVC;
+using Page_Ranking;
+using System.Runtime.InteropServices;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Library_GlobalMethods {
     public class GlobalMethod {   // Metody o zasięgu globalnym, które mają niezmiennną formę i mogą przydać się wszędzie.
         public static void PlaySound(string filepath, bool isLoop) {
             try {
-                MenuPage.currSound.SoundLocation = filepath;
-                if (isLoop) MenuPage.currSound.PlayLooping();
+                Menu.currSound.SoundLocation = filepath;
+                if (isLoop) Menu.currSound.PlayLooping();
                 //Console.WriteLine("Music state: Found and active.\n\n" + filepath);
             }
             catch (Exception error) {
@@ -33,30 +40,6 @@ namespace Library_GlobalMethods {
             Console.Write(text);
             Console.ResetColor();
         }
-        public static void RenderDottedLine(int length) {
-            string text = "";
-            for (int i = 0; i < length; i=i+2) {
-                text += (i == length - 2) ? "-" : "- "; 
-            }
-            Console.WriteLine("\n" + text + "\n");
-        }
-        public static void RenderButtons(string[] buttons, int currentButton) {
-            for (int i = 0, button = 0; i < buttons.Length; i++, button++) {
-                if (button == currentButton) {
-                    Console.WriteLine("> " + buttons[i]);
-                } else {
-                    Console.WriteLine("  " + buttons[i]);
-                }
-            }
-        }
-        public static int MoveButtons(string[] buttons, int currentButton, ConsoleKeyInfo key) {
-            if (key.Key == ConsoleKey.UpArrow || key.Key == ConsoleKey.W) {   // Pierwszy element ma index 0, a ostatni 5, więc jeżeli idziemy do góry, czyli do pierwszego, musimy odejmować.
-                currentButton = (currentButton > 0) ? currentButton - 1 : currentButton;
-            } else if (key.Key == ConsoleKey.DownArrow || key.Key == ConsoleKey.S) {
-                currentButton = (currentButton < buttons.Length - 1) ? currentButton + 1 : currentButton;   // Pierwszy element ma index 0, a ostatni 5, więc jeżeli idziemy do dołu, czyli do szóstego, musimy dodawać.
-            }
-            return currentButton;
-        }
         public static int SearchRemoveAt(List<int> array, int target) {   // Szukanie wartości i jej indeksu (lokalizacji) w tablicy:
             int result = -1;   // W kontekście losowania statków dla komputera, oznacza to kolizję pola począttkowego nowego statku z już istniejącym.
             for (int i = 0; i < array.Count; i++) {
@@ -66,6 +49,56 @@ namespace Library_GlobalMethods {
                 }
             }
             return result;
+        }
+        public class Page {
+            public static void RenderDottedLine(int length) {
+                string text = "";
+                for (int i = 0; i < length; i = i + 2) {
+                    text += (i == length - 2) ? "-" : "- ";
+                }
+                Console.WriteLine("\n" + text + "\n");
+            }
+            public static void RenderButtons(string[] buttons, int currentButton) {
+                for (int i = 0, button = 0; i < buttons.Length; i++, button++) {
+                    if (button == currentButton) {
+                        Console.WriteLine("> " + buttons[i]);
+                    } else {
+                        Console.WriteLine("  " + buttons[i]);
+                    }
+                }
+            }
+            public static ConsoleKeyInfo LoopCorrectKey(int page_ID, ConsoleKeyInfo key, List<ConsoleKey> usingKeys) {
+                bool isCorrSign = false;
+                while (isCorrSign == false) {
+                    key = Console.ReadKey(true);
+                    for (int i = 0; i < usingKeys.Count; i++) {
+                        if (key.Key == usingKeys[i]) {
+                            isCorrSign = true;
+                        }
+                    }
+                }
+                if (key.Key == ConsoleKey.Backspace) MenuReturn(page_ID);
+                return key;
+            }
+            public static void MenuReturn(int ID_page) {
+                switch (ID_page) {
+                    case 0: PVC.isPage = false; break;
+                    case 1: Instructions.isPage = false; break;
+                    case 2: Ranking.isPage = false; break;
+                    case 3: Options.isPage = false; break;
+                    case 4: Credits.isPage = false; break;
+                }
+                Menu.isPage = true;
+                Menu.RenderPage();
+            }
+            public static int MoveButtons(string[] buttons, int currentButton, ConsoleKeyInfo key) {
+                if (key.Key == ConsoleKey.UpArrow || key.Key == ConsoleKey.W) {   // Pierwszy element ma index 0, a ostatni 5, więc jeżeli idziemy do góry, czyli do pierwszego, musimy odejmować.
+                    currentButton = (currentButton > 0) ? currentButton - 1 : currentButton;
+                } else if (key.Key == ConsoleKey.DownArrow || key.Key == ConsoleKey.S) {
+                    currentButton = (currentButton < buttons.Length - 1) ? currentButton + 1 : currentButton;   // Pierwszy element ma index 0, a ostatni 5, więc jeżeli idziemy do dołu, czyli do szóstego, musimy dodawać.
+                }
+                return currentButton;
+            }
         }
         public class Board {
             public static void Top() {
@@ -102,8 +135,6 @@ namespace Library_GlobalMethods {
                 // Algorytm wyświetlający planszę dla instrukcji, ustawiania statków gracza i bitwy.
             }
         }
-
-
 
         // Przenieś to do PVC:
         public static List<List<int>> PrepareShips(List<int> shipsInfo) {
