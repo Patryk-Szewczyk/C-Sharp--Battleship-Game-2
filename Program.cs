@@ -6,22 +6,25 @@ using Page_Options;
 namespace Game {
     internal class Program {
         private static void Main(string[] args) {
+            bool isCorrect = false;
             Console.Title = "Battleship Game 2";
             Console.CursorVisible = false;
             Intro.RenderPage();
             Options.Upload.UploadOptions(Options.optionsPath);   // Nie trzeba tworzyć instancji klasy "Options", gdyż używam zmiennych globalnych statycznych tej klasy. Utworzona instancja tej klasy będzie zawierała zaktualisowane dane.
-            CheckOptionsValid();
+            isCorrect = CheckOptionsValid(isCorrect);
+            if (isCorrect) Menu.RenderPage();
         }
-        private static void CheckOptionsValid() {
+        private static bool CheckOptionsValid(bool isCorrect) {
             if (Options.isFile) {
                 if (Options.isCorrectContent) {
-                    Menu.RenderPage();
+                    isCorrect = true;
                 } else {
                     isError(Options.errorCorrectContent);
                 }
             } else {
                 isError(Options.errorFile);
             }
+            return isCorrect;
         }
         private static void isError(string error) {
             Console.Clear();

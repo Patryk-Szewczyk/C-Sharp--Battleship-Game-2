@@ -38,7 +38,7 @@ namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM
         public static List<ConsoleKey> usingKeys_SHIPS = new List<ConsoleKey> { ConsoleKey.OemComma, ConsoleKey.D1, ConsoleKey.D2, ConsoleKey.D3, ConsoleKey.D4, ConsoleKey.D5, ConsoleKey.D6, ConsoleKey.D7, ConsoleKey.D8, ConsoleKey.D9, ConsoleKey.Enter };
         public static List<ConsoleKey> usingKeys_DELETE = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace, ConsoleKey.P };
         public static List<ConsoleKey> usingKeys_CONFIRM = new List<ConsoleKey> { ConsoleKey.Y, ConsoleKey.E, ConsoleKey.S, ConsoleKey.N, ConsoleKey.O, ConsoleKey.Enter };
-        public const string optionsPath = "options.txt";
+        public const string optionsPath = "options.txt";   // Zmienna ta jest u¿ywana w klasie "Program"
         public static bool isFile = true;
         public static bool isCorrectContent = true;
         public static string errorFile = "";  // b³¹d odczutu bie¿¹cego pliku = index
@@ -85,7 +85,7 @@ namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM
             }
             return key;
         }
-        public class Upload : Options {
+        public class Upload {
             public static void UploadOptions(string filePath) {   // Panel kontrolny
                 (bool, string, string) fileInfo = GlobalMethod.UploadFile(filePath);
                 isFile = fileInfo.Item1;
@@ -108,7 +108,7 @@ namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM
                     try {
                         info = new List<string>(fileContent.Split('*')); // Rozk³ad danych.
                         ValidateData(info, errorMessage);   // Walidacja danych.
-                        
+
                     }
                     catch {   // Nie podaje parametru b³êdu, poniewa¿ chcê jedynie poinformaowaæ o nieprawid³owym formacie danych.
                         isCorrectContent = false;
@@ -136,7 +136,7 @@ namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM
                 }
             }
         }
-        public class Data : Options {
+        public class Data {
             public static void EnableDisable(int option, ConsoleKeyInfo key) {
                 // Jako, ¿e tak fajnie siê sk³ada, ¿e te metody odpalaj¹ siê po walidacji przycisków, przekazujesz przycisk tutaj i robisz robotê z w³aœciwymi funkcjami :)
             }

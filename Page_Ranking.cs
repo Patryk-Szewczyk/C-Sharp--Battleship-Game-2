@@ -14,15 +14,16 @@ namespace Page_Ranking {
         public static int currentButton = 0;   // Zawsze pierwszy, bo chcê mieæ kursor na górze!
         public static List<ConsoleKey> usingKeys = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace };
         public static string playersLimit_OPTION = "no-limit";   // "no-limit" / "limit"
+        public const int detailsAmount = 5;
         public static List<bool> isFile = new List<bool>();  // plik = index
         public static List<bool> isCorrectContent = new List<bool>();  // plik = index
         public static List<string> errorFile = new List<string>();  // b³¹d odczutu bie¿¹cego pliku = index
-        public static List<string> errorFileContent = new List<string>();  // b³¹d odczutu bie¿¹cego pliku = index
+        public static List<string> errorCorrectContent = new List<string>();  // b³¹d odczutu bie¿¹cego pliku = index
         public static List<List<List<string>>> modePlayersInfo = new List<List<List<string>>>();
         public void RenderPage() {
             ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);
-            Upload.UploadRanking("players_PVC.txt", 5);   // Je¿eli chcesz podpi¹æ kolejny ranking jedyne co trzeba zrobiæ, to dodaæ nazwê przycisku i skopiowaæ t¹ metodê z podaniem nazwy pliku z rozszerzeniem.
-            Upload.UploadRanking("players_PVP.txt", 5);
+            Upload.UploadRanking("players_PVC.txt");   // Je¿eli chcesz podpi¹æ kolejny ranking jedyne co trzeba zrobiæ, to dodaæ nazwê przycisku i skopiowaæ t¹ metodê z podaniem nazwy pliku z rozszerzeniem.
+            Upload.UploadRanking("players_PVP.txt");
             while (isPage == true) {
                 Console.Clear();
                 RenderTitle();
@@ -50,174 +51,174 @@ namespace Page_Ranking {
                     Data.SortData(mode);
                     Data.RenderData(mode);
                 } else {
-                    Console.WriteLine(errorFileContent[currentButton]);
+                    Console.WriteLine(errorCorrectContent[currentButton]);
                 }
             } else {
                 Console.WriteLine(errorFile[currentButton]);
             }
         }
-    }
-    public class Upload : Ranking {   // Dziedziczenie, bo te metody korzystaj¹ ze zmiennej/nych z klasy "Ranking". (Chocia¿ mo¿na umieœciæ te klasy wewn¹trz klasy "Ranking" i efekt taki sam. Chcia³em aby przez dziedziczenie nakierowaæ, ¿e te klasy potrzebuj¹ zmiennych z klasy "Ranking") Dlaczego dziedziczenie i klasa nie znajduje siê na zwen¹trz? Nie wewn¹trz klasy "Ranking", dla lepszej czytelnoœci i ta klasa dziedziczy klasê "Ranking", poniewa¿ u¿yta jej zmiennych statycznik i tym samym nie chcê niepotrzebnie tworzyæ instancji klasy "Ranking".
-        public static void UploadRanking(string filePath, int detailsAmount) {   // Panel kontrolny
-            (bool, string, string) fileInfo = GlobalMethod.UploadFile(filePath);
-            isFile.Add(fileInfo.Item1);
-            errorFile.Add(fileInfo.Item3);
-            if (isFile[isFile.Count - 1] == true) {   // Dodaje siê w linii z "isFile.Add(fileInfo.Item1)", a tutaj bierzemy d³ugoœæ listy dynamicznej "isFile" - 1, czyli ostatni indeks, tzn. aktualny plik. Ha! Jestem geniuszem!
-                ValidateData(fileInfo.Item2, detailsAmount);
+        public class Upload {   // Dlaczego nie przenios³em tych klas bezpoœrednio do namespace, a zamiast tego umieœci³em je wewn¹trz klasy "Ranking". (W klasie "Options" jest tak samo.) Poniewa¿ ta klasa i klasa "Options" posiada klasê "Upload". W klasie "Program" metoda "Main" wywo³uje metodê "UploadOptions" klasy "Upload". W przypadku przeniesienia tej klasy bezpoœrednio do namespace i u¿ycia dziedziczenia by³yby problemy z odpowiednim wskazaniem w³aœciwej metody oraz straci³oby to na czytelnoœci i u¿ytecznoœci kodu w kontekœcie tego typu problemu. Z powodu braku estetyki w przypadku tej sytuacji, aby naprawiæ estetykê tego typu styl (klasy potomne) zosta³ zaimplementowany na sta³e w tym projekcie.
+            public static void UploadRanking(string filePath) {   // Panel kontrolny
+                (bool, string, string) fileInfo = GlobalMethod.UploadFile(filePath);
+                isFile.Add(fileInfo.Item1);
+                errorFile.Add(fileInfo.Item3);
+                if (isFile[isFile.Count - 1] == true) {   // Dodaje siê w linii z "isFile.Add(fileInfo.Item1)", a tutaj bierzemy d³ugoœæ listy dynamicznej "isFile" - 1, czyli ostatni indeks, tzn. aktualny plik. Ha! Jestem geniuszem!
+                    ValidateData(fileInfo.Item2);
+                }
             }
-        }
-        public static void ValidateData(string filePath, int detailsAmount) {
-            isCorrectContent.Add(true);
-            errorFileContent.Add("");
-            modePlayersInfo.Add(new List<List<string>>());
-            string errorMessage = "The data format is \"" + filePath + "\" not correct. It should be:\nuser#data#data#data#data*user#data#data#data#data#data";
-            string content = File.ReadAllText(filePath);
-            string fileContent = GlobalMethod.TrimAllContent(content);
-            List<List<string>> playersInfo = new List<List<string>>();
-            if (fileContent == "") {
-                isCorrectContent[errorFileContent.Count - 1] = false;
-                errorFileContent[errorFileContent.Count - 1] = errorMessage;
-            } else if (fileContent != "") {
-                try {   // Rozk³ad danych
-                    List<string> players = new List<string>(fileContent.Split('*'));
-                    for (int i = 0; i < players.Count; i++) {
-                        playersInfo.Add(new List<string>(players[i].Split('#')));
+            public static void ValidateData(string filePath) {
+                isCorrectContent.Add(true);
+                errorCorrectContent.Add("");
+                modePlayersInfo.Add(new List<List<string>>());
+                string errorMessage = "The data format is \"" + filePath + "\" not correct. It should be:\nuser#data#data#data#data*user#data#data#data#data#data";
+                string content = File.ReadAllText(filePath);
+                string fileContent = GlobalMethod.TrimAllContent(content);
+                List<List<string>> playersInfo = new List<List<string>>();
+                if (fileContent == "") {
+                    isCorrectContent[errorCorrectContent.Count - 1] = false;
+                    errorCorrectContent[errorCorrectContent.Count - 1] = errorMessage;
+                } else if (fileContent != "") {
+                    try {   // Rozk³ad danych
+                        List<string> players = new List<string>(fileContent.Split('*'));
+                        for (int i = 0; i < players.Count; i++) {
+                            playersInfo.Add(new List<string>(players[i].Split('#')));
+                        }
                     }
-                }
-                catch {   // Nie podaje parametru b³êdu, poniewa¿ chcê jedynie poinformaowaæ o nieprawid³owym formacie danych.
-                    isCorrectContent[errorFileContent.Count - 1] = false;
-                    errorFileContent[errorFileContent.Count - 1] = errorMessage;
-                }
-                finally {   // Walidacja danych
-                    for (int i = 0; i < playersInfo.Count; i++) {   // Sprawdzenie czy któraœ z informacji ka¿dego gracza jest pusta.
-                        for (int j = 0; j < playersInfo[i].Count; j++) {
-                            if (playersInfo[i][j] == "") {
-                                isCorrectContent[errorFileContent.Count - 1] = false;
-                                errorFileContent[errorFileContent.Count - 1] = errorMessage;
-                                break;
+                    catch {   // Nie podaje parametru b³êdu, poniewa¿ chcê jedynie poinformaowaæ o nieprawid³owym formacie danych.
+                        isCorrectContent[errorCorrectContent.Count - 1] = false;
+                        errorCorrectContent[errorCorrectContent.Count - 1] = errorMessage;
+                    }
+                    finally {   // Walidacja danych
+                        for (int i = 0; i < playersInfo.Count; i++) {   // Sprawdzenie czy któraœ z informacji ka¿dego gracza jest pusta.
+                            for (int j = 0; j < playersInfo[i].Count; j++) {
+                                if (playersInfo[i][j] == "") {
+                                    isCorrectContent[errorCorrectContent.Count - 1] = false;
+                                    errorCorrectContent[errorCorrectContent.Count - 1] = errorMessage;
+                                    break;
+                                }
                             }
                         }
+                        for (int i = 0; i < playersInfo.Count; i++) {   // Sprawdzenie czy ka¿dy gracz ma tak¹ sam¹ liczbê danych przedzielonych znakiem "#"
+                            if (playersInfo[i].Count != detailsAmount) {
+                                isCorrectContent[errorCorrectContent.Count - 1] = false;
+                                errorCorrectContent[errorCorrectContent.Count - 1] = errorMessage;
+                                break;
+                            }
+                        } //if (playersInfo[playersInfo.Count - 1].Count == detailsAmount) modePlayersInfo[errorFileContent.Count - 1] = playersInfo;
+                        if (isCorrectContent[isCorrectContent.Count - 1] == true) modePlayersInfo[errorCorrectContent.Count - 1] = playersInfo;
                     }
-                    for (int i = 0; i < playersInfo.Count; i++) {   // Sprawdzenie czy ka¿dy gracz ma tak¹ sam¹ liczbê danych przedzielonych znakiem "#"
-                        if (playersInfo[i].Count != detailsAmount) {
-                            isCorrectContent[errorFileContent.Count - 1] = false;
-                            errorFileContent[errorFileContent.Count - 1] = errorMessage;
-                            break;
-                        }
-                    } //if (playersInfo[playersInfo.Count - 1].Count == detailsAmount) modePlayersInfo[errorFileContent.Count - 1] = playersInfo;
-                    if (isCorrectContent[playersInfo.Count - 1] == true) modePlayersInfo[errorFileContent.Count - 1] = playersInfo;
                 }
             }
         }
-    }
-    public class Data : Ranking {
-        public static void SortData(int mode) {
-            bool isEnd = false;
-            string cell = "";
-            while (isEnd == false) {   // Sortowanie graczy wzglêdem iloœci zdobytych punktów.
-                isEnd = true;
-                for (int i = 0; i < modePlayersInfo[mode].Count - 1; i++) {
-                    // Porównujemy po iloœci zdobytych punktów (kolumna 1), zmieniamy warunek na < 0
-                    if (int.Parse(modePlayersInfo[mode][i][1]) < int.Parse(modePlayersInfo[mode][i + 1][1])) {
-                        // Zamiana miejscami ca³ego wiersza
-                        for (int j = 0; j < modePlayersInfo[mode][i].Count; j++) {
-                            cell = modePlayersInfo[mode][i][j];
-                            modePlayersInfo[mode][i][j] = modePlayersInfo[mode][i + 1][j];
-                            modePlayersInfo[mode][i + 1][j] = cell;
+        public class Data {
+            public static void SortData(int mode) {
+                bool isEnd = false;
+                string cell = "";
+                while (isEnd == false) {   // Sortowanie graczy wzglêdem iloœci zdobytych punktów.
+                    isEnd = true;
+                    for (int i = 0; i < modePlayersInfo[mode].Count - 1; i++) {
+                        // Porównujemy po iloœci zdobytych punktów (kolumna 1), zmieniamy warunek na < 0
+                        if (int.Parse(modePlayersInfo[mode][i][1]) < int.Parse(modePlayersInfo[mode][i + 1][1])) {
+                            // Zamiana miejscami ca³ego wiersza
+                            for (int j = 0; j < modePlayersInfo[mode][i].Count; j++) {
+                                cell = modePlayersInfo[mode][i][j];
+                                modePlayersInfo[mode][i][j] = modePlayersInfo[mode][i + 1][j];
+                                modePlayersInfo[mode][i + 1][j] = cell;
+                            }
+                            isEnd = false;
                         }
-                        isEnd = false;
+                    }
+                };
+            }
+            public static void RenderData(int mode) {
+                // WA¯NE: Zrób w opcjach tak, aby mo¿na by³o sprawdziæ wyniki wszystkich graczy lub 10 najlepszych
+                // i dostosujpod tym wzglêdem sprawdzenie d³ugoœci nazwy najd³usz¿ego gracza pod tym wzglêdem!
+
+
+
+                // Najpierw zrób dzia³aj¹ce opcje!
+
+
+
+
+
+
+                string space_TH = "";
+                string minus_TH = "";
+                string space_TD = "";
+                string place = "";
+                int longestSpace = -1;
+                int playerLength = 0;
+                int longestFirstCol = 0;
+                int firstColAdd = 0;
+                int playersLimit = 10;   // Limit wyœwietlanych graczy.
+                for (int i = 0; i < modePlayersInfo[mode].Count; i++) {                  // Najpierw posortuje ich, bo ja ci z najd³u¿sz¹ nazw¹ zostali dodani na pocz¹tku, to bêd¹ uwzglêdnieni, nawet pomimo ich ni¿szego wyniku ni¿ TOP 10.
+                    playerLength = modePlayersInfo[mode][i][0].Length;
+                    if (playerLength > longestSpace) {
+                        longestSpace = playerLength;
                     }
                 }
-            };
-        }
-        public static void RenderData(int mode) {
-            // WA¯NE: Zrób w opcjach tak, aby mo¿na by³o sprawdziæ wyniki wszystkich graczy lub 10 najlepszych
-            // i dostosujpod tym wzglêdem sprawdzenie d³ugoœci nazwy najd³usz¿ego gracza pod tym wzglêdem!
-
-
-
-            // Najpierw zrób dzia³aj¹ce opcje!
-
-
-
-
-
-
-            string space_TH = "";
-            string minus_TH = "";
-            string space_TD = "";
-            string place = "";
-            int longestSpace = -1;
-            int playerLength = 0;
-            int longestFirstCol = 0;
-            int firstColAdd = 0;
-            int playersLimit = 10;   // Limit wyœwietlanych graczy.
-            for (int i = 0; i < modePlayersInfo[mode].Count; i++) {                  // Najpierw posortuje ich, bo ja ci z najd³u¿sz¹ nazw¹ zostali dodani na pocz¹tku, to bêd¹ uwzglêdnieni, nawet pomimo ich ni¿szego wyniku ni¿ TOP 10.
-                playerLength = modePlayersInfo[mode][i][0].Length;
-                if (playerLength > longestSpace) {
-                    longestSpace = playerLength;
+                longestSpace -= 6;   // Player (odj¹æ d³ugoœæ)
+                longestSpace = (longestSpace <= 0) ? 0 : longestSpace;
+                longestFirstCol = longestSpace + 6;
+                for (int i = 0; i < longestSpace; i++) {
+                    space_TH += " ";
+                    minus_TH += "-";
                 }
-            }
-            longestSpace -= 6;   // Player (odj¹æ d³ugoœæ)
-            longestSpace = (longestSpace <= 0) ? 0 : longestSpace;
-            longestFirstCol = longestSpace + 6;
-            for (int i = 0; i < longestSpace; i++) {
-                space_TH += " ";
-                minus_TH += "-";
-            }
 
 
 
-            Console.WriteLine("|" + minus_TH + "---------------------------------------------------|");
-            Console.WriteLine("| PLACE | PLAYER" + space_TH + " | SCORE | SUNKEN | LOSS | ACCURATE |");
-            Console.WriteLine("|" + minus_TH + "---------------------------------------------------|");
-            if (playersLimit_OPTION == "limit") {
-                playersLimit = (modePlayersInfo[mode].Count >= playersLimit) ? playersLimit : modePlayersInfo[mode].Count;   // Ograniczony limit wyœwietlania graczy w rankingu.
-            } else if (playersLimit_OPTION == "no-limit") {
-                playersLimit = modePlayersInfo[mode].Count;   // Wyœwietlanie graczy bez limitu.
-            }
-            for (int i = 0; i < playersLimit; i++) {
-                Console.Write("| ");
-                for (int j = 0; j < 5; j++) {
-                    if (j == 0) {
-                        place = (i + 1).ToString() + ".";
-                        space_TD = "";
-                        firstColAdd = 5 - place.Length;   // 5 - PLACE
-                        for (int k = 0; k < firstColAdd; k++) {
-                            space_TD += " ";
+                Console.WriteLine("|" + minus_TH + "---------------------------------------------------|");
+                Console.WriteLine("| PLACE | PLAYER" + space_TH + " | SCORE | SUNKEN | LOSS | ACCURATE |");
+                Console.WriteLine("|" + minus_TH + "---------------------------------------------------|");
+                if (playersLimit_OPTION == "limit") {
+                    playersLimit = (modePlayersInfo[mode].Count >= playersLimit) ? playersLimit : modePlayersInfo[mode].Count;   // Ograniczony limit wyœwietlania graczy w rankingu.
+                } else if (playersLimit_OPTION == "no-limit") {
+                    playersLimit = modePlayersInfo[mode].Count;   // Wyœwietlanie graczy bez limitu.
+                }
+                for (int i = 0; i < playersLimit; i++) {
+                    Console.Write("| ");
+                    for (int j = 0; j < 5; j++) {
+                        if (j == 0) {
+                            place = (i + 1).ToString() + ".";
+                            space_TD = "";
+                            firstColAdd = 5 - place.Length;   // 5 - PLACE
+                            for (int k = 0; k < firstColAdd; k++) {
+                                space_TD += " ";
+                            }
+                            Console.Write(space_TD + place + " | ");
+                            space_TD = "";
+                            firstColAdd = longestFirstCol - modePlayersInfo[mode][i][j].Length;
+                            for (int k = 0; k < firstColAdd; k++) {
+                                space_TD += " ";
+                            }
+                            Console.Write(modePlayersInfo[mode][i][j] + space_TD + " | ");
+                        } else if (j == 1) {
+                            space_TD = "";
+                            firstColAdd = 5 - modePlayersInfo[mode][i][j].Length;   // 5 - Score
+                            for (int k = 0; k < firstColAdd; k++) {
+                                space_TD += " ";
+                            }
+                            Console.Write(space_TD + modePlayersInfo[mode][i][j] + " | ");
+                        } else if (j == 2) {
+                            Console.Write("     " + modePlayersInfo[mode][i][j] + " | ");
+                        } else if (j == 3) {
+                            Console.Write("   " + modePlayersInfo[mode][i][j] + " | ");
+                        } else if (j == 4) {
+                            space_TD = "";
+                            firstColAdd = 8 - modePlayersInfo[mode][i][j].Length;   // 8 - ACCURATE
+                            for (int k = 0; k < firstColAdd; k++) {
+                                space_TD += " ";
+                            }
+                            Console.Write(space_TD + modePlayersInfo[mode][i][j] + " | ");
                         }
-                        Console.Write(space_TD + place + " | ");
-                        space_TD = "";
-                        firstColAdd = longestFirstCol - modePlayersInfo[mode][i][j].Length;
-                        for (int k = 0; k < firstColAdd; k++) {
-                            space_TD += " ";
-                        }
-                        Console.Write(modePlayersInfo[mode][i][j] + space_TD + " | ");
-                    } else if (j == 1) {
-                        space_TD = "";
-                        firstColAdd = 5 - modePlayersInfo[mode][i][j].Length;   // 5 - Score
-                        for (int k = 0; k < firstColAdd; k++) {
-                            space_TD += " ";
-                        }
-                        Console.Write(space_TD + modePlayersInfo[mode][i][j] + " | ");
-                    } else if (j == 2) {
-                        Console.Write("     " + modePlayersInfo[mode][i][j] + " | ");
-                    } else if (j == 3) {
-                        Console.Write("   " + modePlayersInfo[mode][i][j] + " | ");
-                    } else if (j == 4) {
-                        space_TD = "";
-                        firstColAdd = 8 - modePlayersInfo[mode][i][j].Length;   // 8 - ACCURATE
-                        for (int k = 0; k < firstColAdd; k++) {
-                            space_TD += " ";
-                        }
-                        Console.Write(space_TD + modePlayersInfo[mode][i][j] + " | ");
                     }
+                    Console.WriteLine("\n|" + minus_TH + "---------------------------------------------------|");
+
+
+
+
                 }
-                Console.WriteLine("\n|" + minus_TH + "---------------------------------------------------|");
-
-
-
-
             }
         }
     }
