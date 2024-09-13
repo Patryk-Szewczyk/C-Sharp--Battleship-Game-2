@@ -58,15 +58,15 @@ namespace Page_Ranking {
         }
     }
     public class Upload : Ranking {   // Dziedziczenie, bo te metody korzystaj¹ ze zmiennej/nych z klasy "Ranking". (Chocia¿ mo¿na umieœciæ te klasy wewn¹trz klasy "Ranking" i efekt taki sam. Chcia³em aby przez dziedziczenie nakierowaæ, ¿e te klasy potrzebuj¹ zmiennych z klasy "Ranking") Dlaczego dziedziczenie i klasa nie znajduje siê na zwen¹trz? Nie wewn¹trz klasy "Ranking", dla lepszej czytelnoœci i ta klasa dziedziczy klasê "Ranking", poniewa¿ u¿yta jej zmiennych statycznik i tym samym nie chcê niepotrzebnie tworzyæ instancji klasy "Ranking".
-        public static void UploadRanking(string filePath, int details) {   // Panel kontrolny
+        public static void UploadRanking(string filePath, int detailsAmount) {   // Panel kontrolny
             (bool, string, string) fileInfo = GlobalMethod.UploadFile(filePath);
             isFile.Add(fileInfo.Item1);
             errorFile.Add(fileInfo.Item3);
             if (isFile[isFile.Count - 1] == true) {   // Dodaje siê w linii z "isFile.Add(fileInfo.Item1)", a tutaj bierzemy d³ugoœæ listy dynamicznej "isFile" - 1, czyli ostatni indeks, tzn. aktualny plik. Ha! Jestem geniuszem!
-                UploadData(fileInfo.Item2, details);
+                ValidateData(fileInfo.Item2, detailsAmount);
             }
         }
-        public static void UploadData(string filePath, int details) {
+        public static void ValidateData(string filePath, int detailsAmount) {
             isCorrectContent.Add(true);
             errorFileContent.Add("");
             modePlayersInfo.Add(new List<List<string>>());
@@ -74,10 +74,10 @@ namespace Page_Ranking {
             string content = File.ReadAllText(filePath);
             string fileContent = GlobalMethod.TrimAllContent(content);
             List<List<string>> playersInfo = new List<List<string>>();
-            if (fileContent == "" || fileContent.Length < 2) {
+            if (fileContent == "") {
                 isCorrectContent[errorFileContent.Count - 1] = false;
                 errorFileContent[errorFileContent.Count - 1] = errorMessage;
-            } else if (fileContent != "" && fileContent.Length >= 2) {
+            } else if (fileContent != "") {
                 try {   // Rozk³ad danych
                     List<string> players = new List<string>(fileContent.Split('*'));
                     for (int i = 0; i < players.Count; i++) {
@@ -99,12 +99,13 @@ namespace Page_Ranking {
                         }
                     }
                     for (int i = 0; i < playersInfo.Count; i++) {   // Sprawdzenie czy ka¿dy gracz ma tak¹ sam¹ liczbê danych przedzielonych znakiem "#"
-                        if (playersInfo[i].Count != 5) {
+                        if (playersInfo[i].Count != detailsAmount) {
                             isCorrectContent[errorFileContent.Count - 1] = false;
                             errorFileContent[errorFileContent.Count - 1] = errorMessage;
                             break;
                         }
-                    } if (playersInfo[playersInfo.Count - 1].Count == details) modePlayersInfo[errorFileContent.Count - 1] = playersInfo;
+                    } //if (playersInfo[playersInfo.Count - 1].Count == detailsAmount) modePlayersInfo[errorFileContent.Count - 1] = playersInfo;
+                    if (isCorrectContent[playersInfo.Count - 1] == true) modePlayersInfo[errorFileContent.Count - 1] = playersInfo;
                 }
             }
         }
