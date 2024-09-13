@@ -1,6 +1,7 @@
 ﻿using System;
 using Page_Intro;
 using Page_Menu;
+using Page_Options;
 
 namespace Game {
     internal class Program {
@@ -8,7 +9,26 @@ namespace Game {
             Console.Title = "Battleship Game 2";
             Console.CursorVisible = false;
             Intro.RenderPage();
-            Menu.RenderPage();
+            Options.Upload.UploadOptions(Options.optionsPath);   // Nie trzeba tworzyć instancji klasy "Options", gdyż używam zmiennych globalnych statycznych tej klasy. Utworzona instancja tej klasy będzie zawierała zaktualisowane dane.
+            CheckOptionsValid();
+        }
+        private static void CheckOptionsValid() {
+            if (Options.isFile) {
+                if (Options.isCorrectContent) {
+                    Menu.RenderPage();
+                } else {
+                    isError(Options.errorCorrectContent);
+                }
+            } else {
+                isError(Options.errorFile);
+            }
+        }
+        private static void isError(string error) {
+            Console.Clear();
+            Console.WriteLine(error);
+            Console.WriteLine("\nFor this reason, the option data necessary for the application to run cannot be downloaded." +
+                "\n\n\nClick [ENTER] to exit the program.");
+            Console.ReadLine();
         }
     }
 }

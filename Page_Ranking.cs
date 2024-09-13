@@ -70,7 +70,7 @@ namespace Page_Ranking {
             isCorrectContent.Add(true);
             errorFileContent.Add("");
             modePlayersInfo.Add(new List<List<string>>());
-            string errorMessage = "The data format is not correct. It should be:\nuser#data#data#data#data*user#data#data#data#data#data";
+            string errorMessage = "The data format is \"" + filePath + "\" not correct. It should be:\nuser#data#data#data#data*user#data#data#data#data#data";
             string content = File.ReadAllText(filePath);
             string fileContent = GlobalMethod.TrimAllContent(content);
             List<List<string>> playersInfo = new List<List<string>>();

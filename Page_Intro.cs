@@ -9,7 +9,7 @@ namespace Page_Intro {
 
 
             // Test losowania statków:
-            List<int> plansza = new List<int>();
+            /*List<int> plansza = new List<int>();
             List<int> statki = new List<int> { 2, 2, 2, 3, 3, 4, 5 };   // Limit 10 statków o długości 10
             List<List<int>> listaStatkow = new List<List<int>>();
             for (int i = 0; i < 100; i++) {
@@ -25,7 +25,7 @@ namespace Page_Intro {
                     Console.Write(listaStatkow[i][j] + " ");
                 }
                 Console.WriteLine();
-            }
+            }*/
 
 
             Intro.LoopCorrectKey();
