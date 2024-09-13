@@ -72,9 +72,9 @@ namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM
         public static void ShowOption(int currentButton, ConsoleKeyInfo key) {
             Console.WriteLine(guide[currentButton]);
             switch (currentButton) {
-                case 4: Data.DetermineShips(currentButton); break;
-                case 5: Data.DeleteRanking(currentButton, "PVC"); break;
-                default: Data.EnableDisable(currentButton); break;
+                case 4: Data.DetermineShips(currentButton, key); break;
+                case 5: Data.DeleteRanking(currentButton, key, "PVC"); break;
+                default: Data.EnableDisable(currentButton, key); break;
             }
         }
         public static ConsoleKeyInfo SelectLoopCorrectKey(int currentButton, int page_ID, ConsoleKeyInfo key) {
@@ -137,13 +137,13 @@ namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM
             }
         }
         public class Data : Options {
-            public static void EnableDisable(int option) {
-
+            public static void EnableDisable(int option, ConsoleKeyInfo key) {
+                // Jako, ¿e tak fajnie siê sk³ada, ¿e te metody odpalaj¹ siê po walidacji przycisków, przekazujesz przycisk tutaj i robisz robotê z w³aœciwymi funkcjami :)
             }
-            public static void DetermineShips(int option) {
+            public static void DetermineShips(int option, ConsoleKeyInfo key) {
                 Console.WriteLine("\nNew value: ");
             }
-            public static void DeleteRanking(int option, string name) {
+            public static void DeleteRanking(int option, ConsoleKeyInfo key, string name) {
                 Console.WriteLine("\nDo you want delete " + name + " ranking data ?");
             }
         }
