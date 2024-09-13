@@ -23,9 +23,9 @@ namespace Library_GlobalMethods {
             }
         }
         public static (bool, string, string) UploadFile(string filePath) {
-            (bool, string, string) fileInfo = (false, filePath, "");   // Krotkę nienazwaną można modyfikować, a nazwaną nie.
+            (bool, string, string) fileInfo = (true, filePath, "");   // Krotkę nienazwaną można modyfikować, a nazwaną nie.
             try {
-                fileInfo.Item1 = true;
+                //fileInfo.Item1 = true;
                 string fileContent = File.ReadAllText(filePath);
                 fileInfo.Item2 = filePath;
             }
@@ -49,6 +49,15 @@ namespace Library_GlobalMethods {
                 }
             }
             return result;
+        }
+        public static string TrimAllContent(string content) {
+            string text = "";
+            for (int i = 0; i < content.Length; i++) {
+                if (content[i] != ' ') {
+                    text += content[i];
+                }
+            }
+            return text;
         }
         public class Page {
             public static void RenderDottedLine(int length) {

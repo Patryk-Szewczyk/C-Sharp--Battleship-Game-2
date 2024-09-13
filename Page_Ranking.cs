@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq.Expressions;
 using System.Reflection;
 using Library_GlobalMethods;
 using Page_Menu;
@@ -14,12 +15,14 @@ namespace Page_Ranking {
         public static List<ConsoleKey> usingKeys = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace };
         public static string playersLimit_OPTION = "no-limit";   // "no-limit" / "limit"
         public static List<bool> isFile = new List<bool>();  // plik = index
-        public static List<string> error = new List<string>();  // b³¹d odczutu bie¿¹cego pliku = index
+        public static List<bool> isCorrectContent = new List<bool>();  // plik = index
+        public static List<string> errorFile = new List<string>();  // b³¹d odczutu bie¿¹cego pliku = index
+        public static List<string> errorFileContent = new List<string>();  // b³¹d odczutu bie¿¹cego pliku = index
         public static List<List<List<string>>> modePlayersInfo = new List<List<List<string>>>();
         public void RenderPage() {
             ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);
-            Upload.UploadRanking("players_PVC.txt");   // Je¿eli chcesz podpi¹æ kolejny ranking jedyne co trzeba zrobiæ, to dodaæ nazwê przycisku i skopiowaæ t¹ metodê z podaniem nazwy pliku z rozszerzeniem.
-            Upload.UploadRanking("players_PVP.txt");
+            Upload.UploadRanking("players_PVC.txt", 5);   // Je¿eli chcesz podpi¹æ kolejny ranking jedyne co trzeba zrobiæ, to dodaæ nazwê przycisku i skopiowaæ t¹ metodê z podaniem nazwy pliku z rozszerzeniem.
+            Upload.UploadRanking("players_PVP.txt", 5);
             while (isPage == true) {
                 Console.Clear();
                 RenderTitle();
@@ -43,36 +46,67 @@ namespace Page_Ranking {
         }
         public static void ShowRanking(int mode) {   // Panel kontrolny
             if (isFile[currentButton] == true) {   // Tutaj bierzemy "currentButton", poniewa¿ nie dodajemy na bierz¹co kolejnych zmienneych dla listy dynamicznej "isFile", sk¹d (tam) mogliœmy od razu walidowaæ obs³ugê metody "UploadData".
-                Data.SortData(mode);
-                Data.RenderData(mode);
+                if (isCorrectContent[currentButton] == true) {
+                    Data.SortData(mode);
+                    Data.RenderData(mode);
+                } else {
+                    Console.WriteLine(errorFileContent[currentButton]);
+                }
             } else {
-                Console.WriteLine(error[currentButton]);
+                Console.WriteLine(errorFile[currentButton]);
             }
         }
     }
     public class Upload : Ranking {   // Dziedziczenie, bo te metody korzystaj¹ ze zmiennej/nych z klasy "Ranking". (Chocia¿ mo¿na umieœciæ te klasy wewn¹trz klasy "Ranking" i efekt taki sam. Chcia³em aby przez dziedziczenie nakierowaæ, ¿e te klasy potrzebuj¹ zmiennych z klasy "Ranking") Dlaczego dziedziczenie i klasa nie znajduje siê na zwen¹trz? Nie wewn¹trz klasy "Ranking", dla lepszej czytelnoœci i ta klasa dziedziczy klasê "Ranking", poniewa¿ u¿yta jej zmiennych statycznik i tym samym nie chcê niepotrzebnie tworzyæ instancji klasy "Ranking".
-        public static void UploadRanking(string filePath) {   // Panel kontrolny
+        public static void UploadRanking(string filePath, int details) {   // Panel kontrolny
             (bool, string, string) fileInfo = GlobalMethod.UploadFile(filePath);
             isFile.Add(fileInfo.Item1);
-            error.Add(fileInfo.Item3);
+            errorFile.Add(fileInfo.Item3);
             if (isFile[isFile.Count - 1] == true) {   // Dodaje siê w linii z "isFile.Add(fileInfo.Item1)", a tutaj bierzemy d³ugoœæ listy dynamicznej "isFile" - 1, czyli ostatni indeks, tzn. aktualny plik. Ha! Jestem geniuszem!
-                UploadData(fileInfo.Item2);
+                UploadData(fileInfo.Item2, details);
             }
         }
-        public static void UploadData(string filePath) {
-            string fileContent = File.ReadAllText(filePath);
-            string[] info = null;
+        public static void UploadData(string filePath, int details) {
+            isCorrectContent.Add(true);
+            errorFileContent.Add("");
+            modePlayersInfo.Add(new List<List<string>>());
+            string errorMessage = "The data format is not correct. It should be:\nuser#data#data#data#data*user#data#data#data#data#data";
+            string content = File.ReadAllText(filePath);
+            string fileContent = GlobalMethod.TrimAllContent(content);
             List<List<string>> playersInfo = new List<List<string>>();
-            List<string> players = new List<string>(fileContent.Split('*'));
-            for (int i = 0; i < players.Count; i++) {   // Ka¿dy gracz ma 5 informacji oddzielonych znakiem "#":
-                //playersInfo.Add(new List<string>(players[i].Split('#')));  // Spróbuj!
-                info = players[i].Split('#'); // Ta
-                playersInfo.Add(new List<string>()); // i Ta = 1 linijka, jak z "List<string> players"
-                for (int j = 0; j < info.Length; j++) {
-                    playersInfo[i].Add(info[j]);
+            if (fileContent == "" || fileContent.Length < 2) {
+                isCorrectContent[errorFileContent.Count - 1] = false;
+                errorFileContent[errorFileContent.Count - 1] = errorMessage;
+            } else if (fileContent != "" && fileContent.Length >= 2) {
+                try {   // Rozk³ad danych
+                    List<string> players = new List<string>(fileContent.Split('*'));
+                    for (int i = 0; i < players.Count; i++) {
+                        playersInfo.Add(new List<string>(players[i].Split('#')));
+                    }
+                }
+                catch {   // Nie podaje parametru b³êdu, poniewa¿ chcê jedynie poinformaowaæ o nieprawid³owym formacie danych.
+                    isCorrectContent[errorFileContent.Count - 1] = false;
+                    errorFileContent[errorFileContent.Count - 1] = errorMessage;
+                }
+                finally {   // Walidacja danych
+                    for (int i = 0; i < playersInfo.Count; i++) {   // Sprawdzenie czy któraœ z informacji ka¿dego gracza jest pusta.
+                        for (int j = 0; j < playersInfo[i].Count; j++) {
+                            if (playersInfo[i][j] == "") {
+                                isCorrectContent[errorFileContent.Count - 1] = false;
+                                errorFileContent[errorFileContent.Count - 1] = errorMessage;
+                                break;
+                            }
+                        }
+                    }
+                    for (int i = 0; i < playersInfo.Count; i++) {   // Sprawdzenie czy ka¿dy gracz ma tak¹ sam¹ liczbê danych przedzielonych znakiem "#"
+                        if (playersInfo[i].Count != 5) {
+                            isCorrectContent[errorFileContent.Count - 1] = false;
+                            errorFileContent[errorFileContent.Count - 1] = errorMessage;
+                            break;
+                        }
+                    } if (playersInfo[playersInfo.Count - 1].Count == details) modePlayersInfo[errorFileContent.Count - 1] = playersInfo;
                 }
             }
-            modePlayersInfo.Add(playersInfo);
         }
     }
     public class Data : Ranking {
