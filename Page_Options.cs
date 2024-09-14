@@ -154,9 +154,9 @@ namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM
                     string dtrmError = "";
                     string newValue = "";
                     string[] corrSigns = new string[10] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "," };
-                    bool isChangeLoop = true;
+                    bool isLoop = true;
                     bool isBad = false;
-                    while (isChangeLoop) {
+                    while (isLoop) {
                         isBad = false;
                         Console.Write("\n\nNew value: ");
                         newValue = GlobalMethod.TrimAllContent(Console.ReadLine());
@@ -212,7 +212,7 @@ namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM
                         if (isBad) {
                             Console.WriteLine("\n" + dtrmError + "\n");
                         } else {
-                            isChangeLoop = false;
+                            isLoop = false;
                             options[option] = SortShips(newValue);
                             Update();
                         }
@@ -242,6 +242,18 @@ namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM
                 return newValue;
             }
             public static void DeleteRanking(int option, ConsoleKeyInfo key, string name) {
+                /*if (key.Key == ConsoleKey.P) {
+                    string reset = "";
+                    bool isLoop = true;
+                    bool isBad = false;
+                    while (isLoop) {
+                        if (isBad == false) {
+                            isLoop = false;
+                            options[option] = reset;
+                            Update();
+                        }
+                    }
+                }*/
                 Console.WriteLine("\nDo you want delete " + name + " ranking data ?");
             }
             public static void Update() {
