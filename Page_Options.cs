@@ -20,15 +20,15 @@ namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM
             "Equal ships direction for AI:          ",
             "Show only top 10 players in ranking:   ",
             "Change ships in battle:                ",
-            "Delete PVC ranking data:               "
+            "Delete PVC mode ranking data:          "
         };
         public static string[] guide = new string[buttonsAmount] {
-            "ON = [E], OFF = [D]",
-            "ON = [E], OFF = [D]",
-            "ON = [E], OFF = [D]",
-            "ON = [E], OFF = [D]",
-            "change = [C]",
-            "delete = [P]"
+            "ON = [E] | OFF = [D]",
+            "ON = [E] | OFF = [D]",
+            "ON = [E] | OFF = [D]",
+            "ON = [E] | OFF = [D]",
+            "change = [C] => Write new numeric value => [ENTER]\n\nCorrect keys are numbers and comma | Example: 2,2,3,4,5",
+            "delete = [P] => Write \"yes\" or \"no\" => [ENTER]"
         };
         public static int currentButton = 0;   // Zawsze pierwszy, bo chcê mieæ kursor na górze!
         //public static List<ConsoleKey> usingKeys = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace };
@@ -44,12 +44,13 @@ namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM
         public static string errorFile = "";  // b³¹d odczutu bie¿¹cego pliku = index
         public static string errorCorrectContent = "";  // b³¹d odczutu bie¿¹cego pliku = index
         public static List<string> options = new List<string>();
+        public static bool isUpdate = false;
         public void RenderPage() {
             System.ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);   // Dowolny niew³aœciwy klawisz.
             while (isPage == true) {
                 Console.Clear();
                 RenderTitle();
-                // Dlaczego nie ma kontroli walidacji b³êdów? Poniewa¿ jest w klasie "Program" przy pierwszej inicjacji danych.
+                // Dlaczego nie ma kontroli walidacji b³êdów? Poniewa¿ jest w klasie "Program" przy pierwszym pobraniu danych.
                 GlobalMethod.Page.RenderButtons(buttons, currentButton);
                 GlobalMethod.Page.RenderDottedLine(90);
                 ShowOption(currentButton, key);
@@ -70,7 +71,7 @@ namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM
             Console.WriteLine("OPTIONS: | Moving: arrows/[W][S] | Back to menu: [Backspace]\n");
         }
         public static void ShowOption(int currentButton, ConsoleKeyInfo key) {
-            Console.WriteLine(guide[currentButton]);
+            Console.WriteLine("GUIDE: " + guide[currentButton]);
             switch (currentButton) {
                 case 4: Data.DetermineShips(currentButton, key); break;
                 case 5: Data.DeleteRanking(currentButton, key, "PVC"); break;
@@ -86,7 +87,7 @@ namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM
             return key;
         }
         public class Upload {
-            public static void UploadOptions(string filePath) {   // Panel kontrolny
+            public static void SearchFile(string filePath) {   // Panel kontrolny
                 (bool, string, string) fileInfo = GlobalMethod.UploadFile(filePath);
                 isFile = fileInfo.Item1;
                 errorFile = fileInfo.Item3;
@@ -139,12 +140,76 @@ namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM
         public class Data {
             public static void EnableDisable(int option, ConsoleKeyInfo key) {
                 // Jako, ¿e tak fajnie siê sk³ada, ¿e te metody odpalaj¹ siê po walidacji przycisków, przekazujesz przycisk tutaj i robisz robotê z w³aœciwymi funkcjami :)
+                if (key.Key == ConsoleKey.E) {
+                    options[option] = "ON";
+                    isUpdate = true;
+                    Update();
+                    if (isUpdate) Update();
+                } else if (key.Key == ConsoleKey.D) {
+                    options[option] = "OFF";
+                    isUpdate = true;
+                    if (isUpdate) Update();
+                }
             }
             public static void DetermineShips(int option, ConsoleKeyInfo key) {
-                Console.WriteLine("\nNew value: ");
+                if (key.Key == ConsoleKey.C) {
+                    string newValue = "";
+                    List<string> splitValue = new List<string>();
+                    bool isChangeLoop = true;
+                    bool isBad = false;
+                    while (isChangeLoop) {
+                        isBad = false;
+                        Console.WriteLine("\nNew value: ");
+                        //GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_SHIPS);  -- pomyœl nad tym
+                        newValue = Console.ReadLine();
+                        if (GlobalMethod.TrimAllContent(newValue) != "") {
+                            for (int i = 0; i < newValue.Length; i++) {
+                                if (newValue[i] == '\0') {   // '0' - odpowiednik pustego stringa
+                                    isBad = true;
+                                    break;
+                                } else {
+                                    splitValue = new List<string>(newValue.Split(','));
+                                    
+                                    // Walidacja na tylko jedn¹ cyfrê w sektorze.
+
+                                }
+                            }
+                        } else {
+                            isBad = true;
+                        }
+                        if (isBad) {
+                            Console.WriteLine("\nThis value is uncorrect. Write correct value.\n\n");
+                        } else {
+                            isChangeLoop = false;
+                            SortShips(newValue);
+                            options[option] = newValue;
+                            Update();
+
+
+                            // Metoda "GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_SHIPS)" z przekazanie odpowiedniej listy "usingKeys_".
+
+
+                        }
+                    }
+                }
             }
             public static void DeleteRanking(int option, ConsoleKeyInfo key, string name) {
                 Console.WriteLine("\nDo you want delete " + name + " ranking data ?");
+            }
+            public static void Update() {
+                isUpdate = false;
+                Upload.FillButtons();
+                string fileContent = "";
+                for (int i = 0; i < buttonsAmount; i++) {
+                    fileContent += options[i];
+                    if (i < buttonsAmount - 1) fileContent += "*";
+                }
+                File.WriteAllText(optionsPath, fileContent);
+                Options page = new Options();
+                page.RenderPage();
+            }
+            public static string SortShips(string newValue) {
+                return newValue;
             }
         }
     }

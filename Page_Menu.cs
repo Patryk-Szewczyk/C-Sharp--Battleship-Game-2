@@ -36,9 +36,8 @@ namespace Page_Menu {
                 key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys);   // Pêtla ta uniemo¿liwia prze³adowanie strony kiedy kliknie siê niew³aœciwy klawisz.
                 RenderPage(key, pages);
                 currentButton = GlobalMethod.Page.MoveButtons(buttons, currentButton, key);   // Poruszanie siê po przyciskach (obliczenia):
-                //Console.WriteLine(isPage);
-                //Console.ReadLine();
             }
+            Environment.Exit(0);   // U¿y³em tej metody, poniewa¿ po zapisie danych w klasie "Options" pojawia siê problem z wyjœciem z pragramu. Strasznie d³ugo siê zamyka.
         }
         public static void SoundSwitch() {
             if (PLAY_menu == false && PLAY_credits == false) {

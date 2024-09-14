@@ -22,8 +22,8 @@ namespace Page_Ranking {
         public static List<List<List<string>>> modePlayersInfo = new List<List<List<string>>>();
         public void RenderPage() {
             ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);
-            Upload.UploadRanking("players_PVC.txt");   // Je¿eli chcesz podpi¹æ kolejny ranking jedyne co trzeba zrobiæ, to dodaæ nazwê przycisku i skopiowaæ t¹ metodê z podaniem nazwy pliku z rozszerzeniem.
-            Upload.UploadRanking("players_PVP.txt");
+            Upload.SearchFile("players_PVC.txt");   // Je¿eli chcesz podpi¹æ kolejny ranking jedyne co trzeba zrobiæ, to dodaæ nazwê przycisku i skopiowaæ t¹ metodê z podaniem nazwy pliku z rozszerzeniem.
+            Upload.SearchFile("players_PVP.txt");
             while (isPage == true) {
                 Console.Clear();
                 RenderTitle();
@@ -58,15 +58,15 @@ namespace Page_Ranking {
             }
         }
         public class Upload {   // Dlaczego nie przenios³em tych klas bezpoœrednio do namespace, a zamiast tego umieœci³em je wewn¹trz klasy "Ranking". (W klasie "Options" jest tak samo.) Poniewa¿ ta klasa i klasa "Options" posiada klasê "Upload". W klasie "Program" metoda "Main" wywo³uje metodê "UploadOptions" klasy "Upload". W przypadku przeniesienia tej klasy bezpoœrednio do namespace i u¿ycia dziedziczenia by³yby problemy z odpowiednim wskazaniem w³aœciwej metody oraz straci³oby to na czytelnoœci i u¿ytecznoœci kodu w kontekœcie tego typu problemu. Z powodu braku estetyki w przypadku tej sytuacji, aby naprawiæ estetykê tego typu styl (klasy potomne) zosta³ zaimplementowany na sta³e w tym projekcie.
-            public static void UploadRanking(string filePath) {   // Panel kontrolny
+            public static void SearchFile(string filePath) {   // Panel kontrolny
                 (bool, string, string) fileInfo = GlobalMethod.UploadFile(filePath);
                 isFile.Add(fileInfo.Item1);
                 errorFile.Add(fileInfo.Item3);
                 if (isFile[isFile.Count - 1] == true) {   // Dodaje siê w linii z "isFile.Add(fileInfo.Item1)", a tutaj bierzemy d³ugoœæ listy dynamicznej "isFile" - 1, czyli ostatni indeks, tzn. aktualny plik. Ha! Jestem geniuszem!
-                    ValidateData(fileInfo.Item2);
+                    UploadData(fileInfo.Item2);
                 }
             }
-            public static void ValidateData(string filePath) {
+            public static void UploadData(string filePath) {
                 isCorrectContent.Add(true);
                 errorCorrectContent.Add("");
                 modePlayersInfo.Add(new List<List<string>>());
@@ -83,31 +83,32 @@ namespace Page_Ranking {
                         for (int i = 0; i < players.Count; i++) {
                             playersInfo.Add(new List<string>(players[i].Split('#')));
                         }
+                        ValidateData(playersInfo, errorMessage);
                     }
                     catch {   // Nie podaje parametru b³êdu, poniewa¿ chcê jedynie poinformaowaæ o nieprawid³owym formacie danych.
                         isCorrectContent[errorCorrectContent.Count - 1] = false;
                         errorCorrectContent[errorCorrectContent.Count - 1] = errorMessage;
                     }
-                    finally {   // Walidacja danych
-                        for (int i = 0; i < playersInfo.Count; i++) {   // Sprawdzenie czy któraœ z informacji ka¿dego gracza jest pusta.
-                            for (int j = 0; j < playersInfo[i].Count; j++) {
-                                if (playersInfo[i][j] == "") {
-                                    isCorrectContent[errorCorrectContent.Count - 1] = false;
-                                    errorCorrectContent[errorCorrectContent.Count - 1] = errorMessage;
-                                    break;
-                                }
-                            }
+                }
+            }
+            public static void ValidateData(List<List<string>> playersInfo, string errorMessage) {
+                for (int i = 0; i < playersInfo.Count; i++) {   // Sprawdzenie czy któraœ z informacji ka¿dego gracza jest pusta.
+                    for (int j = 0; j < playersInfo[i].Count; j++) {
+                        if (playersInfo[i][j] == "") {
+                            isCorrectContent[errorCorrectContent.Count - 1] = false;
+                            errorCorrectContent[errorCorrectContent.Count - 1] = errorMessage;
+                            break;
                         }
-                        for (int i = 0; i < playersInfo.Count; i++) {   // Sprawdzenie czy ka¿dy gracz ma tak¹ sam¹ liczbê danych przedzielonych znakiem "#"
-                            if (playersInfo[i].Count != detailsAmount) {
-                                isCorrectContent[errorCorrectContent.Count - 1] = false;
-                                errorCorrectContent[errorCorrectContent.Count - 1] = errorMessage;
-                                break;
-                            }
-                        } //if (playersInfo[playersInfo.Count - 1].Count == detailsAmount) modePlayersInfo[errorFileContent.Count - 1] = playersInfo;
-                        if (isCorrectContent[isCorrectContent.Count - 1] == true) modePlayersInfo[errorCorrectContent.Count - 1] = playersInfo;
                     }
                 }
+                for (int i = 0; i < playersInfo.Count; i++) {   // Sprawdzenie czy ka¿dy gracz ma tak¹ sam¹ liczbê danych przedzielonych znakiem "#"
+                    if (playersInfo[i].Count != detailsAmount) {
+                        isCorrectContent[errorCorrectContent.Count - 1] = false;
+                        errorCorrectContent[errorCorrectContent.Count - 1] = errorMessage;
+                        break;
+                    }
+                }
+                if (isCorrectContent[isCorrectContent.Count - 1] == true) modePlayersInfo[errorCorrectContent.Count - 1] = playersInfo;
             }
         }
         public class Data {

@@ -10,7 +10,7 @@ namespace Game {
             Console.Title = "Battleship Game 2";
             Console.CursorVisible = false;
             Intro.RenderPage();
-            Options.Upload.UploadOptions(Options.optionsPath);   // Nie trzeba tworzyć instancji klasy "Options", gdyż używam zmiennych globalnych statycznych tej klasy. Utworzona instancja tej klasy będzie zawierała zaktualisowane dane.
+            Options.Upload.SearchFile(Options.optionsPath);   // Nie trzeba tworzyć instancji klasy "Options", gdyż używam zmiennych globalnych statycznych tej klasy. Utworzona instancja tej klasy będzie zawierała zaktualisowane dane.
             isCorrect = CheckOptionsValid(isCorrect);
             if (isCorrect) Menu.RenderPage();
         }
