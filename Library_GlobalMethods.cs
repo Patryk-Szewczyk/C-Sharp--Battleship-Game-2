@@ -70,9 +70,9 @@ namespace Library_GlobalMethods {
             public static void RenderButtons(string[] buttons, int currentButton) {
                 for (int i = 0, button = 0; i < buttons.Length; i++, button++) {
                     if (button == currentButton) {
-                        Console.WriteLine("> " + buttons[i]);
+                        Console.WriteLine("-> " + buttons[i]);
                     } else {
-                        Console.WriteLine("  " + buttons[i]);
+                        Console.WriteLine("   " + buttons[i]);
                     }
                 }
             }
@@ -158,6 +158,11 @@ namespace Library_GlobalMethods {
             return shipsList;
         }
         public static List<List<int>> RandomShips(List<int> array, List<List<int>> shipsList) {   // Zrób klasę RandomShips - w której zadeklarujesz zmienne globalne aby później ich już nie deklarować
+
+
+            // Powróć do prostrzej wersji tego algorytmu: odzielny "toRight" i "toBottom"
+
+
             bool isCor = false;
             List<int> board = array;
             string dirVal = "";

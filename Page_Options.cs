@@ -12,6 +12,7 @@ namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM
     public class Options {
         public static int page_ID = 3;   // ZMIEÑ "static" NA "const" i sprawdŸ w dokumentacji jej zasiêg w kontekœcie KLASY !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         public static bool isPage = false;
+        public static int maxShipsLengthScore = 25;
         public const int buttonsAmount = 6;   // Musia³em ustawiæ const, aby zadeklarowaæ d³ugoœæ tablicy.
         public static string[] buttons = new string[buttonsAmount];
         public static string[] buttonsTitle = { 
@@ -27,17 +28,14 @@ namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM
             "ON = [E] | OFF = [D]",
             "ON = [E] | OFF = [D]",
             "ON = [E] | OFF = [D]",
-            "change = [C] => Write new numeric value => [ENTER]\n\nCorrect keys are numbers and comma | Example: 2,2,3,4,5",
-            "delete = [P] => Write \"yes\" or \"no\" => [ENTER]"
+            "change = [C] -> Write new numeric value -> [ENTER]\n\nCorrect keys are numbers and comma. | Example: 2,2,3,4,5\n\nAdditional the sum of lenght all ships can be max: " + maxShipsLengthScore + ".",
+            "delete = [P] -> Write \"yes\" or \"no\" -> [ENTER]"
         };
         public static int currentButton = 0;   // Zawsze pierwszy, bo chcê mieæ kursor na górze!
         //public static List<ConsoleKey> usingKeys = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace };
         public static List<ConsoleKey> usingKeys_DEFAULT = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace, ConsoleKey.E, ConsoleKey.D };
         public static List<ConsoleKey> usingKeys_CHANGE = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace, ConsoleKey.C };
-        // Ustaw maksymaln¹ d³ugoœæ zajêtych pól (w kontekœcie d³ugoœci statków) na max. 25!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        public static List<ConsoleKey> usingKeys_SHIPS = new List<ConsoleKey> { ConsoleKey.OemComma, ConsoleKey.D1, ConsoleKey.D2, ConsoleKey.D3, ConsoleKey.D4, ConsoleKey.D5, ConsoleKey.D6, ConsoleKey.D7, ConsoleKey.D8, ConsoleKey.D9, ConsoleKey.Enter };
         public static List<ConsoleKey> usingKeys_DELETE = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace, ConsoleKey.P };
-        public static List<ConsoleKey> usingKeys_CONFIRM = new List<ConsoleKey> { ConsoleKey.Y, ConsoleKey.E, ConsoleKey.S, ConsoleKey.N, ConsoleKey.O, ConsoleKey.Enter };
         public const string optionsPath = "options.txt";   // Zmienna ta jest u¿ywana w klasie "Program"
         public static bool isFile = true;
         public static bool isCorrectContent = true;
@@ -52,7 +50,7 @@ namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM
                 RenderTitle();
                 // Dlaczego nie ma kontroli walidacji b³êdów? Poniewa¿ jest w klasie "Program" przy pierwszym pobraniu danych.
                 GlobalMethod.Page.RenderButtons(buttons, currentButton);
-                GlobalMethod.Page.RenderDottedLine(90);
+                GlobalMethod.Page.RenderDottedLine(64);
                 ShowOption(currentButton, key);
                 key = SelectLoopCorrectKey(currentButton, page_ID, key);
                 //key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys);
@@ -67,7 +65,7 @@ namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM
             Console.WriteLine("BB    BB  BB           BB     BB  BB    BB  BB BB BB        BB");
             Console.WriteLine("BB    BB  BB           BB     BB  BB    BB  BB BB BB        BB");
             Console.WriteLine(" BBBBBB   BB           BB     BB   BBBBBB   BB  BBBB  BBBBBBB ");
-            GlobalMethod.Page.RenderDottedLine(90);
+            GlobalMethod.Page.RenderDottedLine(64);
             Console.WriteLine("OPTIONS: | Moving: arrows/[W][S] | Back to menu: [Backspace]\n");
         }
         public static void ShowOption(int currentButton, ConsoleKeyInfo key) {
@@ -153,45 +151,95 @@ namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM
             }
             public static void DetermineShips(int option, ConsoleKeyInfo key) {
                 if (key.Key == ConsoleKey.C) {
+                    string dtrmError = "";
                     string newValue = "";
-                    List<string> splitValue = new List<string>();
+                    string[] corrSigns = new string[10] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "," };
                     bool isChangeLoop = true;
                     bool isBad = false;
                     while (isChangeLoop) {
                         isBad = false;
-                        Console.WriteLine("\nNew value: ");
-                        //GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_SHIPS);  -- pomyœl nad tym
-                        newValue = Console.ReadLine();
-                        if (GlobalMethod.TrimAllContent(newValue) != "") {
-                            for (int i = 0; i < newValue.Length; i++) {
-                                if (newValue[i] == '\0') {   // '0' - odpowiednik pustego stringa
+                        Console.Write("\n\nNew value: ");
+                        newValue = GlobalMethod.TrimAllContent(Console.ReadLine());
+                        if (newValue != "") {
+                            bool idxSign = true;
+                            for (int i = 0; i < newValue.Length; i++) {   // Walidacja na poprawne znaki.
+                                idxSign = true;
+                                for (int j = 0; j < corrSigns.Length; j++) {
+                                    if (newValue[i] == Convert.ToChar(corrSigns[j])) {
+                                        idxSign = false;
+                                        break;
+                                    }
+                                }
+                                if (idxSign) {
                                     isBad = true;
+                                    dtrmError = "This value can only contain characters from 1 to 9 and a comma [,].\nWrite correct value.";
                                     break;
-                                } else {
-                                    splitValue = new List<string>(newValue.Split(','));
-                                    
-                                    // Walidacja na tylko jedn¹ cyfrê w sektorze.
-
+                                };
+                            }
+                            if (isBad == false) {
+                                List<string> splitValue = new List<string>(newValue.Split(','));
+                                for (int i = 0; i < splitValue.Count; i++) {   // Walidacja na puste miejsce. '0' - odpowiednik pustego stringa.
+                                    if (splitValue[i] == "" || splitValue[i] == " ") {
+                                        isBad = true;
+                                        dtrmError = "No field can be empty. Write correct value.";
+                                        break;
+                                    }
+                                }
+                                if (isBad == false) {
+                                    for (int i = 0; i < splitValue.Count; i++) {   // Walidacja na tylko jedn¹ cyfrê w sektorze.
+                                        if (splitValue[i].Length != 1) {
+                                            isBad = true;
+                                            dtrmError = "This value can only contain one number in field (1,2,3).\nWrite correct value.";
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (isBad == false) {
+                                    int totalLength = 0;
+                                    for (int i = 0; i < splitValue.Count; i++) {   // Walidacja na maksymalne ³¹czne miejsce zajête przez statki, domyœlnie: 30.
+                                        totalLength += int.Parse(splitValue[i]);
+                                    }
+                                    if (totalLength > maxShipsLengthScore) {
+                                        isBad = true;
+                                        dtrmError = "The total ships lenght is more than max limit: " + maxShipsLengthScore + ".\nYour total length: " + totalLength + ". Write correct value.";
+                                    }
                                 }
                             }
                         } else {
                             isBad = true;
+                            dtrmError = "This value is empty. Write correct value.";
                         }
                         if (isBad) {
-                            Console.WriteLine("\nThis value is uncorrect. Write correct value.\n\n");
+                            Console.WriteLine("\n" + dtrmError + "\n");
                         } else {
                             isChangeLoop = false;
-                            SortShips(newValue);
-                            options[option] = newValue;
+                            options[option] = SortShips(newValue);
                             Update();
-
-
-                            // Metoda "GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_SHIPS)" z przekazanie odpowiedniej listy "usingKeys_".
-
-
                         }
                     }
                 }
+            }
+            public static string SortShips(string newValue) {
+                List<int> values = new List<string>(newValue.Split(',')).Select(int.Parse).ToList();
+                bool isChange = true;
+                int smaller = 0;
+                while (isChange == true) {   // Algroytm sortowania b¹belkowego. Z³o¿onoœæ obliczeniowa maksymalna: O(n*2)
+                    isChange = false;
+                    for (int i = 0; i < values.Count - 1; i++) {
+                        if (values[i + 1] < values[i]) {
+                            smaller = values[i + 1];
+                            values[i + 1] = values[i];
+                            values[i] = smaller;
+                            isChange = true;
+                        }
+                    }
+                }
+                newValue = "";
+                for (int i = 0; i < values.Count; i++) {
+                    newValue += values[i];
+                    if (i < values.Count - 1) newValue += ",";
+                }
+                return newValue;
             }
             public static void DeleteRanking(int option, ConsoleKeyInfo key, string name) {
                 Console.WriteLine("\nDo you want delete " + name + " ranking data ?");
@@ -207,9 +255,6 @@ namespace Page_Options {    // DO£¥CZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM
                 File.WriteAllText(optionsPath, fileContent);
                 Options page = new Options();
                 page.RenderPage();
-            }
-            public static string SortShips(string newValue) {
-                return newValue;
             }
         }
     }
