@@ -1,4 +1,4 @@
-// Te przestrzenie nazw s¹ tu POTRZEBNE, poniewa¿ metoda MENU odwo³uje siê do klas tych przestrzeni nazw.
+// Te przestrzenie nazw sï¿½ tu POTRZEBNE, poniewaï¿½ metoda MENU odwoï¿½uje siï¿½ do klas tych przestrzeni nazw.
 using System;
 using System.Media;
 using System.Collections.Generic;
@@ -11,13 +11,14 @@ using Library_GlobalMethods;
 
 namespace Page_Menu {
     public class Menu {
-        public static int page_ID = 99;   // Musia³em dla wywo³ania metody "LoopCorrectKey", poniewa¿ wymaga przekazania ID strony.
-        public static SoundPlayer currSound = new SoundPlayer();   // WE TO SPRÓBUJ PRZENIEŒÆ DO MENU Z try/catch
+        public static int page_ID = 99;   // Musiaï¿½em dla wywoï¿½ania metody "LoopCorrectKey", poniewaï¿½ wymaga przekazania ID strony.
+        public static int pageLineLength = 105;
+        public static SoundPlayer currSound = new SoundPlayer();   // WEï¿½ TO SPRï¿½BUJ PRZENIEï¿½ï¿½ DO MENU Z try/catch
         public static bool PLAY_menu = false;
         public static bool PLAY_credits = false;
         public static bool isPage = true;
         public static string[] buttons = { "PVC Mode", "Instruction", "Ranking", "Options", "Credits", "Exit" };
-        public static int currentButton = 0;   // Zawsze pierwszy, bo chcê mieæ kursor na górze!
+        public static int currentButton = 0;   // Zawsze pierwszy, bo chcï¿½ mieï¿½ kursor na gï¿½rze!
         public static List<ConsoleKey> usingKeys = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Enter };
         public static Tuple<PVC, Instructions, Ranking, Options, Credits> pages = new Tuple<PVC, Instructions, Ranking, Options, Credits>(
                 new PVC(),
@@ -28,16 +29,16 @@ namespace Page_Menu {
         );
         public static void RenderPage() {
             SoundSwitch();
-            ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);   // Dowolna niew³aœciwa wartoœæ.
+            ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);   // Dowolna niewï¿½aï¿½ciwa wartoï¿½ï¿½.
             while (isPage == true) {
                 Console.Clear();
                 RenderTitle();
                 GlobalMethod.Page.RenderButtons(buttons, currentButton);
-                key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys);   // Pêtla ta uniemo¿liwia prze³adowanie strony kiedy kliknie siê niew³aœciwy klawisz.
+                key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys);   // Pï¿½tla ta uniemoï¿½liwia przeï¿½adowanie strony kiedy kliknie siï¿½ niewï¿½aï¿½ciwy klawisz.
                 RenderPage(key, pages);
-                currentButton = GlobalMethod.Page.MoveButtons(buttons, currentButton, key);   // Poruszanie siê po przyciskach (obliczenia):
+                currentButton = GlobalMethod.Page.MoveButtons(buttons, currentButton, key);   // Poruszanie siï¿½ po przyciskach (obliczenia):
             }
-            Environment.Exit(0);   // U¿y³em tej metody, poniewa¿ po zapisie danych w klasie "Options" pojawia siê problem z wyjœciem z pragramu. Strasznie d³ugo siê zamyka.
+            Environment.Exit(0);   // Uï¿½yï¿½em tej metody, poniewaï¿½ po zapisie danych w klasie "Options" pojawia siï¿½ problem z wyjï¿½ciem z pragramu. Strasznie dï¿½ugo siï¿½ zamyka.
         }
         public static void SoundSwitch() {
             if (PLAY_menu == false && PLAY_credits == false) {
@@ -58,7 +59,7 @@ namespace Page_Menu {
             Console.WriteLine("BB    BB  BB    BB     BB        BB     BB        BB              BB  BB    BB  BB  BB            BB");
             Console.WriteLine("BB    BB  BB    BB     BB        BB     BB        BB              BB  BB    BB  BB  BB           BB");
             Console.WriteLine("BBBBBBB   BB    BB     BB        BB     BBBBBBBB  BBBBBBBB  BBBBBBB   BB    BB  BB  BB          BBBBBBBB");
-            GlobalMethod.Page.RenderDottedLine(105);
+            GlobalMethod.Page.RenderDottedLine(pageLineLength);
             Console.WriteLine("MENU: | Moving: arrows/[W][S] | Click = ENTER\n");
         }
         public static void RenderPage(ConsoleKeyInfo key, Tuple<PVC, Instructions, Ranking, Options, Credits> pages) {
