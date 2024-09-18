@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Page_Intro;
 using Page_Menu;
 using Page_Options;
