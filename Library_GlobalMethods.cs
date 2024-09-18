@@ -1,4 +1,4 @@
-﻿using Page_Menu;
+using Page_Menu;
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -56,6 +56,18 @@ namespace Library_GlobalMethods {
                 if (content[i] != ' ') {
                     text += content[i];
                 }
+            }
+            return text;
+        }
+        public static string StringPlayers(List<List<string>> playersInfo) {   // Zamienia stringową listę dwówymiarową na stringa według formatu dla players.
+            string text = "";
+            List<List<string>> content = playersInfo;
+            for (int i = 0; i < content.Count; i++) {
+                for (int j = 0; j < content[i].Count; j++) {
+                    text += content[i][j];
+                    if (j < content[i].Count - 1) text += "#";
+                }
+                if (i < content.Count - 1) text += "*";
             }
             return text;
         }
