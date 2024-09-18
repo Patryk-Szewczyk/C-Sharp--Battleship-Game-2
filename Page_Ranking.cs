@@ -10,25 +10,26 @@ namespace Page_Ranking {
     public class Ranking {
         public static int page_ID = 2;
         public static bool isPage = false;
+        public static int pageLineLength = 64;
         public static string[] buttons = { "PVC Mode", "PVP Mode"};
-        public static int currentButton = 0;   // Zawsze pierwszy, bo chcê mieæ kursor na górze!
+        public static int currentButton = 0;   // Zawsze pierwszy, bo chcï¿½ mieï¿½ kursor na gï¿½rze!
         public static List<ConsoleKey> usingKeys = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace };
         public static string playersLimit_OPTION = "no-limit";   // "no-limit" / "limit"
         public const int detailsAmount = 5;
         public static List<bool> isFile = new List<bool>();  // plik = index
         public static List<bool> isCorrectContent = new List<bool>();  // plik = index
-        public static List<string> errorFile = new List<string>();  // b³¹d odczutu bie¿¹cego pliku = index
-        public static List<string> errorCorrectContent = new List<string>();  // b³¹d odczutu bie¿¹cego pliku = index
+        public static List<string> errorFile = new List<string>();  // bï¿½ï¿½d odczutu bieï¿½ï¿½cego pliku = index
+        public static List<string> errorCorrectContent = new List<string>();  // bï¿½ï¿½d odczutu bieï¿½ï¿½cego pliku = index
         public static List<List<List<string>>> modePlayersInfo = new List<List<List<string>>>();
         public void RenderPage() {
             ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);
-            Upload.SearchFile("players_PVC.txt");   // Je¿eli chcesz podpi¹æ kolejny ranking jedyne co trzeba zrobiæ, to dodaæ nazwê przycisku i skopiowaæ t¹ metodê z podaniem nazwy pliku z rozszerzeniem.
-            Upload.SearchFile("players_PVP.txt");
+            //Upload.SearchFile("players_PVC.txt");   // Przeniesiono do Intro.   // Jeï¿½eli chcesz podpiï¿½ï¿½ kolejny ranking jedyne co trzeba zrobiï¿½, to dodaï¿½ nazwï¿½ przycisku i skopiowaï¿½ tï¿½ metodï¿½ z podaniem nazwy pliku z rozszerzeniem.
+            //Upload.SearchFile("players_PVP.txt");
             while (isPage == true) {
                 Console.Clear();
                 RenderTitle();
                 GlobalMethod.Page.RenderButtons(buttons, currentButton);
-                GlobalMethod.Page.RenderDottedLine(64);
+                GlobalMethod.Page.RenderDottedLine(pageLineLength);
                 ShowRanking(currentButton);
                 key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys);
                 currentButton = GlobalMethod.Page.MoveButtons(buttons, currentButton, key);
@@ -42,11 +43,11 @@ namespace Page_Ranking {
             Console.WriteLine("BB    BB  BB    BB  BB BB BB  BB  BB    BB  BB BB BB  BB  B BB");
             Console.WriteLine("BB    BB  BB    BB  BB BB BB  BB   BB   BB  BB BB BB  BB    BB");
             Console.WriteLine("BB    BB  BB    BB  BB  BBBB  BB    BB  BB  BB  BBBB   BBBBBB ");
-            GlobalMethod.Page.RenderDottedLine(64);
+            GlobalMethod.Page.RenderDottedLine(pageLineLength);
             Console.WriteLine("RANKING: | Moving: arrows/[W][S] | Back to menu: [Backspace]\n");
         }
         public static void ShowRanking(int mode) {   // Panel kontrolny
-            if (isFile[currentButton] == true) {   // Tutaj bierzemy "currentButton", poniewa¿ nie dodajemy na bierz¹co kolejnych zmienneych dla listy dynamicznej "isFile", sk¹d (tam) mogliœmy od razu walidowaæ obs³ugê metody "UploadData".
+            if (isFile[currentButton] == true) {   // Tutaj bierzemy "currentButton", poniewaï¿½ nie dodajemy na bierzï¿½co kolejnych zmienneych dla listy dynamicznej "isFile", skï¿½d (tam) mogliï¿½my od razu walidowaï¿½ obsï¿½ugï¿½ metody "UploadData".
                 if (isCorrectContent[currentButton] == true) {
                     Data.SortData(mode);
                     Data.RenderData(mode);
@@ -57,12 +58,12 @@ namespace Page_Ranking {
                 Console.WriteLine(errorFile[currentButton]);
             }
         }
-        public class Upload {   // Dlaczego nie przenios³em tych klas bezpoœrednio do namespace, a zamiast tego umieœci³em je wewn¹trz klasy "Ranking". (W klasie "Options" jest tak samo.) Poniewa¿ ta klasa i klasa "Options" posiada klasê "Upload". W klasie "Program" metoda "Main" wywo³uje metodê "UploadOptions" klasy "Upload". W przypadku przeniesienia tej klasy bezpoœrednio do namespace i u¿ycia dziedziczenia by³yby problemy z odpowiednim wskazaniem w³aœciwej metody oraz straci³oby to na czytelnoœci i u¿ytecznoœci kodu w kontekœcie tego typu problemu. Z powodu braku estetyki w przypadku tej sytuacji, aby naprawiæ estetykê tego typu styl (klasy potomne) zosta³ zaimplementowany na sta³e w tym projekcie.
+        public class Upload {   // Dlaczego nie przeniosï¿½em tych klas bezpoï¿½rednio do namespace, a zamiast tego umieï¿½ciï¿½em je wewnï¿½trz klasy "Ranking". (W klasie "Options" jest tak samo.) Poniewaï¿½ ta klasa i klasa "Options" posiada klasï¿½ "Upload". W klasie "Program" metoda "Main" wywoï¿½uje metodï¿½ "UploadOptions" klasy "Upload". W przypadku przeniesienia tej klasy bezpoï¿½rednio do namespace i uï¿½ycia dziedziczenia byï¿½yby problemy z odpowiednim wskazaniem wï¿½aï¿½ciwej metody oraz straciï¿½oby to na czytelnoï¿½ci i uï¿½ytecznoï¿½ci kodu w kontekï¿½cie tego typu problemu. Z powodu braku estetyki w przypadku tej sytuacji, aby naprawiï¿½ estetykï¿½ tego typu styl (klasy potomne) zostaï¿½ zaimplementowany na staï¿½e w tym projekcie.
             public static void SearchFile(string filePath) {   // Panel kontrolny
                 (bool, string, string) fileInfo = GlobalMethod.UploadFile(filePath);
                 isFile.Add(fileInfo.Item1);
                 errorFile.Add(fileInfo.Item3);
-                if (isFile[isFile.Count - 1] == true) {   // Dodaje siê w linii z "isFile.Add(fileInfo.Item1)", a tutaj bierzemy d³ugoœæ listy dynamicznej "isFile" - 1, czyli ostatni indeks, tzn. aktualny plik. Ha! Jestem geniuszem!
+                if (isFile[isFile.Count - 1] == true) {   // Dodaje siï¿½ w linii z "isFile.Add(fileInfo.Item1)", a tutaj bierzemy dï¿½ugoï¿½ï¿½ listy dynamicznej "isFile" - 1, czyli ostatni indeks, tzn. aktualny plik. Ha! Jestem geniuszem!
                     UploadData(fileInfo.Item2);
                 }
             }
@@ -76,51 +77,48 @@ namespace Page_Ranking {
                 List<List<string>> playersInfo = new List<List<string>>();
                 if (fileContent == "") {
                     isCorrectContent[errorCorrectContent.Count - 1] = false;
-                    errorCorrectContent[errorCorrectContent.Count - 1] = errorMessage;
+                    errorCorrectContent[errorCorrectContent.Count - 1] = "This data file is empty. Create new user and play game.";
                 } else if (fileContent != "") {
-                    try {   // Rozk³ad danych
+                    try {   // Rozkï¿½ad danych
                         List<string> players = new List<string>(fileContent.Split('*'));
                         for (int i = 0; i < players.Count; i++) {
                             playersInfo.Add(new List<string>(players[i].Split('#')));
                         }
-                        ValidateData(playersInfo, errorMessage);
-                    }
-                    catch {   // Nie podaje parametru b³êdu, poniewa¿ chcê jedynie poinformaowaæ o nieprawid³owym formacie danych.
-                        isCorrectContent[errorCorrectContent.Count - 1] = false;
-                        errorCorrectContent[errorCorrectContent.Count - 1] = errorMessage;
-                    }
-                }
-            }
-            public static void ValidateData(List<List<string>> playersInfo, string errorMessage) {
-                for (int i = 0; i < playersInfo.Count; i++) {   // Sprawdzenie czy któraœ z informacji ka¿dego gracza jest pusta.
-                    for (int j = 0; j < playersInfo[i].Count; j++) {
-                        if (playersInfo[i][j] == "") {
-                            isCorrectContent[errorCorrectContent.Count - 1] = false;
-                            errorCorrectContent[errorCorrectContent.Count - 1] = errorMessage;
-                            break;
+                        for (int i = 0; i < playersInfo.Count; i++) {   // Sprawdzenie czy ktï¿½raï¿½ z informacji kaï¿½dego gracza jest pusta.
+                            for (int j = 0; j < playersInfo[i].Count; j++) {
+                                if (playersInfo[i][j] == "") {
+                                    isCorrectContent[errorCorrectContent.Count - 1] = false;
+                                    errorCorrectContent[errorCorrectContent.Count - 1] = errorMessage;
+                                    break;
+                                }
+                            }
                         }
+                        for (int i = 0; i < playersInfo.Count; i++) {   // Sprawdzenie czy kaï¿½dy gracz ma takï¿½ samï¿½ liczbï¿½ danych przedzielonych znakiem "#"
+                            if (playersInfo[i].Count != detailsAmount) {
+                                isCorrectContent[errorCorrectContent.Count - 1] = false;
+                                errorCorrectContent[errorCorrectContent.Count - 1] = errorMessage;
+                                break;
+                            }
+                        }
+                        if (isCorrectContent[isCorrectContent.Count - 1] == true) modePlayersInfo[errorCorrectContent.Count - 1] = playersInfo;
                     }
-                }
-                for (int i = 0; i < playersInfo.Count; i++) {   // Sprawdzenie czy ka¿dy gracz ma tak¹ sam¹ liczbê danych przedzielonych znakiem "#"
-                    if (playersInfo[i].Count != detailsAmount) {
+                    catch {   // Nie podaje parametru bï¿½ï¿½du, poniewaï¿½ chcï¿½ jedynie poinformaowaï¿½ o nieprawidï¿½owym formacie danych.
                         isCorrectContent[errorCorrectContent.Count - 1] = false;
                         errorCorrectContent[errorCorrectContent.Count - 1] = errorMessage;
-                        break;
                     }
                 }
-                if (isCorrectContent[isCorrectContent.Count - 1] == true) modePlayersInfo[errorCorrectContent.Count - 1] = playersInfo;
             }
         }
         public class Data {
             public static void SortData(int mode) {
                 bool isEnd = false;
                 string cell = "";
-                while (isEnd == false) {   // Sortowanie graczy wzglêdem iloœci zdobytych punktów.
+                while (isEnd == false) {   // Sortowanie graczy wzglï¿½dem iloï¿½ci zdobytych punktï¿½w.
                     isEnd = true;
                     for (int i = 0; i < modePlayersInfo[mode].Count - 1; i++) {
-                        // Porównujemy po iloœci zdobytych punktów (kolumna 1), zmieniamy warunek na < 0
+                        // Porï¿½wnujemy po iloï¿½ci zdobytych punktï¿½w (kolumna 1), zmieniamy warunek na < 0
                         if (int.Parse(modePlayersInfo[mode][i][1]) < int.Parse(modePlayersInfo[mode][i + 1][1])) {
-                            // Zamiana miejscami ca³ego wiersza
+                            // Zamiana miejscami caï¿½ego wiersza
                             for (int j = 0; j < modePlayersInfo[mode][i].Count; j++) {
                                 cell = modePlayersInfo[mode][i][j];
                                 modePlayersInfo[mode][i][j] = modePlayersInfo[mode][i + 1][j];
@@ -132,12 +130,12 @@ namespace Page_Ranking {
                 };
             }
             public static void RenderData(int mode) {
-                // WA¯NE: Zrób w opcjach tak, aby mo¿na by³o sprawdziæ wyniki wszystkich graczy lub 10 najlepszych
-                // i dostosujpod tym wzglêdem sprawdzenie d³ugoœci nazwy najd³usz¿ego gracza pod tym wzglêdem!
+                // WAï¿½NE: Zrï¿½b w opcjach tak, aby moï¿½na byï¿½o sprawdziï¿½ wyniki wszystkich graczy lub 10 najlepszych
+                // i dostosujpod tym wzglï¿½dem sprawdzenie dï¿½ugoï¿½ci nazwy najdï¿½uszï¿½ego gracza pod tym wzglï¿½dem!
 
 
 
-                // Najpierw zrób dzia³aj¹ce opcje!
+                // Najpierw zrï¿½b dziaï¿½ajï¿½ce opcje!
 
 
 
@@ -152,14 +150,14 @@ namespace Page_Ranking {
                 int playerLength = 0;
                 int longestFirstCol = 0;
                 int firstColAdd = 0;
-                int playersLimit = 10;   // Limit wyœwietlanych graczy.
-                for (int i = 0; i < modePlayersInfo[mode].Count; i++) {                  // Najpierw posortuje ich, bo ja ci z najd³u¿sz¹ nazw¹ zostali dodani na pocz¹tku, to bêd¹ uwzglêdnieni, nawet pomimo ich ni¿szego wyniku ni¿ TOP 10.
+                int playersLimit = 10;   // Limit wyï¿½wietlanych graczy.
+                for (int i = 0; i < modePlayersInfo[mode].Count; i++) {                  // Najpierw posortuje ich, bo ja ci z najdï¿½uï¿½szï¿½ nazwï¿½ zostali dodani na poczï¿½tku, to bï¿½dï¿½ uwzglï¿½dnieni, nawet pomimo ich niï¿½szego wyniku niï¿½ TOP 10.
                     playerLength = modePlayersInfo[mode][i][0].Length;
                     if (playerLength > longestSpace) {
                         longestSpace = playerLength;
                     }
                 }
-                longestSpace -= 6;   // Player (odj¹æ d³ugoœæ)
+                longestSpace -= 6;   // Player (odjï¿½ï¿½ dï¿½ugoï¿½ï¿½)
                 longestSpace = (longestSpace <= 0) ? 0 : longestSpace;
                 longestFirstCol = longestSpace + 6;
                 for (int i = 0; i < longestSpace; i++) {
@@ -173,9 +171,9 @@ namespace Page_Ranking {
                 Console.WriteLine("| PLACE | PLAYER" + space_TH + " | SCORE | SUNKEN | LOSS | ACCURATE |");
                 Console.WriteLine("|" + minus_TH + "---------------------------------------------------|");
                 if (playersLimit_OPTION == "limit") {
-                    playersLimit = (modePlayersInfo[mode].Count >= playersLimit) ? playersLimit : modePlayersInfo[mode].Count;   // Ograniczony limit wyœwietlania graczy w rankingu.
+                    playersLimit = (modePlayersInfo[mode].Count >= playersLimit) ? playersLimit : modePlayersInfo[mode].Count;   // Ograniczony limit wyï¿½wietlania graczy w rankingu.
                 } else if (playersLimit_OPTION == "no-limit") {
-                    playersLimit = modePlayersInfo[mode].Count;   // Wyœwietlanie graczy bez limitu.
+                    playersLimit = modePlayersInfo[mode].Count;   // Wyï¿½wietlanie graczy bez limitu.
                 }
                 for (int i = 0; i < playersLimit; i++) {
                     Console.Write("| ");
@@ -220,6 +218,15 @@ namespace Page_Ranking {
 
 
                 }
+            }
+            public static List<List<string>> UpdateData(string filePath) {   // Metoda jest wywoï¿½ywana po kiedy "pierwszy warunek walidacji danych" jest speï¿½niony (w "Options").
+                string fileContent = File.ReadAllText(filePath);
+                List<List<string>> playersInfo = new List<List<string>>();
+                List<string> players = new List<string>(fileContent.Split('*'));
+                for (int i = 0; i < players.Count; i++) {
+                    playersInfo.Add(new List<string>(players[i].Split('#')));
+                }
+                return playersInfo;
             }
         }
     }
