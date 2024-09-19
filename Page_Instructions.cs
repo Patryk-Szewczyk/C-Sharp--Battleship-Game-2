@@ -9,18 +9,18 @@ namespace Page_Instructions {
         public static bool isPage = false;
         public static int pageLineLength = 97;
         public static string[] buttons = { "Game", "Ships", "Board"};
-        public static int currentButton = 0;   // Zawsze pierwszy, bo chc� mie� kursor na g�rze!
+        public static int currentButton = 0;   // Zawsze pierwszy, bo chcę mieć kursor na górze!
         public static List<ConsoleKey> usingKeys = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace };
         public void RenderPage() {
-            ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);   // Dowolna niew�a�ciwa warto��.
+            ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);   // Dowolna niewłaściwa wartość.
             while (isPage == true) {
                 Console.Clear();
                 RenderTitle();
                 GlobalMethod.Page.RenderButtons(buttons, currentButton);
                 GlobalMethod.Page.RenderDottedLine(pageLineLength);
                 ShowInstruction(currentButton);
-                key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys);   // P�tla ta uniemo�liwia prze�adowanie strony kiedy kliknie si� niew�a�ciwy klawisz.
-                currentButton = GlobalMethod.Page.MoveButtons(buttons, currentButton, key);   // Poruszanie si� po przyciskach (obliczenia).
+                key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys);   // Pętla ta uniemożliwia przeładowanie strony kiedy kliknie się niewłaściwy klawisz.
+                currentButton = GlobalMethod.Page.MoveButtons(buttons, currentButton, key);   // Poruszanie się po przyciskach (obliczenia).
             }
         }
         public static void RenderTitle() {
@@ -34,7 +34,7 @@ namespace Page_Instructions {
             GlobalMethod.Page.RenderDottedLine(pageLineLength);
             Console.WriteLine("INSTRUCTION: | Moving: arrows/[W][S] | Back to menu: [Backspace]\n");
         }
-        public static void ShowInstruction(int option) {   // Dlaczego "internal"? Poniewa� chc� ograniczy� wykonywanie tej metody i innych w tej klasie do wy��cznie tego "namespace" (przestrze� nazw) w kt�rym si� znajduje ("Page_Instructions"), aby nie wykona� jej przypadkiem w innych namespacach z plik�w do��czonych za pomoc� s�owa kluczowego "using". Mo�na si� sprzecza�, �e jest to niepotrzebne, gdy� klasa ma ustawiony modyfikator dost�pu "internal", ale dla ostro�no�ci i czytelno�ci kodu lepiej trzyma� si� estetyki.
+        public static void ShowInstruction(int option) {   // Dlaczego "internal"? Ponieważ chcę ograniczyć wykonywanie tej metody i innych w tej klasie do wyłącznie tego "namespace" (przestrzeń nazw) w którym się znajduje ("Page_Instructions"), aby nie wykonać jej przypadkiem w innych namespacach z plików dołączonych za pomocą słowa kluczowego "using". Można się sprzeczać, że jest to niepotrzebne, gdyż klasa ma ustawiony modyfikator dostępu "internal", ale dla ostrożności i czytelności kodu lepiej trzymać się estetyki.
             switch (option) {
                 case 0: Guide.Game(); break;
                 case 1: Guide.Ships(); break;
@@ -75,7 +75,7 @@ namespace Page_Instructions {
                     "\n55555 - aircraft carrier");
                 Console.WriteLine("\nDestruction all ships indicate win these player who do it the opposite player.");
             }
-            public static void Board() { // NA PODSTAWIE PONI�SZEGO ZAPISU ZAIMPLEMENTUJ DWIE P�TLE, KT�RE B�D� ODPOWIEDZIALNE ZA WK�ADANIE ODPOWIEDNICH DANYCH Z IF'�W DO METODY "GlobalMethod.Color()"!!!
+            public static void Board() { // NA PODSTAWIE PONIŻSZEGO ZAPISU ZAIMPLEMENTUJ DWIE PĘTLE, KTÓRE BĘDĄ ODPOWIEDZIALNE ZA WKŁADANIE ODPOWIEDNICH DANYCH Z IF'óW DO METODY "GlobalMethod.Color()"!!!
                 Console.Write("Cursor: ");
                 GlobalMethod.Color("{ }", ConsoleColor.White);
                 Console.Write(" | Sea area: ");
@@ -99,7 +99,7 @@ namespace Page_Instructions {
                 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 1:
                 // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
                 GlobalMethod.Color("|    ", ConsoleColor.Green);
-                GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);  // Ka�dy tego typu element b�dzie mia� dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
+                GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);  // Każdy tego typu element będzie miał dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
                 GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
                 GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
                 GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
@@ -134,7 +134,7 @@ namespace Page_Instructions {
                 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 2:
                 // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
                 GlobalMethod.Color("|    ", ConsoleColor.Green);
-                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Ka�dy tego typu element b�dzie mia� dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Każdy tego typu element będzie miał dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
                 GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
                 GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
                 GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
@@ -169,7 +169,7 @@ namespace Page_Instructions {
                 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 3:
                 // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
                 GlobalMethod.Color("|    ", ConsoleColor.Green);
-                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Ka�dy tego typu element b�dzie mia� dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Każdy tego typu element będzie miał dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
                 GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
                 GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
                 GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
@@ -204,7 +204,7 @@ namespace Page_Instructions {
                 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 4:
                 // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
                 GlobalMethod.Color("|    ", ConsoleColor.Green);
-                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Ka�dy tego typu element b�dzie mia� dwie wersje. Pierwsza: " O  ". Druga: "O", gdzie przed jest "{", a po "} ".
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Każdy tego typu element będzie miał dwie wersje. Pierwsza: " O  ". Druga: "O", gdzie przed jest "{", a po "} ".
                 GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
                 GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
                 GlobalMethod.Color(" 3  ", ConsoleColor.Gray);
@@ -239,7 +239,7 @@ namespace Page_Instructions {
                 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 5:
                 // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
                 GlobalMethod.Color("|    ", ConsoleColor.Green);
-                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Ka�dy tego typu element b�dzie mia� dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Każdy tego typu element będzie miał dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
                 GlobalMethod.Color(" X  ", ConsoleColor.Red);
                 GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
                 GlobalMethod.Color(" 3  ", ConsoleColor.Gray);
@@ -274,7 +274,7 @@ namespace Page_Instructions {
                 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 6:
                 // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
                 GlobalMethod.Color("|    ", ConsoleColor.Green);
-                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Ka�dy tego typu element b�dzie mia� dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Każdy tego typu element będzie miał dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
                 GlobalMethod.Color(" X  ", ConsoleColor.Red);
                 GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
                 GlobalMethod.Color(" 3  ", ConsoleColor.Gray);
@@ -313,7 +313,7 @@ namespace Page_Instructions {
                 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 7:
                 // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
                 GlobalMethod.Color("|    ", ConsoleColor.Green);
-                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Ka�dy tego typu element b�dzie mia� dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Każdy tego typu element będzie miał dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
                 GlobalMethod.Color(" X  ", ConsoleColor.Red);
                 GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
                 GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
@@ -348,7 +348,7 @@ namespace Page_Instructions {
                 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 8:
                 // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
                 GlobalMethod.Color("|    ", ConsoleColor.Green);
-                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Ka�dy tego typu element b�dzie mia� dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Każdy tego typu element będzie miał dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
                 GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
                 GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
                 GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
@@ -383,7 +383,7 @@ namespace Page_Instructions {
                 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 9:
                 // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
                 GlobalMethod.Color("|    ", ConsoleColor.Green);
-                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Ka�dy tego typu element b�dzie mia� dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Każdy tego typu element będzie miał dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
                 GlobalMethod.Color(" O  ", ConsoleColor.DarkYellow);
                 GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
                 GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
@@ -418,7 +418,7 @@ namespace Page_Instructions {
                 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - WIERSZ 10:
                 // - - - - - - - - - - - - - - - - - - - - - - - LEWO:
                 GlobalMethod.Color("|    ", ConsoleColor.Green);
-                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Ka�dy tego typu element b�dzie mia� dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
+                GlobalMethod.Color(" ~  ", ConsoleColor.Blue);  // Każdy tego typu element będzie miał dwie wersje. Pierwsza: " O  ". Druga: "{O} ".
                 GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
                 GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
                 GlobalMethod.Color(" ~  ", ConsoleColor.Blue);
