@@ -9,17 +9,25 @@ using Page_PVC;
 using Page_Ranking;
 using System.Runtime.InteropServices;
 using static System.Net.Mime.MediaTypeNames;
+using System.Runtime.CompilerServices;
 
 namespace Library_GlobalMethods {
     public class GlobalMethod {   // Metody o zasięgu globalnym, które mają niezmiennną formę i mogą przydać się wszędzie.
-        public static void PlaySound(string filepath, bool isLoop) {
-            try {
-                Menu.currSound.SoundLocation = filepath;
-                if (isLoop) Menu.currSound.PlayLooping();
-                //Console.WriteLine("Music state: Found and active.\n\n" + filepath);
+        public class SoundControl {
+            public static void PlaySound(string filepath) {
+                try {
+                    Menu.currentSound.SoundLocation = filepath;
+                    if (Options.options[Options.optMusic] == "ON") Menu.currentSound.PlayLooping();
+                }
+                catch (Exception error) {
+                    Console.WriteLine("Music file is not found. Check your filepath.\n\n" + error);
+                }
             }
-            catch (Exception error) {
-                Console.WriteLine("Music state: Not found. Check your filepath.\n\n" + error);
+            public static void StopSound() {
+                Menu.currentSound.Stop();
+            }
+            public static void ResumeSound() {
+                Menu.currentSound.PlayLooping();
             }
         }
         public static (bool, string, string) UploadFile(string filePath) {
