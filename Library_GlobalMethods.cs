@@ -31,7 +31,7 @@ namespace Library_GlobalMethods {
             }
             catch (IOException error) {
                 fileInfo.Item1 = false;
-                fileInfo.Item3 = "An error has been detected while reading the file:\n\n" + error.Message;
+                fileInfo.Item3 = "File cannot be found.\n\n" + error.Message;
             }
             return fileInfo;
         }
@@ -59,7 +59,7 @@ namespace Library_GlobalMethods {
             }
             return text;
         }
-        public static string StringPlayers(List<List<string>> playersInfo) {   // Zamienia stringową listę dwówymiarową na stringa według formatu dla players.
+        public static string StringPlayersInfo(List<List<string>> playersInfo) {   // Zamienia stringową listę dwówymiarową na stringa według formatu dla players.
             string text = "";
             List<List<string>> content = playersInfo;
             for (int i = 0; i < content.Count; i++) {
