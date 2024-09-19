@@ -9,6 +9,7 @@ namespace Page_Credits {
     public class Credits {
         public static int page_ID = 4;
         public static bool isPage = false;
+        public static int pageLineLength = 105;
         public static List<ConsoleKey> usingKeys = new List<ConsoleKey> { ConsoleKey.Backspace };
         public void RenderPage() {
             SoundSwitch();
@@ -17,7 +18,7 @@ namespace Page_Credits {
                 Console.Clear();
                 RenderTitle();
                 OpenHTML();
-                key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys);   // PÍtla ta uniemoøliwia prze≥adowanie strony kiedy kliknie siÍ niew≥aúciwy klawisz.
+                key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys);   // Pƒôtla ta uniemo≈ºliwia prze≈Çadowanie strony kiedy kliknie siƒô niew≈Ça≈õciwy klawisz.
             }
         }
         public static void SoundSwitch() {
@@ -38,7 +39,7 @@ namespace Page_Credits {
             Console.WriteLine("BB    BB  BB    BB  BB BB BB  BB          BB        BB    BB  BB        BB    BB  BB     BB           BB");
             Console.WriteLine("BB    BB  BB    BB  BB BB BB  BB          BB        BB    BB  BB        BB   BB   BB     BB           BB");
             Console.WriteLine(" BBBBBB   BB    BB  BB BB BB  BBBBBBBB     BBBBBBB  BB    BB  BBBBBBBB  BBBBBB    BB     BB     BBBBBBB ");
-            GlobalMethod.Page.RenderDottedLine(105);
+            GlobalMethod.Page.RenderDottedLine(pageLineLength);
             Console.WriteLine("CREDITS: | Back to menu: [Backspace]\n");
         }
         public static void OpenHTML() {
@@ -53,7 +54,7 @@ namespace Page_Credits {
                 };
                 process.Start();
             } else {
-                Console.WriteLine("Plik credits.html nie zosta≥ znaleziony.");
+                Console.WriteLine("Plik credits.html nie zosta≈Ç znaleziony.");
             }
         }
     }
