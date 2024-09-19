@@ -1,4 +1,4 @@
-// Te przestrzenie nazw s� tu POTRZEBNE, poniewa� metoda MENU odwo�uje si� do klas tych przestrzeni nazw.
+// Te przestrzenie nazw są tu POTRZEBNE, ponieważ metoda MENU odwołuje się do klas tych przestrzeni nazw.
 using System;
 using System.Media;
 using System.Collections.Generic;
@@ -11,14 +11,14 @@ using Library_GlobalMethods;
 
 namespace Page_Menu {
     public class Menu {
-        public static int page_ID = 99;   // Musia�em dla wywo�ania metody "LoopCorrectKey", poniewa� wymaga przekazania ID strony.
+        public static int page_ID = 99;   // Musiałem dla wywołania metody "LoopCorrectKey", ponieważ wymaga przekazania ID strony.
         public static int pageLineLength = 105;
-        public static SoundPlayer currSound = new SoundPlayer();   // WE� TO SPR�BUJ PRZENIE�� DO MENU Z try/catch
+        public static SoundPlayer currSound = new SoundPlayer();   // WEŹ TO SPRÓBUJ PRZENIEŚĆ DO MENU Z try/catch
         public static bool PLAY_menu = false;
         public static bool PLAY_credits = false;
         public static bool isPage = true;
         public static string[] buttons = { "PVC Mode", "Instruction", "Ranking", "Options", "Credits", "Exit" };
-        public static int currentButton = 0;   // Zawsze pierwszy, bo chc� mie� kursor na g�rze!
+        public static int currentButton = 0;   // Zawsze pierwszy, bo chcę mieć kursor na górze!
         public static List<ConsoleKey> usingKeys = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Enter };
         public static Tuple<PVC, Instructions, Ranking, Options, Credits> pages = new Tuple<PVC, Instructions, Ranking, Options, Credits>(
                 new PVC(),
@@ -29,16 +29,16 @@ namespace Page_Menu {
         );
         public static void RenderPage() {
             SoundSwitch();
-            ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);   // Dowolna niew�a�ciwa warto��.
+            ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);   // Dowolna niewłaściwa wartość.
             while (isPage == true) {
                 Console.Clear();
                 RenderTitle();
                 GlobalMethod.Page.RenderButtons(buttons, currentButton);
-                key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys);   // P�tla ta uniemo�liwia prze�adowanie strony kiedy kliknie si� niew�a�ciwy klawisz.
+                key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys);   // Pętla ta uniemożliwia przeładowanie strony kiedy kliknie się niewłaściwy klawisz.
                 RenderPage(key, pages);
-                currentButton = GlobalMethod.Page.MoveButtons(buttons, currentButton, key);   // Poruszanie si� po przyciskach (obliczenia):
+                currentButton = GlobalMethod.Page.MoveButtons(buttons, currentButton, key);   // Poruszanie się po przyciskach (obliczenia):
             }
-            Environment.Exit(0);   // U�y�em tej metody, poniewa� po zapisie danych w klasie "Options" pojawia si� problem z wyj�ciem z pragramu. Strasznie d�ugo si� zamyka.
+            Environment.Exit(0);   // Użyłem tej metody, ponieważ po zapisie danych w klasie "Options" pojawia się problem z wyjściem z pragramu. Strasznie długo się zamyka.
         }
         public static void SoundSwitch() {
             if (PLAY_menu == false && PLAY_credits == false) {
@@ -60,7 +60,7 @@ namespace Page_Menu {
             Console.WriteLine("BB    BB  BB    BB     BB        BB     BB        BB              BB  BB    BB  BB  BB           BB");
             Console.WriteLine("BBBBBBB   BB    BB     BB        BB     BBBBBBBB  BBBBBBBB  BBBBBBB   BB    BB  BB  BB          BBBBBBBB");
             GlobalMethod.Page.RenderDottedLine(pageLineLength);
-            Console.WriteLine("MENU: | Moving: arrows/[W][S] | Click = ENTER\n");
+            Console.WriteLine("MENU: | Moving: arrows/[W][S] | Click = [ENTER]\n");
         }
         public static void RenderPage(ConsoleKeyInfo key, Tuple<PVC, Instructions, Ranking, Options, Credits> pages) {
             if (key.Key == ConsoleKey.Enter) {
