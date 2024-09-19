@@ -16,6 +16,7 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
         public static int pageLineLength = 64;
         public static int maxShipsLengthScore = 25;
         public const int buttonsAmount = 7;   // Musiałem ustawić const, aby zadeklarować długość tablicy.
+        public static int optReset_PVC = 5;   // Metoda "DetermineShips" i "DeleteUsers" odwołuje się do danych opcji resetu, a przy dodawaniu opcji nowego trybu, opcję tą mogę przenieść np. do dołu, jeżeli zajdzie taka potrzeba.
         public static string[] buttons = new string[buttonsAmount];
         public static string[] buttonsTitle = { 
             "Music:                                 ",
@@ -24,7 +25,7 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
             "Show only top 10 players in ranking:   ",
             "Change ships in battle - PVC mode:     ",
             "Reset ranking data - - - PVC mode:     ",   // [DATA], [CLEAN], [EMPTY]
-            "Delete users - - - - - - PVC mode:     "    // [CONTENT]. [EMPTY]   
+            "Delete users - - - - - - PVC mode:     "    // [CONTENT], [EMPTY]   
         };
         public static string[] guide = new string[buttonsAmount] {
             "ON = [E] | OFF = [D]",
@@ -39,8 +40,8 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
             "delete = [P] -> Write \"yes\" or \"no\" -> [ENTER]"
         };
         public static int currentButton = 0;   // Zawsze pierwszy, bo chcę mieć kursor na górze!
-        //public static List<ConsoleKey> usingKeys = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace };
-        public static List<ConsoleKey> usingKeys_DEFAULT = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace, ConsoleKey.E, ConsoleKey.D };
+        public static List<ConsoleKey> usingKeys_ENABLE = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace, ConsoleKey.E };
+        public static List<ConsoleKey> usingKeys_DISABLE = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace, ConsoleKey.D };
         public static List<ConsoleKey> usingKeys_CHANGE = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace, ConsoleKey.C };
         public static List<ConsoleKey> usingKeys_RESET_IS = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace, ConsoleKey.R };
         public static List<ConsoleKey> usingKeys_RESET_NOT = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace};
@@ -52,7 +53,7 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
         public static string errorFile = "";  // błąd odczutu bieżącego pliku = index
         public static string errorCorrectContent = "";  // błąd odczutu bieżącego pliku = index
         public static List<string> options = new List<string>();
-        public static bool isUpdate = false;
+        public static bool isDisable = false;
         public void RenderPage() {
             System.ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);   // Dowolny niewłaściwy klawisz.
             while (isPage == true) {
@@ -123,7 +124,7 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
                 case 4: key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_CHANGE); break;   // ostatni argument = zestaw odpowiednich przycisków dla: metody "DetermineShips"
                 case 5: key = (Ranking.isFile[0] && Ranking.isCorrectContent[0] == true) ? GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_RESET_IS) : GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_RESET_NOT); break;   // ostatni argument = zestaw odpowiednich przycisków dla: metody "DetermineShips"
                 case 6: key = (Ranking.isFile[0] && Ranking.isCorrectContent[0] == true) ? GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_DELETE_IS) : GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_DELETE_NOT); break;
-                default: key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_DEFAULT); break;   // ostatni argument = zestaw odpowiednich przycisków dla: metody "EnableDisable"
+                default: key = (isDisable == true) ? GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_DISABLE) : GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_ENABLE); break;
             }
             return key;
         }
@@ -178,15 +179,17 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
         public class Data {
             public static void EnableDisable(int option, ConsoleKeyInfo key) {
                 // Jako, że tak fajnie się składa, że te metody odpalają się po walidacji przycisków, przekazujesz przycisk tutaj i robisz robotę z właściwymi funkcjami :)
+                string prev = options[option];   // Zabezpieczenie, mające na celu zablokowanie akcji klawisza [E] i [D] klikniętego więcej niż jeden raz podczas bycia na tej samej opcji - np: [E] -> [E], aby nie przeładowała się niepotrzebnie strona za drugim razem.
+                string next = "";
+                isDisable = (options[option] == "ON") ? isDisable = true : isDisable = false;
                 if (key.Key == ConsoleKey.E) {
                     options[option] = "ON";
-                    isUpdate = true;
-                    Update();
-                    if (isUpdate) Update();
+                    next = options[option];
+                    if (prev != next) PageUpdate();
                 } else if (key.Key == ConsoleKey.D) {
                     options[option] = "OFF";
-                    isUpdate = true;
-                    if (isUpdate) Update();
+                    next = options[option];
+                    if (prev != next) PageUpdate();
                 }
             }
             public static void DetermineShips(int option, ConsoleKeyInfo key, string modeText, int modeNum) {
@@ -245,6 +248,13 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
                                         dtrmError = "The total ships lenght is more than max limit: " + maxShipsLengthScore + ".\nYour total length: " + totalLength + ". Write correct value.";
                                     }
                                 }
+                                if (isBad == false) {
+                                    newValue = SortShips(newValue);   // Sortowanie statków. | Sortowanie jest przeniesione do walidacji na takie same statki, aby nie wywoływać tej metody dwukrotnie.
+                                    if (options[option] == newValue) {   // Walidacja na takie same statki jak poprzednio.
+                                        isBad = true;
+                                        dtrmError = "The ships fleet is the same like previous ship fleet. You must change them.";
+                                    }
+                                }
                             }
                         } else {
                             isBad = true;
@@ -256,9 +266,9 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
                             isLoop = false;
                             Console.CursorVisible = true;
                             bool isReset = false;
-                            if (options[5] != "CLEAN") {   // Jako, że wcześniej resetowanie ma walidację na [EMPTY] (w kontekście "Ranking.isCorrectContent[modeNum]"), nie muszę robić tu dodatkowej i zbędnej walidacji.
+                            if (options[optReset_PVC] == "DATA") {
                                 Console.WriteLine("\nDo you want create new ship fleet in " + modeText + " mode?" +
-                                "\nYou cause RESET all " + modeText + " mode ranking data." +
+                                "\nYou will cause RESET all " + modeText + " mode ranking data." +
                                 "\n\nWrite \"yes\" or \"no\".");
                                 string answer = "";
                                 bool confirmLoop = true;
@@ -277,10 +287,10 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
                             }
                             Console.CursorVisible = false;
                             if (isReset) ResetProper(modeText, modeNum);
-                            options[option] = SortShips(newValue);
-                            if (options[5] == "EMPTY") options[5] = "EMPTY";
-                            else if (options[5] == "DATA" && isReset == true) options[5] = "CLEAN";
-                            Update();
+                            options[option] = newValue;   // Sortowanie jest przeniesione do walidacji na takie same statki, aby nie wywoływać tej metody dwukrotnie.
+                            if (options[optReset_PVC] == "EMPTY") options[optReset_PVC] = "EMPTY";
+                            else if (options[optReset_PVC] == "DATA" && isReset == true) options[optReset_PVC] = "CLEAN";
+                            PageUpdate();
                         }
                     }
                 }
@@ -320,7 +330,7 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
                             Console.CursorVisible = false;
                             ResetProper(modeText, modeNum);
                             options[option] = "CLEAN";
-                            Update();
+                            PageUpdate();
                         } else if (answer == "no") {
                             isLoop = false;
                             Console.CursorVisible = false;
@@ -332,26 +342,15 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
                 }
             }
             public static void ResetProper(string modeText, int modeNum) {   // Zrobiłem tą metodę, aby metoda "DetermineShips" miała dostęp do metody "WYŁĄCZNIE" kasującej.
-                //string fileContent = "";
                 List<List<string>> playersInfo = Ranking.modePlayersInfo[modeNum];
                 for (int i = 0; i < playersInfo.Count; i++) {
                     for (int j = 0; j < playersInfo[i].Count; j++) {
-                        if (j > 1 && j < playersInfo[i].Count - 1) playersInfo[i][j] = "0";    // Zaczynamy od indeksu z danymi liczbowymi, a kończymy na przedostatnim indeksie z danymi liczbowymi (przed danymi procentowymi)
-                        //fileContent += playersInfo[i][j];
-                        //if (j < playersInfo[i].Count - 1) fileContent += "#";
+                        if (j > 1 && j < playersInfo[i].Count - 1) playersInfo[i][j] = "0";    // Zaczynamy od indeksu z danymi liczbowymi (index [2] - trzeci element), a kończymy na przedostatnim indeksie z danymi liczbowymi (przed danymi procentowymi)
                     }
                     playersInfo[i][playersInfo[i].Count - 1] = "0%";   // Ostatni index - dane procentowe
-                    //if (i < playersInfo.Count - 1) fileContent += "*";
                 }
                 Ranking.modePlayersInfo[modeNum] = playersInfo;
-                File.WriteAllText("players_" + modeText + ".txt", GlobalMethod.StringPlayers(playersInfo));
-                for (int i = 0; i < Ranking.modePlayersInfo[modeNum].Count; i++) {
-                    for (int j = 0; j < Ranking.modePlayersInfo[modeNum][i].Count; j++) {
-                        Console.Write(" " + Ranking.modePlayersInfo[modeNum][i][j] + " ");
-                    }
-                    Console.WriteLine();
-                }
-                Console.ReadLine();
+                File.WriteAllText("players_" + modeText + ".txt", GlobalMethod.StringPlayersInfo(playersInfo));
             }
             public static void DeleteUsers(int option, ConsoleKeyInfo key, string modeText, int modeNum) {
                 if (key.Key == ConsoleKey.P) {
@@ -365,12 +364,18 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
                             isLoop = false;
                             Console.CursorVisible = false;
                             File.WriteAllText("players_" + modeText + ".txt", "");   // Kasowanie użytkowników.
-                            Ranking.modePlayersInfo[modeNum] = BackDataFile("players_" + modeText + ".txt");   // Aktualizacja danych gry z pliku. | Ranking.modePlayersInfo[modeNum] = 0 = PVC mode
+                            string fileContent = File.ReadAllText("players_" + modeText + ".txt");
+                            List<List<string>> playersInfo = new List<List<string>>();
+                            List<string> players = new List<string>(fileContent.Split('*'));
+                            for (int i = 0; i < players.Count; i++) {
+                                playersInfo.Add(new List<string>(players[i].Split('#')));
+                            }
+                            Ranking.modePlayersInfo[modeNum] = playersInfo;   // Aktualizacja danych gry z pliku. | Ranking.modePlayersInfo[modeNum] = 0 = PVC mode
                             Ranking.isCorrectContent[modeNum] = false;
                             Ranking.errorCorrectContent[modeNum] = "This data file is empty. Create new user and play game.";
                             options[option] = "EMPTY";
-                            options[5] = "EMPTY";   // Wartość opcji od resetowania. | Kiedy pojawi/wią się gracze z początkowymi danymi, albo zostanie aktywowana metoda resetu = [CLEAN] | Kiedy dane któegokolwiek z graczy zostaną uzupełnione = [DATA]
-                            Update();
+                            options[optReset_PVC] = "EMPTY";   // Wartość opcji od resetowania. | Kiedy pojawi/wią się gracze z początkowymi danymi, albo zostanie aktywowana metoda resetu = [CLEAN] | Kiedy dane któegokolwiek z graczy zostaną uzupełnione = [DATA]
+                            PageUpdate();
                         } else if (answer == "no") {
                             isLoop = false;
                             Console.CursorVisible = false;
@@ -381,8 +386,7 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
                     }
                 }
             }
-            public static void Update() {
-                isUpdate = false;
+            public static void PageUpdate() {
                 Upload.FillButtons();
                 string fileContent = "";
                 for (int i = 0; i < buttonsAmount; i++) {
@@ -392,15 +396,6 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
                 File.WriteAllText(optionsPath, fileContent);
                 Options page = new Options();
                 page.RenderPage();
-            }
-            public static List<List<string>> BackDataFile(string filePath) {   // Metoda jest wywoływana po kiedy "pierwszy warunek walidacji danych" jest spełniony (w "Options").
-                string fileContent = File.ReadAllText(filePath);
-                List<List<string>> playersInfo = new List<List<string>>();
-                List<string> players = new List<string>(fileContent.Split('*'));
-                for (int i = 0; i < players.Count; i++) {
-                    playersInfo.Add(new List<string>(players[i].Split('#')));
-                }
-                return playersInfo;
             }
         }
     }
