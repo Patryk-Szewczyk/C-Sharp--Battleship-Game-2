@@ -13,7 +13,7 @@ namespace Page_Menu {
     public class Menu {
         public static int page_ID = 99;   // Musiałem dla wywołania metody "LoopCorrectKey", ponieważ wymaga przekazania ID strony.
         public static int pageLineLength = 105;
-        public static SoundPlayer currSound = new SoundPlayer();   // WEŹ TO SPRÓBUJ PRZENIEŚĆ DO MENU Z try/catch
+        public static SoundPlayer currentSound = new SoundPlayer();
         public static bool PLAY_menu = false;
         public static bool PLAY_credits = false;
         public static bool isPage = true;
@@ -42,12 +42,12 @@ namespace Page_Menu {
         }
         public static void SoundSwitch() {
             if (PLAY_menu == false && PLAY_credits == false) {
-                GlobalMethod.PlaySound("Soundtracks/Menu/473915__xhale303__synthwave-loop.wav", true);
+                GlobalMethod.SoundControl.PlaySound("Soundtracks/Menu/473915__xhale303__synthwave-loop.wav");
                 PLAY_menu = true;
             } else if (PLAY_menu == false && PLAY_credits == true) {
-                currSound.Stop();
+                currentSound.Stop();
                 PLAY_credits = false;
-                GlobalMethod.PlaySound("Soundtracks/Menu/473915__xhale303__synthwave-loop.wav", true);
+                GlobalMethod.SoundControl.PlaySound("Soundtracks/Menu/473915__xhale303__synthwave-loop.wav");
                 PLAY_menu = true;
             }
         }
