@@ -23,12 +23,12 @@ namespace Page_Credits {
         }
         public static void SoundSwitch() {
             if (Menu.PLAY_menu == true && Menu.PLAY_credits == false) {
-                Menu.currSound.Stop();
+                Menu.currentSound.Stop();
                 Menu.PLAY_credits = true;
                 Menu.PLAY_menu = false;
             }
             if (Menu.PLAY_menu == false && Menu.PLAY_credits == true) {
-                GlobalMethod.PlaySound("Soundtracks/Credits/stay-retro-124958.wav", true);
+                GlobalMethod.SoundControl.PlaySound("Soundtracks/Credits/stay-retro-124958.wav");
             }
         }
         public static void RenderTitle() {
