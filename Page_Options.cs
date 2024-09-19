@@ -15,20 +15,22 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
         public static bool isPage = false;
         public static int pageLineLength = 64;
         public static int maxShipsLengthScore = 25;
-        public const int buttonsAmount = 7;   // Musiałem ustawić const, aby zadeklarować długość tablicy.
-        public static int optReset_PVC = 5;   // Metoda "DetermineShips" i "DeleteUsers" odwołuje się do danych opcji resetu, a przy dodawaniu opcji nowego trybu, opcję tą mogę przenieść np. do dołu, jeżeli zajdzie taka potrzeba.
+        public const int buttonsAmount = 6;   // Musiałem ustawić const, aby zadeklarować długość tablicy.
+        public static int optMusic = 0;  // W razie zmiany pozycji tego przycisku odpowiedzialnego za włącznie i wyłączanie muzyki.
+        public static int optEqualShipsAI = 1;
+        public static int optTopPlayers = 2;
+        public static int optReset_PVC = 4;   // Metoda "DetermineShips" i "DeleteUsers" odwołuje się do danych opcji resetu, a przy dodawaniu opcji nowego trybu, opcję tą mogę przenieść np. do dołu, jeżeli zajdzie taka potrzeba.
+        public static int optDelete_PVC = 5;
         public static string[] buttons = new string[buttonsAmount];
         public static string[] buttonsTitle = { 
-            "Music:                                 ",
-            "Sound effects:                         ",
-            "Equal ships direction for AI:          ",
-            "Show only top 10 players in ranking:   ",
-            "Change ships in battle - PVC mode:     ",
-            "Reset ranking data - - - PVC mode:     ",   // [DATA], [CLEAN], [EMPTY]
-            "Delete users - - - - - - PVC mode:     "    // [CONTENT], [EMPTY]   
+            "Music:                                 ",   // OK
+            "Equal ships direction for AI:          ",   // "RandomShips"
+            "Show only top 10 players in ranking:   ",   // "RenderRanking"
+            "Change ships in battle - PVC mode:     ",   // OK
+            "Reset ranking data - - - PVC mode:     ",   // [DATA], [CLEAN], [EMPTY] | [DATA] = kiedy gracz ma wpisywany wynik do pliku
+            "Delete users - - - - - - PVC mode:     "    // [CONTENT], [EMPTY] | [CONTENT] = kiedy jest dodawany nowy gracz
         };
         public static string[] guide = new string[buttonsAmount] {
-            "ON = [E] | OFF = [D]",
             "ON = [E] | OFF = [D]",
             "ON = [E] | OFF = [D]",
             "ON = [E] | OFF = [D]",
@@ -81,14 +83,14 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
         }
         public static void ShowOption(int currentButton, ConsoleKeyInfo key) {
             switch (currentButton) {
-                case 4:
+                case 3:
                     Console.WriteLine("GUIDE: " + guide[currentButton]);
                     Data.DetermineShips(currentButton, key, "PVC", 0);
                     break;
-                case 5:
+                case 4:
                     if (Ranking.isFile[0] == true) {   // Walidacja na zawartość pliku danego rankingu | 0 = PVC mode
                         if (Ranking.isCorrectContent[0] == true) {
-                            if (options[currentButton] != "CLEAN") {   // Jeżeli zawartość danego rankingu została już wyczyszczona, nie ma potrzeby czyścić jej ponownie.
+                            if (options[currentButton] == "DATA") {   // Jeżeli zawartość danego rankingu została już wyczyszczona, nie ma potrzeby czyścić jej ponownie.
                                 Console.WriteLine("GUIDE: " + guide[currentButton]);
                                 Data.ResetRanking(currentButton, key, "PVC", 0);
                             } else {
@@ -101,7 +103,7 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
                         Console.WriteLine(Ranking.errorFile[0]);
                     }
                     break;
-                case 6:
+                case 5:
                     if (Ranking.isFile[0] == true) {
                         if (Ranking.isCorrectContent[0] == true) {
                             Console.WriteLine("GUIDE: " + guide[currentButton]);
@@ -121,9 +123,9 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
         }
         public static ConsoleKeyInfo SelectLoopCorrectKey(int currentButton, int page_ID, ConsoleKeyInfo key) {
             switch (currentButton) {
-                case 4: key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_CHANGE); break;   // ostatni argument = zestaw odpowiednich przycisków dla: metody "DetermineShips"
-                case 5: key = (Ranking.isFile[0] && Ranking.isCorrectContent[0] == true) ? GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_RESET_IS) : GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_RESET_NOT); break;   // ostatni argument = zestaw odpowiednich przycisków dla: metody "DetermineShips"
-                case 6: key = (Ranking.isFile[0] && Ranking.isCorrectContent[0] == true) ? GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_DELETE_IS) : GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_DELETE_NOT); break;
+                case 3: key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_CHANGE); break;   // ostatni argument = zestaw odpowiednich przycisków dla: metody "DetermineShips"
+                case 4: key = (Ranking.isFile[0] && Ranking.isCorrectContent[0] == true) ? GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_RESET_IS) : GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_RESET_NOT); break;   // ostatni argument = zestaw odpowiednich przycisków dla: metody "DetermineShips"
+                case 5: key = (Ranking.isFile[0] && Ranking.isCorrectContent[0] == true) ? GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_DELETE_IS) : GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_DELETE_NOT); break;
                 default: key = (isDisable == true) ? GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_DISABLE) : GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_ENABLE); break;
             }
             return key;
@@ -140,7 +142,7 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
             public static void UploadData(string filePath) {
                 isCorrectContent = true;
                 errorCorrectContent = "";
-                string errorMessage = "The data format in \"" + filePath + "\" is not correct. It should be: data*data*data*data*data*data";
+                string errorMessage = "The data format in \"" + filePath + "\" is not correct. It should be: " + GenerateFormat(buttonsAmount);
                 string content = File.ReadAllText(filePath);
                 string fileContent = GlobalMethod.TrimAllContent(content);
                 List<string> info = new List<string>();
@@ -175,6 +177,14 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
                     buttons[i] = buttonsTitle[i] + "[" + options[i] + "]";
                 }
             }
+            public static string GenerateFormat(int optionsNum) {
+                string format = "";
+                for (int i = 0; i < optionsNum; i++) {
+                    format += "data";
+                    if (i < optionsNum - 1) format += "*";
+                }
+                return format;
+            }
         }
         public class Data {
             public static void EnableDisable(int option, ConsoleKeyInfo key) {
@@ -185,10 +195,12 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
                 if (key.Key == ConsoleKey.E) {
                     options[option] = "ON";
                     next = options[option];
+                    if (option == optMusic && prev != next) GlobalMethod.SoundControl.ResumeSound();
                     if (prev != next) PageUpdate();
                 } else if (key.Key == ConsoleKey.D) {
                     options[option] = "OFF";
                     next = options[option];
+                    if (option == optMusic && prev != next) GlobalMethod.SoundControl.StopSound();
                     if (prev != next) PageUpdate();
                 }
             }
@@ -275,8 +287,8 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
                                 while (confirmLoop) {
                                     answer = Console.ReadLine();
                                     if (answer == "yes") {
-                                        isReset = true;
                                         confirmLoop = false;
+                                        isReset = true;
                                     } else if (answer == "no") {
                                         confirmLoop = false;
                                         Console.WriteLine("\n\nYou can now move to other options.");
@@ -286,10 +298,12 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
                                 }
                             }
                             Console.CursorVisible = false;
+                            if (options[optReset_PVC] == "DATA" && isReset == true) {
+                                if (isReset) options[option] = newValue;   // Sortowanie jest przeniesione do walidacji na takie same statki, aby nie wywoływać tej metody dwukrotnie.
+                                options[optReset_PVC] = "CLEAN";
+                            }
+                            if (options[optReset_PVC] == "CLEAN" || options[optReset_PVC] == "EMPTY") options[option] = newValue;
                             if (isReset) ResetProper(modeText, modeNum);
-                            options[option] = newValue;   // Sortowanie jest przeniesione do walidacji na takie same statki, aby nie wywoływać tej metody dwukrotnie.
-                            if (options[optReset_PVC] == "EMPTY") options[optReset_PVC] = "EMPTY";
-                            else if (options[optReset_PVC] == "DATA" && isReset == true) options[optReset_PVC] = "CLEAN";
                             PageUpdate();
                         }
                     }
@@ -355,7 +369,7 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
             public static void DeleteUsers(int option, ConsoleKeyInfo key, string modeText, int modeNum) {
                 if (key.Key == ConsoleKey.P) {
                     Console.CursorVisible = true;
-                    Console.WriteLine("\nDo you want delete " + modeText + " users?\n");
+                    Console.WriteLine("\n\nDo you want delete " + modeText + " users?\n");
                     string answer = "";
                     bool isLoop = true;
                     while (isLoop) {
