@@ -15,7 +15,7 @@ namespace Page_Ranking {
         public static int currentButton = 0;   // Zawsze pierwszy, bo chcę mieć kursor na górze!
         public static List<ConsoleKey> usingKeys = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace };
         public static string playersLimit_OPTION = "no-limit";   // "no-limit" / "limit"
-        public const int detailsAmount = 5;
+        public const int detailsAmount = 6;
         public static List<bool> isFile = new List<bool>();  // plik = index
         public static List<bool> isCorrectContent = new List<bool>();  // plik = index
         public static List<string> errorFile = new List<string>();  // błąd odczutu bieżącego pliku = index
@@ -71,7 +71,7 @@ namespace Page_Ranking {
                 isCorrectContent.Add(true);
                 errorCorrectContent.Add("");
                 modePlayersInfo.Add(new List<List<string>>());
-                string errorMessage = "The data format is \"" + filePath + "\" not correct. It should be:\nuser#data#data#data#data*user#data#data#data#data#data";
+                string errorMessage = "The data format is \"" + filePath + "\" not correct. It should be:\n" + GenerateFormat(detailsAmount);
                 string content = File.ReadAllText(filePath);
                 string fileContent = GlobalMethod.TrimAllContent(content);
                 List<List<string>> playersInfo = new List<List<string>>();
@@ -108,21 +108,32 @@ namespace Page_Ranking {
                     }
                 }
             }
+            public static string GenerateFormat(int optionsNum) {   //user#data#data#data#data#data*user#data#data#data#data#data
+                string format = "";
+                for (int i = 0; i < 2; i++) {
+                    if (i == 0) format += "user#";
+                    if (i == 1) format += "*user#";
+                    for (int j = 0; j < optionsNum; j++) {
+                        format += "data";
+                        if (j < optionsNum - 1) format += "#";
+                    }
+                }
+                return format;
+            }
         }
         public class Data {
             public static void SortData(int mode) {
                 bool isEnd = false;
-                string cell = "";
-                while (isEnd == false) {   // Sortowanie graczy względem ilości zdobytych punktów.
+                string field = "";
+                int scoreIdx = 2;
+                while (isEnd == false) {   // Sortowanie bąbelkowe graczy względem ilości zdobytych punktów.
                     isEnd = true;
                     for (int i = 0; i < modePlayersInfo[mode].Count - 1; i++) {
-                        // Porównujemy po ilości zdobytych punktów (kolumna 1), zmieniamy warunek na < 0
-                        if (int.Parse(modePlayersInfo[mode][i][1]) < int.Parse(modePlayersInfo[mode][i + 1][1])) {
-                            // Zamiana miejscami całego wiersza
+                        if (int.Parse(modePlayersInfo[mode][i][scoreIdx]) < int.Parse(modePlayersInfo[mode][i + 1][scoreIdx])) {
                             for (int j = 0; j < modePlayersInfo[mode][i].Count; j++) {
-                                cell = modePlayersInfo[mode][i][j];
+                                field = modePlayersInfo[mode][i][j];
                                 modePlayersInfo[mode][i][j] = modePlayersInfo[mode][i + 1][j];
-                                modePlayersInfo[mode][i + 1][j] = cell;
+                                modePlayersInfo[mode][i + 1][j] = field;
                             }
                             isEnd = false;
                         }
@@ -135,14 +146,19 @@ namespace Page_Ranking {
 
 
 
-                // Najpierw zrób działające opcje!
+                for (int i = 0; i < modePlayersInfo[mode].Count; i++) {
+                    for (int j = 0; j < modePlayersInfo[mode][i].Count; j++) {
+                        Console.Write(" " + modePlayersInfo[mode][i][j]);
+                    }
+                    Console.WriteLine();
+                }
 
 
 
 
 
 
-                string space_TH = "";
+                /*string space_TH = "";
                 string minus_TH = "";
                 string space_TD = "";
                 string place = "";
@@ -151,7 +167,7 @@ namespace Page_Ranking {
                 int longestFirstCol = 0;
                 int firstColAdd = 0;
                 int playersLimit = 10;   // Limit wyświetlanych graczy.
-                for (int i = 0; i < modePlayersInfo[mode].Count; i++) {                  // Najpierw posortuje ich, bo ja ci z najdłuższą nazwą zostali dodani na początku, to będą uwzględnieni, nawet pomimo ich niższego wyniku niż TOP 10.
+                for (int i = 0; i < modePlayersInfo[mode].Count; i++) {   // Najpierw posortuje ich, bo ja ci z najdłuższą nazwą zostali dodani na początku, to będą uwzględnieni, nawet pomimo ich niższego wyniku niż TOP 10.
                     playerLength = modePlayersInfo[mode][i][0].Length;
                     if (playerLength > longestSpace) {
                         longestSpace = playerLength;
@@ -163,11 +179,11 @@ namespace Page_Ranking {
                 for (int i = 0; i < longestSpace; i++) {
                     space_TH += " ";
                     minus_TH += "-";
-                }
+                }*/
 
 
 
-                Console.WriteLine("|" + minus_TH + "---------------------------------------------------|");
+                /*Console.WriteLine("|" + minus_TH + "---------------------------------------------------|");
                 Console.WriteLine("| PLACE | PLAYER" + space_TH + " | SCORE | SUNKEN | LOSS | ACCURATE |");
                 Console.WriteLine("|" + minus_TH + "---------------------------------------------------|");
                 if (playersLimit_OPTION == "limit") {
@@ -217,7 +233,7 @@ namespace Page_Ranking {
 
 
 
-                }
+                }*/
             }
         }
     }
