@@ -1,13 +1,14 @@
-﻿using Library_GlobalMethods;
+using Library_GlobalMethods;
+using Page_Ranking;
 using System;
 using System.Collections.Generic;
 
 namespace Page_Intro {
     public class Intro {
         public static void RenderPage() {
-            Intro.Info();
-
-
+            Info();
+            Ranking.Upload.SearchFile("players_PVC.txt");   // Jeżeli chcesz podpiąć kolejny ranking jedyne co trzeba zrobić, to dodać nazwę przycisku i skopiować tą metodę z podaniem nazwy pliku z rozszerzeniem.
+            Ranking.Upload.SearchFile("players_PVP.txt");   // Jest to tutaj, aby można było kożystać z danych rankingu w stronie Options.
             // Test losowania statków:
             /*List<int> plansza = new List<int>();
             List<int> statki = new List<int> { 2, 2, 2, 3, 3, 4, 5 };   // Limit 10 statków o długości 10
@@ -28,7 +29,7 @@ namespace Page_Intro {
             }*/
 
 
-            Intro.LoopCorrectKey();
+            LoopCorrectKey();
         }
         private static void Info() {
             Console.WriteLine("\nBattleship 2 AI [Version 1.00]" +
@@ -44,7 +45,7 @@ namespace Page_Intro {
                 "\nit in the browser. To do this, select the \"select another application\" option and" +
                 "\nselect a browser. Additionally maximize your browser window." +
                 "\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -" +
-                "\n\nTo continue, click ENTER key:\n");
+                "\n\nTo continue, click [ENTER] key:\n");
         }
         private static void LoopCorrectKey() {
             System.ConsoleKeyInfo corrKey;
