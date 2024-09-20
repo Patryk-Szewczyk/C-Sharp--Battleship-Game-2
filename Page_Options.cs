@@ -357,11 +357,13 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
             }
             public static void ResetProper(string modeText, int modeNum) {   // Zrobiłem tą metodę, aby metoda "DetermineShips" miała dostęp do metody "WYŁĄCZNIE" kasującej.
                 List<List<string>> playersInfo = Ranking.modePlayersInfo[modeNum];
+                int battleIDX = 1;
                 for (int i = 0; i < playersInfo.Count; i++) {
                     for (int j = 0; j < playersInfo[i].Count; j++) {
                         if (j > 1 && j < playersInfo[i].Count - 1) playersInfo[i][j] = "0";    // Zaczynamy od indeksu z danymi liczbowymi (index [2] - trzeci element), a kończymy na przedostatnim indeksie z danymi liczbowymi (przed danymi procentowymi)
                     }
                     playersInfo[i][playersInfo[i].Count - 1] = "0%";   // Ostatni index - dane procentowe
+                    playersInfo[i][battleIDX] = "?";
                 }
                 Ranking.modePlayersInfo[modeNum] = playersInfo;
                 File.WriteAllText("players_" + modeText + ".txt", GlobalMethod.StringPlayersInfo(playersInfo));
