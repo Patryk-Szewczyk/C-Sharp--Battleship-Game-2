@@ -2,13 +2,14 @@ using System;
 using Page_Menu;
 using Library_GlobalMethods;
 using System.Collections.Generic;
+using Page_Options;
 
 namespace Page_Instructions {
     public class Instructions {
         public static int page_ID = 1;
         public static bool isPage = false;
         public static int pageLineLength = 97;
-        public static string[] buttons = { "Game", "Ships", "Board"};
+        public static string[] buttons = { "Game", "Ships", "Board", "Score"};
         public static int currentButton = 0;   // Zawsze pierwszy, bo chcę mieć kursor na górze!
         public static List<ConsoleKey> usingKeys = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace };
         public void RenderPage() {
@@ -39,6 +40,7 @@ namespace Page_Instructions {
                 case 0: Guide.Game(); break;
                 case 1: Guide.Ships(); break;
                 case 2: Guide.Board(); break;
+                case 3: Guide.Score(); break;
             }
         }
         public class Guide {
@@ -67,13 +69,15 @@ namespace Page_Instructions {
                     "\n18. After game players can play game again or back to menu.");
             }
             public static void Ships() {
-                Console.WriteLine("You have 5 ships, about these length:" +
+                Console.WriteLine("You have 5 base ships, about these length:" +
                     "\n1 - patrol boat" +
                     "\n22 - frigate" +
                     "\n333 - submarine" +
                     "\n4444 - destroyer" +
                     "\n55555 - aircraft carrier");
                 Console.WriteLine("\nDestruction all ships indicate win these player who do it the opposite player.");
+                Console.WriteLine("\nAdditionaly you can change ship's length and them amount in options," +
+                    "\nup to 9 length and max occuped field limit: " + Options.maxShipsLengthScore);
             }
             public static void Board() { // NA PODSTAWIE PONIŻSZEGO ZAPISU ZAIMPLEMENTUJ DWIE PĘTLE, KTÓRE BĘDĄ ODPOWIEDZIALNE ZA WKŁADANIE ODPOWIEDNICH DANYCH Z IF'óW DO METODY "GlobalMethod.Color()"!!!
                 Console.Write("Cursor: ");
@@ -451,6 +455,9 @@ namespace Page_Instructions {
                 Console.WriteLine();
                 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                 GlobalMethod.Color("|_______________________________________________|     |_______________________________________________|", ConsoleColor.Green);
+            }
+            public static void Score() {
+                Console.WriteLine("Score");
             }
         }
     }
