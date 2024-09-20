@@ -14,7 +14,7 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
         public static int page_ID = 3;   // ZMIEŃ "static" NA "const" i sprawdź w dokumentacji jej zasięg w kontekście KLASY !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         public static bool isPage = false;
         public static int pageLineLength = 64;
-        public static int maxShipsLengthScore = 25;
+        public static int maxShipsLengthScore = 30;
         public const int buttonsAmount = 6;   // Musiałem ustawić const, aby zadeklarować długość tablicy.
         public static int optMusic = 0;  // W razie zmiany pozycji tego przycisku odpowiedzialnego za włącznie i wyłączanie muzyki.
         public static int optEqualShipsAI = 1;
