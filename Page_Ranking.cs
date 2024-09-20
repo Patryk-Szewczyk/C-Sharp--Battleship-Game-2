@@ -152,9 +152,9 @@ namespace Page_Ranking {
                 string playerSpace = tuple.Item1;
                 string minusSpace = tuple.Item2;
                 int longestNameSpace = tuple.Item3;
-                Console.WriteLine("|------------------------" + minusSpace + "------------------------------------|");
-                Console.WriteLine("| PLACE | " + secondColTit + playerSpace + " | SCORE | BATTLE | SUNKEN | LOSS | ACCURATE |");
-                Console.WriteLine("|------------------------" + minusSpace + "------------------------------------|");
+                Console.WriteLine("|------------------------" + minusSpace + "-----------------------------------------|");
+                Console.WriteLine("| PLACE | " + secondColTit + playerSpace + " | BEST SCORE | BATTLE | SUNKEN | LOSS | ACCURATE |");
+                Console.WriteLine("|------------------------" + minusSpace + "-----------------------------------------|");
                 string data = "";
                 int place = 0;
                 int score = 0;
@@ -180,10 +180,13 @@ namespace Page_Ranking {
                                 break;
                             case 1:
                                 score = int.Parse(data);
-                                if (score <= 9) Console.Write("    " + data + " | ");
-                                else if (score > 9 && score <= 99) Console.Write("   " + data + " | ");
-                                else if (score > 99 && score <= 999) Console.Write("  " + data + " | ");
-                                else if (score > 999 && score <= 9999) Console.Write(" " + data + " | ");
+                                if (score <= 9) Console.Write("         " + data + " | ");
+                                else if (score > 9 && score <= 99) Console.Write("        " + data + " | ");
+                                else if (score > 99 && score <= 999) Console.Write("       " + data + " | ");
+                                else if (score > 999 && score <= 9999) Console.Write("      " + data + " | ");
+                                else if (score > 9999 && score <= 99999) Console.Write("     " + data + " | ");
+                                else if (score > 99999 && score <= 999999) Console.Write("    " + data + " | ");
+                                else if (score > 999999 && score <= 9999999) Console.Write("   " + data + " | ");   // Maksymalny wynik przy aktualnym punktowaniu: 8 812 382 punktów.
                                 break;
                             case 2:
                                 if (data == "win") Console.Write("   " + data + " | ");
@@ -208,7 +211,7 @@ namespace Page_Ranking {
                                 break;
                         }
                     }
-                    Console.WriteLine("\n|" + minusSpace + "------------------------------------------------------------|");
+                    Console.WriteLine("\n|" + minusSpace + "-----------------------------------------------------------------|");
                 }
             }
             public static (string, string, int) MakeSpaces(int mode, int playersLimit, string secondColTit) {
