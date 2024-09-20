@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Library_GlobalMethods;
 using Page_Menu;
+using Page_Options;
 
 namespace Page_Ranking {
     public class Ranking {
@@ -73,7 +76,7 @@ namespace Page_Ranking {
                 modePlayersInfo.Add(new List<List<string>>());
                 string errorMessage = "The data format is \"" + filePath + "\" not correct. It should be:\n" + GenerateFormat(detailsAmount);
                 string content = File.ReadAllText(filePath);
-                string fileContent = GlobalMethod.TrimAllContent(content);
+                string fileContent = content;   // WCZEŚNIEJ: GlobalMethod.TrimAllContent(content); Opuściłe, aby "TrimAllContent" nie pożerał spacji w nazwie użytkowników. Potrzeba ogólnie lepszej walidacji (szczególnie na odpowiednie dopuszczalne wartości dla każdego z pól danych użytkowanika), ale lepsza taka niż nic - podstawowa.
                 List<List<string>> playersInfo = new List<List<string>>();
                 if (fileContent == "") {
                     isCorrectContent[errorCorrectContent.Count - 1] = false;
@@ -141,99 +144,100 @@ namespace Page_Ranking {
                 };
             }
             public static void RenderData(int mode) {
-                // WAŻNE: Zrób w opcjach tak, aby można było sprawdzić wyniki wszystkich graczy lub 10 najlepszych
-                // i dostosujpod tym względem sprawdzenie długości nazwy najdłuszżego gracza pod tym względem!
-
-
-
-                for (int i = 0; i < modePlayersInfo[mode].Count; i++) {
-                    for (int j = 0; j < modePlayersInfo[mode][i].Count; j++) {
-                        Console.Write(" " + modePlayersInfo[mode][i][j]);
+                string secondColTit = "PLAYER";
+                int players = modePlayersInfo[mode].Count;
+                int limit = (Options.options[Options.optTopPlayers] == "ON") ? 10 : players;
+                limit = (players < limit) ? players : limit;
+                (string, string, int) tuple = MakeSpaces(mode, limit, secondColTit);
+                string playerSpace = tuple.Item1;
+                string minusSpace = tuple.Item2;
+                int longestNameSpace = tuple.Item3;
+                Console.WriteLine("|------------------------" + minusSpace + "------------------------------------|");
+                Console.WriteLine("| PLACE | " + secondColTit + playerSpace + " | SCORE | BATTLE | SUNKEN | LOSS | ACCURATE |");
+                Console.WriteLine("|------------------------" + minusSpace + "------------------------------------|");
+                string data = "";
+                int place = 0;
+                int score = 0;
+                int sunken = 0;
+                int loss = 0;
+                int accurate = 0;
+                string extraSpace = "";
+                for (int i = 0; i < limit; i++) {
+                    Console.Write("| ");
+                    place++;
+                    if (place <= 9) Console.Write("   " + place + ". | ");
+                    else if (place > 9 && place <= 99) Console.Write("  " + place + ". | ");
+                    else if (place > 99 && place <= 999) Console.Write(" " + place + ". | ");
+                    else if (place > 999 && place <= 9999) Console.Write(place + ". | ");
+                    for (int j = 0; j < Ranking.detailsAmount; j++) {
+                        if (j == 1) data = modePlayersInfo[mode][i][j + 1];   // Cała ta sztuczka polega na zamianie miejscamidwóch pól danych z indeksu [1] i [2] (zamiana naprzemian).
+                        else if (j == 2) data = modePlayersInfo[mode][i][j - 1];   // Nie chciałem zmieniać układu danych w pliku, bo zaburzyłoby to formę aktualnej metody resetu danych graczy, przez co musiałbym tam robić tego samego typu operację, co tutaj.
+                        else data = modePlayersInfo[mode][i][j];
+                        switch (j) {
+                            case 0:
+                                extraSpace = ExtraPlayerSpace(longestNameSpace, data.Length);
+                                Console.Write(data + extraSpace + " | ");
+                                break;
+                            case 1:
+                                score = int.Parse(data);
+                                if (score <= 9) Console.Write("    " + data + " | ");
+                                else if (score > 9 && score <= 99) Console.Write("   " + data + " | ");
+                                else if (score > 99 && score <= 999) Console.Write("  " + data + " | ");
+                                else if (score > 999 && score <= 9999) Console.Write(" " + data + " | ");
+                                break;
+                            case 2:
+                                if (data == "win") Console.Write("   " + data + " | ");
+                                else if (data == "win") Console.Write("  " + data + " | ");
+                                else if (data == "?") Console.Write("     " + data + " | ");
+                                break;
+                            case 3:
+                                sunken = int.Parse(data);
+                                if (sunken <= 9) Console.Write("     " + data + " | ");
+                                else if (sunken > 9 && sunken <= 99) Console.Write("    " + data + " | ");
+                                break;
+                            case 4:
+                                loss = int.Parse(data);
+                                if (loss <= 9) Console.Write("   " + data + " | ");
+                                else if (loss > 9 && loss <= 99) Console.Write("  " + data + " | ");
+                                break;
+                            case 5:
+                                accurate = int.Parse(data.Substring(0, data.Length - 1));
+                                if (accurate <= 9) Console.Write("      " + data + " |");   // UWAGA!!!!!!!!!! Ostatni elemnt NIE MA " ", po "|"
+                                else if (accurate > 9 && accurate <= 99) Console.Write("     " + data + " |");
+                                else if (accurate > 99 && accurate <= 999) Console.Write("    " + data + " |");
+                                break;
+                        }
                     }
-                    Console.WriteLine();
+                    Console.WriteLine("\n|" + minusSpace + "------------------------------------------------------------|");
                 }
-
-
-
-
-
-
-                /*string space_TH = "";
-                string minus_TH = "";
-                string space_TD = "";
-                string place = "";
-                int longestSpace = -1;
+            }
+            public static (string, string, int) MakeSpaces(int mode, int playersLimit, string secondColTit) {
                 int playerLength = 0;
-                int longestFirstCol = 0;
-                int firstColAdd = 0;
-                int playersLimit = 10;   // Limit wyświetlanych graczy.
-                for (int i = 0; i < modePlayersInfo[mode].Count; i++) {   // Najpierw posortuje ich, bo ja ci z najdłuższą nazwą zostali dodani na początku, to będą uwzględnieni, nawet pomimo ich niższego wyniku niż TOP 10.
+                int longestSpace = 0;
+                int limit = (modePlayersInfo[mode].Count < playersLimit) ? modePlayersInfo[mode].Count : playersLimit;
+                for (int i = 0; i < limit; i++) {
                     playerLength = modePlayersInfo[mode][i][0].Length;
                     if (playerLength > longestSpace) {
                         longestSpace = playerLength;
                     }
                 }
-                longestSpace -= 6;   // Player (odjąć długość)
+                (string, string, int) space = ("", "", 0);
+                space.Item3 = longestSpace;
+                longestSpace -= secondColTit.Length;   // Odejmujemy długość tytułu drugiej kolumny ("PLAYERS").
                 longestSpace = (longestSpace <= 0) ? 0 : longestSpace;
-                longestFirstCol = longestSpace + 6;
                 for (int i = 0; i < longestSpace; i++) {
-                    space_TH += " ";
-                    minus_TH += "-";
-                }*/
-
-
-
-                /*Console.WriteLine("|" + minus_TH + "---------------------------------------------------|");
-                Console.WriteLine("| PLACE | PLAYER" + space_TH + " | SCORE | SUNKEN | LOSS | ACCURATE |");
-                Console.WriteLine("|" + minus_TH + "---------------------------------------------------|");
-                if (playersLimit_OPTION == "limit") {
-                    playersLimit = (modePlayersInfo[mode].Count >= playersLimit) ? playersLimit : modePlayersInfo[mode].Count;   // Ograniczony limit wyświetlania graczy w rankingu.
-                } else if (playersLimit_OPTION == "no-limit") {
-                    playersLimit = modePlayersInfo[mode].Count;   // Wyświetlanie graczy bez limitu.
+                    space.Item1 += " ";
+                    space.Item2 += "-";
                 }
-                for (int i = 0; i < playersLimit; i++) {
-                    Console.Write("| ");
-                    for (int j = 0; j < 5; j++) {
-                        if (j == 0) {
-                            place = (i + 1).ToString() + ".";
-                            space_TD = "";
-                            firstColAdd = 5 - place.Length;   // 5 - PLACE
-                            for (int k = 0; k < firstColAdd; k++) {
-                                space_TD += " ";
-                            }
-                            Console.Write(space_TD + place + " | ");
-                            space_TD = "";
-                            firstColAdd = longestFirstCol - modePlayersInfo[mode][i][j].Length;
-                            for (int k = 0; k < firstColAdd; k++) {
-                                space_TD += " ";
-                            }
-                            Console.Write(modePlayersInfo[mode][i][j] + space_TD + " | ");
-                        } else if (j == 1) {
-                            space_TD = "";
-                            firstColAdd = 5 - modePlayersInfo[mode][i][j].Length;   // 5 - Score
-                            for (int k = 0; k < firstColAdd; k++) {
-                                space_TD += " ";
-                            }
-                            Console.Write(space_TD + modePlayersInfo[mode][i][j] + " | ");
-                        } else if (j == 2) {
-                            Console.Write("     " + modePlayersInfo[mode][i][j] + " | ");
-                        } else if (j == 3) {
-                            Console.Write("   " + modePlayersInfo[mode][i][j] + " | ");
-                        } else if (j == 4) {
-                            space_TD = "";
-                            firstColAdd = 8 - modePlayersInfo[mode][i][j].Length;   // 8 - ACCURATE
-                            for (int k = 0; k < firstColAdd; k++) {
-                                space_TD += " ";
-                            }
-                            Console.Write(space_TD + modePlayersInfo[mode][i][j] + " | ");
-                        }
-                    }
-                    Console.WriteLine("\n|" + minus_TH + "---------------------------------------------------|");
-
-
-
-
-                }*/
+                return (space.Item1, space.Item2, space.Item3);
+            }
+            public static string ExtraPlayerSpace(int longestNameLength, int currentNameLength) {
+                int length = longestNameLength - currentNameLength;
+                string extraSpace = "";
+                for (int i = 0; i < length; i++) {
+                    extraSpace += " ";
+                }
+                return extraSpace;
             }
         }
     }
