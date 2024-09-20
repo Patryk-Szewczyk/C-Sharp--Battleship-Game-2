@@ -457,7 +457,18 @@ namespace Page_Instructions {
                 GlobalMethod.Color("|_______________________________________________|     |_______________________________________________|", ConsoleColor.Green);
             }
             public static void Score() {
-                Console.WriteLine("Score");
+                Console.WriteLine("Ship hit: +25 points" +
+                    "\n\nShip sunk: +50 points / 1 length square" +
+                    "\n\nCombo for the next hit shot: The first combo gains 10 points." +
+                    "\nEach next combo is calculated based on the formula:" +
+                    "\n[value of the previous combo] * 1.6 = [value of the new combo]." +
+                    "\nFor example:" +
+                    "\n1. hit: nic" +
+                    "\n2. hit: +10 pointst" +
+                    "\n3. hit: ~(10 pointst * 1.6) = +16 pointst" +
+                    "\n4. hit: ~(16 pointst * 1.6) = +25 pointst" +
+                    "\n5. hit: ~(25 pointst * 1.6) = +40 pointst" +
+                    "\nResult of all combo: +91 pointst");
             }
         }
     }
