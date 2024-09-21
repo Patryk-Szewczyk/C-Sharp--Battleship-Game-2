@@ -14,9 +14,12 @@ namespace Page_Ranking {
         public static int page_ID = 2;
         public static bool isPage = false;
         public static int pageLineLength = 64;
-        public static string[] buttons = { "PVC Mode", "PVP Mode"};
+        public static string[] buttons = { "PVC Mode"/*, "PVP Mode"*/};
         public static int currentButton = 0;   // Zawsze pierwszy, bo chcę mieć kursor na górze!
-        public static List<ConsoleKey> usingKeys = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace };
+        public static List<ConsoleKey> usingKeys_STANDARD = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace };
+        public static List<ConsoleKey> usingKeys_TOP = new List<ConsoleKey> { ConsoleKey.S,ConsoleKey.DownArrow, ConsoleKey.Backspace };
+        public static List<ConsoleKey> usingKeys_DOWN = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.UpArrow, ConsoleKey.Backspace };
+        public static List<ConsoleKey> usingKeys_ONE = new List<ConsoleKey> { ConsoleKey.Backspace };
         public static string playersLimit_OPTION = "no-limit";   // "no-limit" / "limit"
         public const int detailsAmount = 6;
         public static List<bool> isFile = new List<bool>();  // plik = index
@@ -34,7 +37,7 @@ namespace Page_Ranking {
                 GlobalMethod.Page.RenderButtons(buttons, currentButton);
                 GlobalMethod.Page.RenderDottedLine(pageLineLength);
                 ShowRanking(currentButton);
-                key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys);
+                key = GlobalMethod.Page.SelectUsingKeys(currentButton, page_ID, key, buttons, usingKeys_STANDARD, usingKeys_TOP, usingKeys_DOWN, usingKeys_ONE);
                 currentButton = GlobalMethod.Page.MoveButtons(buttons, currentButton, key);
             }
         }
