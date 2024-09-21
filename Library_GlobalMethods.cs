@@ -96,6 +96,15 @@ namespace Library_GlobalMethods {
                     }
                 }
             }
+            public static ConsoleKeyInfo SelectUsingKeys(int currentButton, int page_ID, ConsoleKeyInfo key, string[] buttons, List<ConsoleKey> usingKeys_STANDARD, List<ConsoleKey> usingKeys_TOP, List<ConsoleKey> usingKeys_DOWN, List<ConsoleKey> usingKeys_ONE) {
+                if (buttons.Length == 1) key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_ONE);
+                else {
+                    if (currentButton == 0) key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_TOP);// Dlaczego nie użyłem "switch"? Ponieważ w switch można używać tylko stałych wartości i z tego powodu nie mogę zrobić stałej obliczonej na podstawie: "const int down = buttons.Length - 1;"
+                    else if (currentButton == buttons.Length - 1) key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_DOWN);
+                    else key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_STANDARD);
+                }
+                return key;
+            }
             public static ConsoleKeyInfo LoopCorrectKey(int page_ID, ConsoleKeyInfo key, List<ConsoleKey> usingKeys) {
                 bool isCorrSign = false;
                 while (isCorrSign == false) {
