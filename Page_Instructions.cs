@@ -11,7 +11,10 @@ namespace Page_Instructions {
         public static int pageLineLength = 97;
         public static string[] buttons = { "Game", "Ships", "Board", "Score"};
         public static int currentButton = 0;   // Zawsze pierwszy, bo chcę mieć kursor na górze!
-        public static List<ConsoleKey> usingKeys = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace };
+        public static List<ConsoleKey> usingKeys_STANDARD = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace };
+        public static List<ConsoleKey> usingKeys_TOP = new List<ConsoleKey> { ConsoleKey.S, ConsoleKey.DownArrow, ConsoleKey.Backspace };
+        public static List<ConsoleKey> usingKeys_DOWN = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.UpArrow, ConsoleKey.Backspace };
+        public static List<ConsoleKey> usingKeys_ONE = new List<ConsoleKey> { ConsoleKey.Backspace };
         public void RenderPage() {
             ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);   // Dowolna niewłaściwa wartość.
             while (isPage == true) {
@@ -20,7 +23,7 @@ namespace Page_Instructions {
                 GlobalMethod.Page.RenderButtons(buttons, currentButton);
                 GlobalMethod.Page.RenderDottedLine(pageLineLength);
                 ShowInstruction(currentButton);
-                key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys);   // Pętla ta uniemożliwia przeładowanie strony kiedy kliknie się niewłaściwy klawisz.
+                key = GlobalMethod.Page.SelectUsingKeys(currentButton, page_ID, key, buttons, usingKeys_STANDARD, usingKeys_TOP, usingKeys_DOWN, usingKeys_ONE);   // Pętla ta uniemożliwia przeładowanie strony kiedy kliknie się niewłaściwy klawisz.
                 currentButton = GlobalMethod.Page.MoveButtons(buttons, currentButton, key);   // Poruszanie się po przyciskach (obliczenia).
             }
         }
@@ -474,6 +477,9 @@ namespace Page_Instructions {
     }
 }
 
+
+
+// Zaaplikuj to przez pętlę, tak aby można było wyświetlić dwie plansze!
 //"\n _______________________________________________ " + "     " + " _______________________________________________ " +
 //"\n|                                               |" + "     " + "|                                               |" +
 //"\n|                                               |" + "     " + "|                                               |" +
