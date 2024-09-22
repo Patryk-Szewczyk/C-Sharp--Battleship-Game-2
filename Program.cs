@@ -31,6 +31,7 @@ namespace Game {
             Console.WriteLine(error);
             Console.WriteLine("\nFor this reason, the option data necessary for the application to run cannot be downloaded." +
                 "\n\n\nClick [ENTER] to exit the program.");
+            Console.ReadLine();
         }
     }
 }
