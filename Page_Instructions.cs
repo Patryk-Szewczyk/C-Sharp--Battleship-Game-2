@@ -1,7 +1,6 @@
 using System;
-using Page_Menu;
-using Library_GlobalMethods;
 using System.Collections.Generic;
+using Library_GlobalMethods;
 using Page_Options;
 
 namespace Page_Instructions {
@@ -36,7 +35,7 @@ namespace Page_Instructions {
             Console.WriteLine("BB  BB BB BB        BB     BB     BB    BB  BB    BB  BB           BB     BB  BB    BB  BB BB BB");
             Console.WriteLine("BB  BB  BBBB  BBBBBBB      BB     BB    BB   BBBBBB    BBBBBBB     BB     BB   BBBBBB   BB  BBBB");
             GlobalMethod.Page.RenderDottedLine(pageLineLength);
-            Console.WriteLine("INSTRUCTION: | Moving: arrows/[W][S] | Back to menu: [Backspace]\n");
+            Console.WriteLine("INSTRUCTION: | Moving: arrows/[W][S] | Back to menu: [BACKSPACE]\n");
         }
         public static void ShowInstruction(int option) {   // Dlaczego "internal"? Ponieważ chcę ograniczyć wykonywanie tej metody i innych w tej klasie do wyłącznie tego "namespace" (przestrzeń nazw) w którym się znajduje ("Page_Instructions"), aby nie wykonać jej przypadkiem w innych namespacach z plików dołączonych za pomocą słowa kluczowego "using". Można się sprzeczać, że jest to niepotrzebne, gdyż klasa ma ustawiony modyfikator dostępu "internal", ale dla ostrożności i czytelności kodu lepiej trzymać się estetyki.
             switch (option) {
@@ -466,11 +465,11 @@ namespace Page_Instructions {
                     "\nEach next combo is calculated based on the formula:" +
                     "\n[value of the previous combo] * 1.6 = [value of the new combo]." +
                     "\nFor example:" +
-                    "\n1. hit: nic" +
-                    "\n2. hit: +10 pointst" +
-                    "\n3. hit: ~(10 pointst * 1.6) = +16 pointst" +
-                    "\n4. hit: ~(16 pointst * 1.6) = +25 pointst" +
-                    "\n5. hit: ~(25 pointst * 1.6) = +40 pointst" +
+                    "\n1. hit: nothing" +
+                    "\n2. hit: +10 points" +
+                    "\n3. hit: ~(10 points * 1.6) = +16 points" +
+                    "\n4. hit: ~(16 points * 1.6) = +25 points" +
+                    "\n5. hit: ~(25 points * 1.6) = +40 points" +
                     "\nResult of all combo: +91 pointst");
             }
         }
