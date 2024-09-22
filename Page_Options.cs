@@ -1,12 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
-using System.Web;
 using Library_GlobalMethods;
-using Page_Menu;
-using Page_PVC;
 using Page_Ranking;
 
 namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM ZAPISUJESZ I ZAMIENIASZ DANE ODNOŚNIE OPCJI!!!
@@ -43,12 +38,14 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
         };
         public static int currentButton = 0;   // Zawsze pierwszy, bo chcę mieć kursor na górze!
         public static List<ConsoleKey> usingKeys_ENABLE = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace, ConsoleKey.E };
+        public static List<ConsoleKey> usingKeys_ENABLE_FIRST = new List<ConsoleKey> { ConsoleKey.S, ConsoleKey.DownArrow, ConsoleKey.Backspace, ConsoleKey.E };
         public static List<ConsoleKey> usingKeys_DISABLE = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace, ConsoleKey.D };
+        public static List<ConsoleKey> usingKeys_DISABLE_FIRST = new List<ConsoleKey> { ConsoleKey.S, ConsoleKey.DownArrow, ConsoleKey.Backspace, ConsoleKey.D };
         public static List<ConsoleKey> usingKeys_CHANGE = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace, ConsoleKey.C };
         public static List<ConsoleKey> usingKeys_RESET_IS = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace, ConsoleKey.R };
         public static List<ConsoleKey> usingKeys_RESET_NOT = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace};
-        public static List<ConsoleKey> usingKeys_DELETE_IS = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace, ConsoleKey.P };
-        public static List<ConsoleKey> usingKeys_DELETE_NOT = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace };
+        public static List<ConsoleKey> usingKeys_DELETE_IS = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.UpArrow, ConsoleKey.Backspace, ConsoleKey.P };
+        public static List<ConsoleKey> usingKeys_DELETE_NOT = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.UpArrow, ConsoleKey.Backspace };
         public const string optionsPath = "options.txt";   // Zmienna ta jest używana w klasie "Program"
         public static bool isFile = true;
         public static bool isCorrectContent = true;
@@ -65,7 +62,7 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
                 GlobalMethod.Page.RenderButtons(buttons, currentButton);
                 GlobalMethod.Page.RenderDottedLine(pageLineLength);
                 ShowOption(currentButton, key);
-                key = SelectLoopCorrectKey(currentButton, page_ID, key);
+                key = SelectUsingKeys(currentButton, page_ID, key);
                 //key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys);
                 currentButton = GlobalMethod.Page.MoveButtons(buttons, currentButton, key);
             }
@@ -79,7 +76,7 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
             Console.WriteLine("BB    BB  BB           BB     BB  BB    BB  BB BB BB        BB");
             Console.WriteLine(" BBBBBB   BB           BB     BB   BBBBBB   BB  BBBB  BBBBBBB ");
             GlobalMethod.Page.RenderDottedLine(pageLineLength);
-            Console.WriteLine("OPTIONS: | Moving: arrows/[W][S] | Back to menu: [Backspace]\n");
+            Console.WriteLine("OPTIONS: | Moving: arrows/[W][S] | Back to menu: [BACKSPACE]\n");
         }
         public static void ShowOption(int currentButton, ConsoleKeyInfo key) {
             switch (currentButton) {
@@ -121,8 +118,9 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
                     break;
             }
         }
-        public static ConsoleKeyInfo SelectLoopCorrectKey(int currentButton, int page_ID, ConsoleKeyInfo key) {
+        public static ConsoleKeyInfo SelectUsingKeys(int currentButton, int page_ID, ConsoleKeyInfo key) {
             switch (currentButton) {
+                case 0: key = (isDisable == true) ? GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_DISABLE_FIRST) : GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_ENABLE_FIRST); break;
                 case 3: key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_CHANGE); break;   // ostatni argument = zestaw odpowiednich przycisków dla: metody "DetermineShips"
                 case 4: key = (Ranking.isFile[0] && Ranking.isCorrectContent[0] == true) ? GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_RESET_IS) : GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_RESET_NOT); break;   // ostatni argument = zestaw odpowiednich przycisków dla: metody "DetermineShips"
                 case 5: key = (Ranking.isFile[0] && Ranking.isCorrectContent[0] == true) ? GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_DELETE_IS) : GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_DELETE_NOT); break;
@@ -310,7 +308,11 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
                 }
             }
             public static string SortShips(string newValue) {
-                List<int> values = new List<string>(newValue.Split(',')).Select(int.Parse).ToList();
+                List<string> content = new List<string>(newValue.Split(','));
+                List<int> values = new List<int>();
+                for (int i = 0; i < content.Count; i++) {
+                    values.Add(int.Parse(content[i]));
+                }
                 bool isChange = true;
                 int smaller = 0;
                 while (isChange == true) {   // Algroytm sortowania bąbelkowego. Złożoność obliczeniowa maksymalna: O(n^2)
@@ -357,13 +359,18 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
             }
             public static void ResetProper(string modeText, int modeNum) {   // Zrobiłem tą metodę, aby metoda "DetermineShips" miała dostęp do metody "WYŁĄCZNIE" kasującej.
                 List<List<string>> playersInfo = Ranking.modePlayersInfo[modeNum];
-                int battleIDX = 1;
+                const int user = 0;
+                const int battle = 3;
+                const int accurate = 6;
                 for (int i = 0; i < playersInfo.Count; i++) {
                     for (int j = 0; j < playersInfo[i].Count; j++) {
-                        if (j > 1 && j < playersInfo[i].Count - 1) playersInfo[i][j] = "0";    // Zaczynamy od indeksu z danymi liczbowymi (index [2] - trzeci element), a kończymy na przedostatnim indeksie z danymi liczbowymi (przed danymi procentowymi)
+                        switch(j) {
+                            case user: break;
+                            case battle: playersInfo[i][j] = "?"; break;
+                            case accurate: playersInfo[i][playersInfo[i].Count - 1] = "0%"; break;
+                            default: playersInfo[i][j] = "0"; break;
+                        }
                     }
-                    playersInfo[i][playersInfo[i].Count - 1] = "0%";   // Ostatni index - dane procentowe
-                    playersInfo[i][battleIDX] = "?";
                 }
                 Ranking.modePlayersInfo[modeNum] = playersInfo;
                 File.WriteAllText("players_" + modeText + ".txt", GlobalMethod.StringPlayersInfo(playersInfo));
