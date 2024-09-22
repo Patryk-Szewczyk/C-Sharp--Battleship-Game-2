@@ -7,7 +7,7 @@ namespace Game {
     internal class Program {
         private static void Main(string[] args) {
             bool isCorrect = false;
-            Console.Title = "Battleship Game 2";
+            Console.Title = "Battleship Game 2: AI";
             Console.CursorVisible = false;
             Intro.RenderPage();
             Options.Upload.SearchFile(Options.optionsPath);   // Nie trzeba tworzyć instancji klasy "Options", gdyż używam zmiennych globalnych statycznych tej klasy. Utworzona instancja tej klasy będzie zawierała zaktualisowane dane.
@@ -31,7 +31,6 @@ namespace Game {
             Console.WriteLine(error);
             Console.WriteLine("\nFor this reason, the option data necessary for the application to run cannot be downloaded." +
                 "\n\n\nClick [ENTER] to exit the program.");
-            Console.ReadLine();
         }
     }
 }
