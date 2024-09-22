@@ -1,12 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.IO;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using Library_GlobalMethods;
-using Page_Menu;
 using Page_Options;
 
 namespace Page_Ranking {
@@ -21,12 +16,13 @@ namespace Page_Ranking {
         public static List<ConsoleKey> usingKeys_DOWN = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.UpArrow, ConsoleKey.Backspace };
         public static List<ConsoleKey> usingKeys_ONE = new List<ConsoleKey> { ConsoleKey.Backspace };
         public static string playersLimit_OPTION = "no-limit";   // "no-limit" / "limit"
-        public const int detailsAmount = 6;
+        public const int detailsAmount = 7;
         public static List<bool> isFile = new List<bool>();  // plik = index
         public static List<bool> isCorrectContent = new List<bool>();  // plik = index
         public static List<string> errorFile = new List<string>();  // błąd odczutu bieżącego pliku = index
         public static List<string> errorCorrectContent = new List<string>();  // błąd odczutu bieżącego pliku = index
         public static List<List<List<string>>> modePlayersInfo = new List<List<List<string>>>();
+        public static string errorEmpty = "This data file is empty.Create new user and play game.";   // Dlaczego wziąłem to globalnie? Ponieważ klasa "PVC" kożysta z tej zmiennej w celu poprawnej walidacji do określenia pustej ilości graczy, aby wyświetlała się poprawna zawartość na stronie, a nie ekran błędu (aby dało się utworzyć użytkowanika, a nie aby pojawił sie ekran błędu).
         public void RenderPage() {
             ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);
             //Upload.SearchFile("players_PVC.txt");   // Przeniesiono do Intro.   // Jeżeli chcesz podpiąć kolejny ranking jedyne co trzeba zrobić, to dodać nazwę przycisku i skopiować tą metodę z podaniem nazwy pliku z rozszerzeniem.
@@ -50,7 +46,7 @@ namespace Page_Ranking {
             Console.WriteLine("BB    BB  BB    BB  BB BB BB  BB   BB   BB  BB BB BB  BB    BB");
             Console.WriteLine("BB    BB  BB    BB  BB  BBBB  BB    BB  BB  BB  BBBB   BBBBBB ");
             GlobalMethod.Page.RenderDottedLine(pageLineLength);
-            Console.WriteLine("RANKING: | Moving: arrows/[W][S] | Back to menu: [Backspace]\n");
+            Console.WriteLine("RANKING: | Moving: arrows/[W][S] | Back to menu: [BACKSPACE]\n");
         }
         public static void ShowRanking(int mode) {   // Panel kontrolny
             if (isFile[currentButton] == true) {   // Tutaj bierzemy "currentButton", ponieważ nie dodajemy na bierząco kolejnych zmienneych dla listy dynamicznej "isFile", skąd (tam) mogliśmy od razu walidować obsługę metody "UploadData".
@@ -83,7 +79,7 @@ namespace Page_Ranking {
                 List<List<string>> playersInfo = new List<List<string>>();
                 if (fileContent == "") {
                     isCorrectContent[errorCorrectContent.Count - 1] = false;
-                    errorCorrectContent[errorCorrectContent.Count - 1] = "This data file is empty. Create new user and play game.";
+                    errorCorrectContent[errorCorrectContent.Count - 1] = errorEmpty;
                 } else if (fileContent != "") {
                     try {   // Rozkład danych
                         List<string> players = new List<string>(fileContent.Split('*'));
@@ -155,12 +151,13 @@ namespace Page_Ranking {
                 string playerSpace = tuple.Item1;
                 string minusSpace = tuple.Item2;
                 int longestNameSpace = tuple.Item3;
-                Console.WriteLine("|------------------------" + minusSpace + "-----------------------------------------|");
-                Console.WriteLine("| PLACE | " + secondColTit + playerSpace + " | BEST SCORE | BATTLE | SUNKEN | LOSS | ACCURATE |");
-                Console.WriteLine("|------------------------" + minusSpace + "-----------------------------------------|");
+                Console.WriteLine("|------------------------" + minusSpace + "------------------------------------------------------|");
+                Console.WriteLine("| PLACE | " + secondColTit + playerSpace + " | BEST SCORE | BEST COMBO | BATTLE | SUNKEN | LOSS | ACCURATE |");
+                Console.WriteLine("|------------------------" + minusSpace + "------------------------------------------------------|");
                 string data = "";
                 int place = 0;
                 int score = 0;
+                int combo = 0;
                 int sunken = 0;
                 int loss = 0;
                 int accurate = 0;
@@ -173,9 +170,7 @@ namespace Page_Ranking {
                     else if (place > 99 && place <= 999) Console.Write(" " + place + ". | ");
                     else if (place > 999 && place <= 9999) Console.Write(place + ". | ");
                     for (int j = 0; j < Ranking.detailsAmount; j++) {
-                        if (j == 1) data = modePlayersInfo[mode][i][j + 1];   // Cała ta sztuczka polega na zamianie miejscamidwóch pól danych z indeksu [1] i [2] (zamiana naprzemian).
-                        else if (j == 2) data = modePlayersInfo[mode][i][j - 1];   // Nie chciałem zmieniać układu danych w pliku, bo zaburzyłoby to formę aktualnej metody resetu danych graczy, przez co musiałbym tam robić tego samego typu operację, co tutaj.
-                        else data = modePlayersInfo[mode][i][j];
+                        data = modePlayersInfo[mode][i][j];
                         switch (j) {
                             case 0:
                                 extraSpace = ExtraPlayerSpace(longestNameSpace, data.Length);
@@ -192,21 +187,26 @@ namespace Page_Ranking {
                                 else if (score > 999999 && score <= 9999999) Console.Write("   " + data + " | ");   // Maksymalny wynik przy aktualnym punktowaniu: 8 812 382 punktów.
                                 break;
                             case 2:
-                                if (data == "win") Console.Write("   " + data + " | ");
-                                else if (data == "win") Console.Write("  " + data + " | ");
-                                else if (data == "?") Console.Write("     " + data + " | ");
+                                combo = int.Parse(data);   // Nigdy nie będzie combo równego 100, gdyż za combo równe 1 trzeba zadać dwa uderzenia.
+                                if (combo <= 9) Console.Write("         " + data + " | ");
+                                else if (combo > 9 && combo <= 99) Console.Write("        " + data + " | ");
                                 break;
                             case 3:
+                                if (data == "win") Console.Write("   " + data + " | ");
+                                else if (data == "lose") Console.Write("  " + data + " | ");
+                                else if (data == "?") Console.Write("     " + data + " | ");
+                                break;
+                            case 4:
                                 sunken = int.Parse(data);
                                 if (sunken <= 9) Console.Write("     " + data + " | ");
                                 else if (sunken > 9 && sunken <= 99) Console.Write("    " + data + " | ");
                                 break;
-                            case 4:
+                            case 5:
                                 loss = int.Parse(data);
                                 if (loss <= 9) Console.Write("   " + data + " | ");
                                 else if (loss > 9 && loss <= 99) Console.Write("  " + data + " | ");
                                 break;
-                            case 5:
+                            case 6:
                                 accurate = int.Parse(data.Substring(0, data.Length - 1));
                                 if (accurate <= 9) Console.Write("      " + data + " |");   // UWAGA!!!!!!!!!! Ostatni elemnt NIE MA " ", po "|"
                                 else if (accurate > 9 && accurate <= 99) Console.Write("     " + data + " |");
@@ -214,7 +214,7 @@ namespace Page_Ranking {
                                 break;
                         }
                     }
-                    Console.WriteLine("\n|" + minusSpace + "-----------------------------------------------------------------|");
+                    Console.WriteLine("\n|" + minusSpace + "------------------------------------------------------------------------------|");
                 }
             }
             public static (string, string, int) MakeSpaces(int mode, int playersLimit, string secondColTit) {
