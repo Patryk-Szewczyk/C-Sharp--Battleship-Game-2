@@ -17,6 +17,7 @@ namespace Page_PVC {
         public static int pageLineLength = 80;
         public static int PVC_mode = 0;
         public static string[] buttons = new string[Ranking.modePlayersInfo[PVC_mode].Count];
+        public static bool isEmpty = false;
         public static int currentButton = 0;
         public static List<ConsoleKey> usingKeys_STANDARD = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
         public static List<ConsoleKey> usingKeys_TOP = new List<ConsoleKey> { ConsoleKey.S, ConsoleKey.DownArrow, ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
@@ -34,6 +35,7 @@ namespace Page_PVC {
                     RenderTitle();
                     GetButtons(PVC_mode);
                     GlobalMethod.Page.RenderButtons(buttons, currentButton);
+                    if (isEmpty) Error.EmptyMessage();   // Po utworzeniu użytkowania: isEmpty = false
                     GlobalMethod.Page.RenderDottedLine(pageLineLength);
                     //ShowInstruction(currentButton);   // Miejsce na właściwą funkcję - SWITCH na odpowiedni "button".
                     if (buttons.Length == 0) key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_ZERO);
@@ -48,7 +50,7 @@ namespace Page_PVC {
                     if (Ranking.isCorrectContent[mode]) {
                         isCorrect = true;
                     } else {
-                        if (Ranking.errorCorrectContent[mode] == Ranking.errorEmpty) isCorrect = true;   // W przypadku pustego pliku danych, nie wyświetl błędu, a pozwól na tworzenie użytkowaników.
+                        if (Ranking.errorCorrectContent[mode] == Ranking.errorEmpty) { isCorrect = true; isEmpty = true; }   // W przypadku pustego pliku danych, nie wyświetl błędu, a pozwól na tworzenie użytkowaników.
                         else isError(Ranking.errorCorrectContent[mode]);
                     }
                 } else {
@@ -63,6 +65,9 @@ namespace Page_PVC {
                     "\n\n\nClick [BACKSPACE] to back to menu.");
                 ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);
                 GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_ERROR);
+            }
+            public static void EmptyMessage() {
+                Console.WriteLine("\nThere isn't any user to play this game mode. Create new user and play game.\n");
             }
         }
         public void RenderTitle() {
