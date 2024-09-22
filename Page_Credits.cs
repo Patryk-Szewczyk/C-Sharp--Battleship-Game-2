@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using Library_GlobalMethods;
 using Page_Menu;
+using System.Diagnostics;
 
 namespace Page_Credits {
     public class Credits {
@@ -40,14 +40,14 @@ namespace Page_Credits {
             Console.WriteLine("BB    BB  BB    BB  BB BB BB  BB          BB        BB    BB  BB        BB   BB   BB     BB           BB");
             Console.WriteLine(" BBBBBB   BB    BB  BB BB BB  BBBBBBBB     BBBBBBB  BB    BB  BBBBBBBB  BBBBBB    BB     BB     BBBBBBB ");
             GlobalMethod.Page.RenderDottedLine(pageLineLength);
-            Console.WriteLine("CREDITS: | Back to menu: [Backspace]\n");
+            Console.WriteLine("CREDITS: | Back to menu: [BACKSPACE]\n");
         }
         public static void OpenHTML() {
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
             string projectDirectory = Directory.GetParent(baseDirectory).Parent.Parent.FullName;
             string htmlFilePath = Path.Combine(projectDirectory, "credits.html");
             if (File.Exists(htmlFilePath)) {
-                var process = new Process();
+                Process process = new Process();
                 process.StartInfo = new ProcessStartInfo {
                     FileName = htmlFilePath,
                     UseShellExecute = true
