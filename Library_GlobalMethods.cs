@@ -1,15 +1,12 @@
-using Page_Menu;
 using System;
 using System.IO;
 using System.Collections.Generic;
-using Page_Credits;
-using Page_Instructions;
-using Page_Options;
+using Page_Menu;
 using Page_PVC;
+using Page_Instructions;
 using Page_Ranking;
-using System.Runtime.InteropServices;
-using static System.Net.Mime.MediaTypeNames;
-using System.Runtime.CompilerServices;
+using Page_Options;
+using Page_Credits;
 
 namespace Library_GlobalMethods {
     public class GlobalMethod {   // Metody o zasięgu globalnym, które mają niezmiennną formę i mogą przydać się wszędzie.
