@@ -2,13 +2,12 @@
 using System;
 using System.Media;
 using System.Collections.Generic;
-using Page_Instructions;
-using Page_Credits;
+using Library_GlobalMethods;
 using Page_PVC;
+using Page_Instructions;
 using Page_Ranking;
 using Page_Options;
-using Library_GlobalMethods;
-using System.Diagnostics.Eventing.Reader;
+using Page_Credits;
 
 namespace Page_Menu {
     public class Menu {
