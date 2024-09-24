@@ -1,30 +1,38 @@
 using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.IO;
 using Library_GlobalMethods;
 using Page_Menu;
 using Page_Options;
 using Page_Ranking;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Page_PVC {
     public class PVC {
         public static int page_ID = 0;
         public static bool isPage = false;
-        public static bool isUserSelect = false;   // Pętla poświęcona: wybieraniu użytkowanika
-        public static bool isShipPositing = false;   // Pętla poświęcona: ustawianiu statków
+        /*
+        public static bool isUser = false;   // Pętla poświęcona: wybieraniu użytkowanika
+        public static bool isSetting = false;   // Pętla poświęcona: ustawianiu statków
         public static bool isBattle = false;   // Pętla poświęcona: bitwie
-        public static bool isSubmit = false;   // Pętla poświęcona: podsumowaniu
+        public static bool isSummary = false;   // Pętla poświęcona: podsumowaniu
+        */
+        public static string part = "user";
         public static int pageLineLength = 80;
         public static int PVC_mode = 0;
+        public static string PVC_filePath = "players_PVC.txt";
+        public static string dataFormat = "#0#0#?#0#0#0%";
+        public static string user = "";
         public static string[] buttons = new string[Ranking.modePlayersInfo[PVC_mode].Count];
         public static bool isEmpty = false;
         public static int currentButton = 0;
-        public static List<ConsoleKey> usingKeys_STANDARD = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
-        public static List<ConsoleKey> usingKeys_TOP = new List<ConsoleKey> { ConsoleKey.S, ConsoleKey.DownArrow, ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
-        public static List<ConsoleKey> usingKeys_DOWN = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.UpArrow, ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
-        public static List<ConsoleKey> usingKeys_ONE = new List<ConsoleKey> { ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
-        public static List<ConsoleKey> usingKeys_ZERO = new List<ConsoleKey> { ConsoleKey.C, ConsoleKey.P, ConsoleKey.Backspace };
         public static List<ConsoleKey> usingKeys_ERROR = new List<ConsoleKey> { ConsoleKey.Backspace };
+        public static List<ConsoleKey> usingKeys_USER_STANDARD = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
+        public static List<ConsoleKey> usingKeys_USER_TOP = new List<ConsoleKey> { ConsoleKey.S, ConsoleKey.DownArrow, ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
+        public static List<ConsoleKey> usingKeys_USER_DOWN = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.UpArrow, ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
+        public static List<ConsoleKey> usingKeys_USER_ONE = new List<ConsoleKey> { ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
+        public static List<ConsoleKey> usingKeys_USER_ZERO = new List<ConsoleKey> { ConsoleKey.C, ConsoleKey.P, ConsoleKey.Backspace };
         public void RenderPage() {   // Wyświetlenie strony PVC i zarazem panel kontrolny tej strony.
             bool isCorrect = false;
             isCorrect = Error.CheckRankingValid(isCorrect, PVC_mode);
@@ -32,15 +40,11 @@ namespace Page_PVC {
                 ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);   // Dowolna niewłaściwa wartość.
                 while (isPage == true) {
                     Console.Clear();
-                    RenderTitle();
-                    GetButtons(PVC_mode);
-                    GlobalMethod.Page.RenderButtons(buttons, currentButton);
                     if (isEmpty) Error.EmptyMessage();   // Po utworzeniu użytkowania: isEmpty = false
-                    GlobalMethod.Page.RenderDottedLine(pageLineLength);
-                    //ShowInstruction(currentButton);   // Miejsce na właściwą funkcję - SWITCH na odpowiedni "button".
-                    if (buttons.Length == 0) key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_ZERO);
-                    else key = GlobalMethod.Page.SelectUsingKeys(currentButton, page_ID, key, buttons, usingKeys_STANDARD, usingKeys_TOP, usingKeys_DOWN, usingKeys_ONE);   // Pętla ta uniemożliwia przeładowanie strony kiedy kliknie się niewłaściwy klawisz.
-                    currentButton = GlobalMethod.Page.MoveButtons(buttons, currentButton, key);   // Poruszanie się po przyciskach (obliczenia).
+                    Part.Content();
+                    Part.Action(key);   // Miejsce na właściwą funkcję - SWITCH na odpowiedni "button".
+                    key = Part.KeysControl(key);
+                    Part.MoveCursor(key);
                 }
             }
         }
@@ -70,7 +74,7 @@ namespace Page_PVC {
                 Console.WriteLine("\nThere isn't any user to play this game mode. Create new user and play game.\n");
             }
         }
-        public void RenderTitle() {
+        public static void RenderTitle() {
             Console.WriteLine("BBBBBBB   BB    BB   BBBBBBB");
             Console.WriteLine("BB    BB  BB    BB  BB      ");
             Console.WriteLine("BB    BB  BB    BB  BB      ");
@@ -79,27 +83,136 @@ namespace Page_PVC {
             Console.WriteLine("BB          BBBB    BB      ");
             Console.WriteLine("BB           BB      BBBBBBB");
             GlobalMethod.Page.RenderDottedLine(pageLineLength);
-            Console.WriteLine("PVC MODE: | Moving: arrows/[W][S] | Click = [ENTER] | Create player: [C] | Delete player: [P] | Back to menu: [BACKSPACE]\n");
+            Console.WriteLine("PVC MODE: | Moving: arrows/[W][S] | Click: [ENTER] | Create player: [C] | Delete player: [P] | Back to menu: [BACKSPACE]\n");
         }
         public static void GetButtons(int mode) {
+            buttons = new string[Ranking.modePlayersInfo[PVC_mode].Count];
             for (int i = 0; i < Ranking.modePlayersInfo[mode].Count; i++) {
                 buttons[i] = Ranking.modePlayersInfo[mode][i][0];
             }
         }
-        public void addUser(List<List<string>> playersDetails_PARTS) {
-            char[] valid_CHAR_AR = { 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm',
-                                  'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Z', 'X', 'C', 'V', 'B', 'N', 'M',
-                                  'ą', 'ć', 'ę', 'ł', 'ń', 'ó', 'ś', 'ż', 'ź',
-                                  'Ą', 'Ć', 'Ę', 'Ł', 'Ń', 'Ó', 'Ś', 'Ż', 'Ź',
-                                  '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
+        public class Part {
+            public static void Content() {
+                switch (part) {
+                    case "user":
+                        RenderTitle();
+                        GetButtons(PVC_mode);
+                        Console.WriteLine("Select: [" + Ranking.modePlayersInfo[PVC_mode][currentButton][0] + "]");
+                        GlobalMethod.Page.RenderButtons(buttons, currentButton);
+                        GlobalMethod.Page.RenderDottedLine(pageLineLength);
+                        break;
+                    case "setting":
+                        break;
+                    case "battle":
+                        break;
+                    case "summary":
+                        break;
+                }
+            }
+            public static void Action(ConsoleKeyInfo key) {
+                switch (part) {
+                    case "user":
+                        switch (key.Key) {
+                            case ConsoleKey.Enter: User.SelectUser(); break;
+                            case ConsoleKey.C: User.AddUser(); break;
+                            case ConsoleKey.P: User.DeleteUser(); break;
+                        }
+                        break;
+                    case "setting":
+                        break;
+                    case "battle":
+                        break;
+                    case "summary":
+                        break;
+                }
+            }
+            public static ConsoleKeyInfo KeysControl(ConsoleKeyInfo key) {
+                switch (part) {
+                    case "user":
+                        if (buttons.Length == 0) key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_USER_ZERO);
+                        else key = GlobalMethod.Page.SelectUsingKeys(currentButton, page_ID, key, buttons, usingKeys_USER_STANDARD, usingKeys_USER_TOP, usingKeys_USER_DOWN, usingKeys_USER_ONE);
+                        break;
+                    case "setting":
+                        break;
+                    case "battle":
+                        break;
+                    case "summary":
+                        break;
+                }
+                return key;
+            }
+            public static void MoveCursor(ConsoleKeyInfo key) {
+                switch (part) {
+                    case "user": currentButton = GlobalMethod.Page.MoveButtons(buttons, currentButton, key); break;
+                    case "setting":  break;
+                    case "battle":  break;
+                    case "summary":  break;
+                }
+            }
+            public class User {
+                public static void SelectUser() {
+                    user = Ranking.modePlayersInfo[PVC_mode][currentButton][0];
+                    Console.WriteLine("Chosed user: " + user);
+                }
+                public static void AddUser() {
+                    Console.WriteLine("GUIDE: Write new user name -> [ENTER]");
+                    string fileContent = GlobalMethod.StringPlayersInfo(Ranking.modePlayersInfo[PVC_mode]);
+                    string name = "";
+                    bool isBad = false;
+                    bool isLoop = true;
+                    while (isLoop) {
+                        Console.CursorVisible = true;
+                        Console.Write("\nName: ");
+                        name = Console.ReadLine();
+
+                        // Walidacja
+
+                        if (isBad == false) {   Ranking.modePlayersInfo[PVC_mode].Add(new List<string>() { name, "0", "0", "?", "0", "0", "0%" } );
+                            isLoop = false;
+                            Console.CursorVisible = false;
+                            fileContent += (buttons.Length > 0) ? "*" + name + dataFormat : name + dataFormat;
+                            File.WriteAllText(PVC_filePath, fileContent);
+                            UpdateGameData();
+                            PVC pvc = new PVC();
+                            pvc.RenderPage();
+                        }
+                    }
+                }
+                public static void DeleteUser() {
+                    Console.WriteLine("DeleteUser");
+                }
+                public static void UpdateGameData() {   // METODA DO RANKINGU: UpdateGameUsersData()
+                    string uploadContent = File.ReadAllText(PVC_filePath);
+                    List<List<string>> playersInfo = new List<List<string>>();
+                    List<string> players = new List<string>(uploadContent.Split('*'));
+                    for (int i = 0; i < players.Count; i++) {
+                        playersInfo.Add(new List<string>(players[i].Split('#')));
+                    }
+                    Ranking.modePlayersInfo[PVC_mode] = playersInfo;
+                }
+                public static string ValidSigns() {
+                    return "qwertyuioplkjhgfdsazxcvbnm" +
+                           "QWERTYUIOPLKJHGFDSAZXCVBNM" +
+                           "ąćęłńóśżź" +
+                           "ĄĆĘŁŃÓŚŻŹ" +
+                           "0123456789";
+                }
+            }
+            public class Setting {
+
+            }
+            public class Battle {
+
+            }
+            public class Summary {
+
+            }
         }
-        public void SetShips_PLAYER(System.ConsoleKeyInfo key, string userName) {
-            Console.Clear();
-            // Walidacja poruszania się po planszy:
-            Console.WriteLine("Player: [" + userName + "]");
-            int setVal = SetShipsPVC.CursorNavigate(key);
-            Console.WriteLine("Ship initial coordinate: " + setVal);
-        }
+
+
+
+
+
         public class SetShipsPVC {
             public static int cursor = 0;
             public static int CursorNavigate(System.ConsoleKeyInfo key) {
