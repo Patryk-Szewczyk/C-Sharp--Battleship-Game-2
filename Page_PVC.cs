@@ -86,9 +86,9 @@ namespace Page_PVC {
             Console.WriteLine("PVC MODE: | Moving: arrows/[W][S] | Click: [ENTER] | Create player: [C] | Delete player: [P] | Back to menu: [BACKSPACE]\n");
         }
         public static void GetButtons(int mode) {
-            buttons = new string[Ranking.modePlayersInfo[PVC_mode].Count];
-            for (int i = 0; i < Ranking.modePlayersInfo[mode].Count; i++) {
-                buttons[i] = Ranking.modePlayersInfo[mode][i][0];
+            buttons = new string[Ranking.modePlayersInfo[PVC_mode].Count];   // Ten trik rozwiązuje upierdliwy problem, który trzebaby było inaczej rozwiązać konwersją "List<string>" na "string[]".
+            for (int i = 0; i < Ranking.modePlayersInfo[mode].Count; i++) {  // ^ Ale na szczęście zamiast tracić na to czas za każdym wywołaniem tej metody nadpisuję zmienną nową inicjacją zmiennej
+                buttons[i] = Ranking.modePlayersInfo[mode][i][0];            // ^ "string[]" z nową aktualną długością, zaktualizowaną "statycznie" w klasie Ranking.
             }
         }
         public class Part {
@@ -167,7 +167,7 @@ namespace Page_PVC {
 
                         // Walidacja
 
-                        if (isBad == false) {   Ranking.modePlayersInfo[PVC_mode].Add(new List<string>() { name, "0", "0", "?", "0", "0", "0%" } );
+                        if (isBad == false) {
                             isLoop = false;
                             Console.CursorVisible = false;
                             fileContent += (buttons.Length > 0) ? "*" + name + dataFormat : name + dataFormat;
