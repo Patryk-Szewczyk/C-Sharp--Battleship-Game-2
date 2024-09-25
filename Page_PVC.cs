@@ -1,16 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Data.SqlTypes;
-using System.Diagnostics.Eventing.Reader;
-using System.Diagnostics.SymbolStore;
 using System.IO;
-using System.Runtime.Serialization.Formatters;
-using System.Xml.Linq;
 using Library_GlobalMethods;
-using Page_Menu;
-using Page_Options;
 using Page_Ranking;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Page_PVC {
     public class PVC {
