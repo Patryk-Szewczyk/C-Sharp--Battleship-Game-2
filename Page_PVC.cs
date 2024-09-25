@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Diagnostics.Eventing.Reader;
+using System.Diagnostics.SymbolStore;
 using System.IO;
 using System.Runtime.Serialization.Formatters;
 using System.Xml.Linq;
@@ -92,7 +93,7 @@ namespace Page_PVC {
                     case "user":
                         RenderTitle();
                         GetButtons(PVC_mode);
-                        Console.WriteLine(SelectedUserInfo());
+                        Console.WriteLine(User.SelectUserInfo());
                         GlobalMethod.Page.RenderButtons(buttons, currentButton);
                         if (isEmpty) Error.EmptyMessage();   // Po utworzeniu użytkowania: isEmpty = false
                         GlobalMethod.Page.RenderDottedLine(pageLineLength);
@@ -104,12 +105,6 @@ namespace Page_PVC {
                     case "summary":
                         break;
                 }
-            }
-            public static string SelectedUserInfo() {
-                string selected = "Selected: [";
-                if (Ranking.modePlayersInfo[PVC_mode].Count > 0) selected += Ranking.modePlayersInfo[PVC_mode][currentButton][0];
-                selected += "]";
-                return selected;
             }
             public static void Action(ConsoleKeyInfo key) {
                 switch (part) {
@@ -152,6 +147,12 @@ namespace Page_PVC {
                 }
             }
             public class User {
+                public static string SelectUserInfo() {
+                    string selected = "Selected: [";
+                    if (Ranking.modePlayersInfo[PVC_mode].Count > 0) selected += Ranking.modePlayersInfo[PVC_mode][currentButton][0];
+                    selected += "]";
+                    return selected;
+                }
                 public static void SelectUser() {
                     user = Ranking.modePlayersInfo[PVC_mode][currentButton][0];
                     Console.WriteLine("Chosed user: [" + user + "]");
@@ -168,7 +169,7 @@ namespace Page_PVC {
                         Console.CursorVisible = true;
                         Console.Write("\n\nName: ");
                         name = Console.ReadLine();
-                        (string, bool, string) valid = Valid.ValidControlAdd(name, isBad, validError);
+                        (string, bool, string) valid = Valid.ValidControlAdd(name);
                         name = valid.Item1;
                         isBad = valid.Item2;
                         validError = valid.Item3;
@@ -188,41 +189,41 @@ namespace Page_PVC {
                 public static void DeleteUser() {
                     Console.WriteLine("GUIDE: Selected [user] -> Write \"yes\" or \"no\" -> [ENTER]");
                     string name = Ranking.modePlayersInfo[PVC_mode][currentButton][0];
-                    string querry = "";
-                    string validError = "";
-                    bool isBad = false;
-                    bool isLoop = true;
-                    while (isLoop) {
-                        isBad = false;
-                        Console.CursorVisible = true;
-                        Console.WriteLine("\n\nDo you want delete [" + name + "] user?:\n");
-                        querry = Console.ReadLine();
-
-
-                        // OGARNIJ WALIDACJĘ:   // A POTEM TE DWA STANY OPCJI!
-
-                        //(string, bool, string) valid = Valid.ValidControl("delete", name, isBad, validError);
-                        //name = valid.Item1;
-                        //isBad = valid.Item2;
-                        //validError = valid.Item3;
-
-
-                        if (isBad == false) {
-                            isLoop = false;
-                            Console.CursorVisible = false;
-                            Ranking.modePlayersInfo[PVC_mode].RemoveAt(currentButton);
-                            File.WriteAllText(PVC_filePath, GlobalMethod.StringPlayersInfo(Ranking.modePlayersInfo[PVC_mode]));
-                            if (currentButton > Ranking.modePlayersInfo[PVC_mode].Count - 1) currentButton--;
-                            if (Ranking.modePlayersInfo[PVC_mode].Count == 0) isEmpty = true;
-                            PVC pvc = new PVC();
-                            pvc.RenderPage();
-                        } else {
-                            Console.WriteLine("\n" + validError);
-                        }
+                    Console.WriteLine("\n\nDo you want delete [" + name + "] user?:\n");
+                    bool isDelete = Valid.ValidDelete();
+                    if (isDelete) {
+                        Ranking.modePlayersInfo[PVC_mode].RemoveAt(currentButton);
+                        File.WriteAllText(PVC_filePath, GlobalMethod.StringPlayersInfo(Ranking.modePlayersInfo[PVC_mode]));
+                        if (currentButton > Ranking.modePlayersInfo[PVC_mode].Count - 1) currentButton--;
+                        if (Ranking.modePlayersInfo[PVC_mode].Count == 0) isEmpty = true;
+                        PVC pvc = new PVC();
+                        pvc.RenderPage();
                     }
                 }
                 public class Valid {   // Do globalnych metod, kiedy będziesz robił tryb PVP
-                    public static (string, bool, string) ValidControlAdd(string name, bool isBad, string validError) {
+                    public static bool ValidDelete() {
+                        bool isDelete = false;
+                        Console.CursorVisible = true;
+                        string answer;
+                        bool confirmLoop = true;
+                        while (confirmLoop) {
+                            answer = Console.ReadLine();
+                            if (answer == "yes") {
+                                isDelete = true;
+                                confirmLoop = false;
+                            } else if (answer == "no") {
+                                confirmLoop = false;
+                                Console.WriteLine("\n\nYou can now move to other options.");
+                            } else {
+                                Console.WriteLine("\n\nBad value. Write correct value.\n");
+                            }
+                        }
+                        Console.CursorVisible = false;
+                        return isDelete;
+                    }
+                    public static (string, bool, string) ValidControlAdd(string name) {
+                        bool isBad = false;
+                        string validError = "";
                         name = TrimNameOneSpace(name);
                         if (name == "" || name == " ") {
                             isBad = true;
@@ -308,7 +309,6 @@ namespace Page_PVC {
                         return isNotFound;
                     }
                 }
-                
             }
             public class Setting {
 
