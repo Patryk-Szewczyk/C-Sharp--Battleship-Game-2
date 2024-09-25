@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SqlTypes;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
+using System.Runtime.Serialization.Formatters;
+using System.Xml.Linq;
 using Library_GlobalMethods;
 using Page_Menu;
 using Page_Options;
@@ -12,17 +15,10 @@ namespace Page_PVC {
     public class PVC {
         public static int page_ID = 0;
         public static bool isPage = false;
-        /*
-        public static bool isUser = false;   // Pętla poświęcona: wybieraniu użytkowanika
-        public static bool isSetting = false;   // Pętla poświęcona: ustawianiu statków
-        public static bool isBattle = false;   // Pętla poświęcona: bitwie
-        public static bool isSummary = false;   // Pętla poświęcona: podsumowaniu
-        */
         public static string part = "user";
         public static int pageLineLength = 80;
         public static int PVC_mode = 0;
         public static string PVC_filePath = "players_PVC.txt";
-        public static string dataFormat = "#0#0#?#0#0#0%";
         public static string user = "";
         public static string[] buttons = new string[Ranking.modePlayersInfo[PVC_mode].Count];
         public static bool isEmpty = false;
@@ -152,51 +148,121 @@ namespace Page_PVC {
             public class User {
                 public static void SelectUser() {
                     user = Ranking.modePlayersInfo[PVC_mode][currentButton][0];
-                    Console.WriteLine("Chosed user: " + user);
+                    Console.WriteLine("Chosed user: [" + user + "]");
+                    // part = "setting"
                 }
                 public static void AddUser() {
                     Console.WriteLine("GUIDE: Write new user name -> [ENTER]");
-                    string fileContent = GlobalMethod.StringPlayersInfo(Ranking.modePlayersInfo[PVC_mode]);
                     string name = "";
+                    string validError = "";
                     bool isBad = false;
                     bool isLoop = true;
                     while (isLoop) {
+                        isBad = false;
                         Console.CursorVisible = true;
-                        Console.Write("\nName: ");
+                        Console.Write("\n\nName: ");
                         name = Console.ReadLine();
-
-                        // Walidacja
-
+                        (string, bool, string) valid = Valid.ValidControl(name, isBad, validError);
+                        name = valid.Item1;
+                        isBad = valid.Item2;
+                        validError = valid.Item3;
                         if (isBad == false) {
                             isLoop = false;
                             Console.CursorVisible = false;
-                            fileContent += (buttons.Length > 0) ? "*" + name + dataFormat : name + dataFormat;
-                            File.WriteAllText(PVC_filePath, fileContent);
-                            UpdateGameData();
+                            Ranking.modePlayersInfo[PVC_mode].Add(new List<string>() { name, "0", "0", "?", "0", "0", "0%" } );
+                            File.WriteAllText(PVC_filePath, GlobalMethod.StringPlayersInfo(Ranking.modePlayersInfo[PVC_mode]));
+                            Console.WriteLine("User: [" + name + "] has been added to this game mode.");
                             PVC pvc = new PVC();
                             pvc.RenderPage();
+                        } else {
+                            Console.WriteLine("\n" + validError);
                         }
                     }
                 }
                 public static void DeleteUser() {
                     Console.WriteLine("DeleteUser");
                 }
-                public static void UpdateGameData() {   // METODA DO RANKINGU: UpdateGameUsersData()
-                    string uploadContent = File.ReadAllText(PVC_filePath);
-                    List<List<string>> playersInfo = new List<List<string>>();
-                    List<string> players = new List<string>(uploadContent.Split('*'));
-                    for (int i = 0; i < players.Count; i++) {
-                        playersInfo.Add(new List<string>(players[i].Split('#')));
+                public class Valid {   // Do globalnych metod, kiedy będziesz robił tryb PVP
+                    public static (string, bool, string) ValidControl(string name, bool isBad, string validError) {
+                        name = TrimNameOneSpace(name);
+                        if (name == "" || name == " ") {
+                            isBad = true;
+                            validError = "This value is empty. Write correct value.";
+                        } else {
+                            if (isIdx0Number(name)) {
+                                isBad = true;
+                                validError = "Name can't begin on number sign.";
+                            } else {
+                                if (BadSign(name)) {
+                                    isBad = true;
+                                    validError = "This value can only contain word characters and signs from 0 to 9. Write correct value.";
+                                }
+                                else {
+                                    if (SameNames(name)) {
+                                        isBad = true;
+                                        validError = "This user exists. Create another user.";
+                                    }
+                                }
+                            }
+                        }
+                        return (name, isBad, validError);
                     }
-                    Ranking.modePlayersInfo[PVC_mode] = playersInfo;
+                    public static string TrimNameOneSpace(string name) {
+                        string result = "";
+                        int space = 0;
+                        int start = 0;
+                        int end = 0;
+                        for (int i = 0; i < name.Length; i++) {
+                            if (name[i] != ' ') { start = i; break; }
+                        }
+                        for (int i = name.Length - 1; i >= 0; i--) {
+                            if (name[i] != ' ') { end = i; break; }
+                        }
+                        if (name.Length > 0) {
+                            for (int i = start; i <= end; i++) {
+                                if (name[i] == ' ' && space < 2) { space++; result += name[i]; } else space++;
+                                if (name[i] != ' ') { space = 1; result += name[i]; }
+                            }
+                        }
+                        return result;
+                    }
+                    public static bool isIdx0Number(string name) {
+                        string numbers = "0123456789";
+                        bool isNumber = false;
+                        for (int i = 0; i < numbers.Length; i++) {
+                            if (name[0] == numbers[i]) { isNumber = true; break; }
+                        }
+                        return isNumber;
+                    }
+                    public static bool BadSign(string name) {
+                        bool isBadSign = false;
+                        string signs = "qwertyuioplkjhgfdsazxcvbnm" +
+                                       "QWERTYUIOPLKJHGFDSAZXCVBNM" +
+                                       "ąćęłńóśżź" +
+                                       "ĄĆĘŁŃÓŚŻŹ" +
+                                       "0123456789" +
+                                       " ";
+                        int counter = 0;
+                        for (int i = 0; i < name.Length; i++) {
+                            counter = 0;
+                            for (int j = 0; j < signs.Length; j++) {
+                                if (name[i] != signs[j]) {
+                                    counter++;
+                                }
+                            }
+                            if (counter != signs.Length - 1) { isBadSign = true; break; }
+                        }
+                        return isBadSign;
+                    }
+                    public static bool SameNames(string name) {
+                        bool isSameName = false;
+                        for (int i = 0; i < Ranking.modePlayersInfo[PVC_mode].Count; i++) {
+                            if (name == Ranking.modePlayersInfo[PVC_mode][i][0]) isSameName = true;
+                        }
+                        return isSameName;
+                    }
                 }
-                public static string ValidSigns() {
-                    return "qwertyuioplkjhgfdsazxcvbnm" +
-                           "QWERTYUIOPLKJHGFDSAZXCVBNM" +
-                           "ąćęłńóśżź" +
-                           "ĄĆĘŁŃÓŚŻŹ" +
-                           "0123456789";
-                }
+                
             }
             public class Setting {
 
