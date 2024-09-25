@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Library_GlobalMethods;
+using Page_Options;
 using Page_Ranking;
 
 namespace Page_PVC {
@@ -14,7 +15,6 @@ namespace Page_PVC {
         public static string PVC_filePath = "players_PVC.txt";
         public static string user = "";
         public static string[] buttons = new string[Ranking.modePlayersInfo[PVC_mode].Count];
-        public static bool isEmpty = false;
         public static int currentButton = 0;
         public static List<ConsoleKey> usingKeys_ERROR = new List<ConsoleKey> { ConsoleKey.Backspace };
         public static List<ConsoleKey> usingKeys_USER_STANDARD = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
@@ -42,7 +42,7 @@ namespace Page_PVC {
                     if (Ranking.isCorrectContent[mode]) {
                         isCorrect = true;
                     } else {
-                        if (Ranking.errorCorrectContent[mode] == Ranking.errorEmpty) { isCorrect = true; isEmpty = true; }   // W przypadku pustego pliku danych, nie wyświetl błędu, a pozwól na tworzenie użytkowaników.
+                        if (Ranking.errorCorrectContent[mode] == Ranking.errorEmpty) isCorrect = true;   // W przypadku pustego pliku danych, nie wyświetl błędu, a pozwól na tworzenie użytkowaników.
                         else isError(Ranking.errorCorrectContent[mode]);
                     }
                 } else {
@@ -86,8 +86,8 @@ namespace Page_PVC {
                         RenderTitle();
                         GetButtons(PVC_mode);
                         Console.WriteLine(User.SelectUserInfo());
-                        GlobalMethod.Page.RenderButtons(buttons, currentButton);
-                        if (isEmpty) Error.EmptyMessage();   // Po utworzeniu użytkowania: isEmpty = false
+                        if (Options.options[Options.optDelete_PVC] != "EMPTY") GlobalMethod.Page.RenderButtons(buttons, currentButton);
+                        if (Options.options[Options.optDelete_PVC] == "EMPTY") Error.EmptyMessage();   // Po utworzeniu użytkowania: isEmpty = false
                         GlobalMethod.Page.RenderDottedLine(pageLineLength);
                         break;
                     case "setting":
@@ -170,7 +170,7 @@ namespace Page_PVC {
                             Console.CursorVisible = false;
                             Ranking.modePlayersInfo[PVC_mode].Add(new List<string>() { name, "0", "0", "?", "0", "0", "0%" } );
                             File.WriteAllText(PVC_filePath, GlobalMethod.StringPlayersInfo(Ranking.modePlayersInfo[PVC_mode]));
-                            isEmpty = false;
+                            UpdateOptions("addUser");
                             PVC pvc = new PVC();
                             pvc.RenderPage();
                         } else {
@@ -187,9 +187,42 @@ namespace Page_PVC {
                         Ranking.modePlayersInfo[PVC_mode].RemoveAt(currentButton);
                         File.WriteAllText(PVC_filePath, GlobalMethod.StringPlayersInfo(Ranking.modePlayersInfo[PVC_mode]));
                         if (currentButton > Ranking.modePlayersInfo[PVC_mode].Count - 1) currentButton--;
-                        if (Ranking.modePlayersInfo[PVC_mode].Count == 0) isEmpty = true;
+                        UpdateOptions("deleteUser");
                         PVC pvc = new PVC();
                         pvc.RenderPage();
+                    }
+                }
+                public static void UpdateOptions(string activityContext) {
+                    if (activityContext == "addUser") {
+                        Options.options[Options.optDelete_PVC] = "CONTENT";
+                        if (Options.options[Options.optReset_PVC] == "EMPTY") {
+                            Options.options[Options.optReset_PVC] = "CLEAN";
+                        }
+                        Options.Upload.FillButtons();
+                        string fileContent = "";
+                        for (int i = 0; i < Options.buttonsAmount; i++) {
+                            fileContent += Options.options[i];
+                            if (i < Options.buttonsAmount - 1) fileContent += "*";
+                        }
+                        File.WriteAllText(Options.optionsPath, fileContent);
+                        Options.isCorrectContent = true;   // Nie wiem dlaczego, ale pojawiał mi się error message, bo jakoś boole się pozmianiały WTF....
+                        Ranking.isCorrectContent[PVC_mode] = true;
+                    } else if (activityContext == "deleteUser") {
+                        if (Ranking.modePlayersInfo[PVC_mode].Count == 0) {
+                            Options.options[Options.optDelete_PVC] = "EMPTY";
+                            Options.options[Options.optReset_PVC] = "EMPTY";
+                        }
+                        Options.Upload.FillButtons();
+                        string fileContent = "";
+                        for (int i = 0; i < Options.buttonsAmount; i++) {
+                            fileContent += Options.options[i];
+                            if (i < Options.buttonsAmount - 1) fileContent += "*";
+                        }
+                        File.WriteAllText(Options.optionsPath, fileContent);
+                        Options.isCorrectContent = false;   // Nie wiem dlaczego, ale pojawiał mi się error message, bo jakoś boole się pozmianiały WTF....
+                        Options.errorCorrectContent = Ranking.errorEmpty;
+                        Ranking.isCorrectContent[PVC_mode] = false;
+                        Ranking.errorCorrectContent[PVC_mode] = Ranking.errorEmpty;
                     }
                 }
                 public class Valid {   // Do globalnych metod, kiedy będziesz robił tryb PVP
