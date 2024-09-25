@@ -141,7 +141,7 @@ namespace Page_PVC {
             public class User {
                 public static string SelectUserInfo() {
                     string selected = "Selected: [";
-                    if (Ranking.modePlayersInfo[PVC_mode].Count > 0) selected += Ranking.modePlayersInfo[PVC_mode][currentButton][0];
+                    if (Options.options[Options.optDelete_PVC] != "EMPTY") selected += Ranking.modePlayersInfo[PVC_mode][currentButton][0];
                     selected += "]";
                     return selected;
                 }
