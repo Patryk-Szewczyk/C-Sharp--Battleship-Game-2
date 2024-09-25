@@ -36,7 +36,6 @@ namespace Page_PVC {
                 ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);   // Dowolna niewłaściwa wartość.
                 while (isPage == true) {
                     Console.Clear();
-                    if (isEmpty) Error.EmptyMessage();   // Po utworzeniu użytkowania: isEmpty = false
                     Part.Content();
                     Part.Action(key);   // Miejsce na właściwą funkcję - SWITCH na odpowiedni "button".
                     key = Part.KeysControl(key);
@@ -67,7 +66,7 @@ namespace Page_PVC {
                 GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_ERROR);
             }
             public static void EmptyMessage() {
-                Console.WriteLine("\nThere isn't any user to play this game mode. Create new user and play game.\n");
+                Console.WriteLine("\nThere isn't any user to play this game mode. Create new user and play game.");
             }
         }
         public static void RenderTitle() {
@@ -93,8 +92,9 @@ namespace Page_PVC {
                     case "user":
                         RenderTitle();
                         GetButtons(PVC_mode);
-                        Console.WriteLine("Select: [" + Ranking.modePlayersInfo[PVC_mode][currentButton][0] + "]");
+                        Console.WriteLine(SelectedUserInfo());
                         GlobalMethod.Page.RenderButtons(buttons, currentButton);
+                        if (isEmpty) Error.EmptyMessage();   // Po utworzeniu użytkowania: isEmpty = false
                         GlobalMethod.Page.RenderDottedLine(pageLineLength);
                         break;
                     case "setting":
@@ -104,6 +104,12 @@ namespace Page_PVC {
                     case "summary":
                         break;
                 }
+            }
+            public static string SelectedUserInfo() {
+                string selected = "Selected: [";
+                if (Ranking.modePlayersInfo[PVC_mode].Count > 0) selected += Ranking.modePlayersInfo[PVC_mode][currentButton][0];
+                selected += "]";
+                return selected;
             }
             public static void Action(ConsoleKeyInfo key) {
                 switch (part) {
@@ -162,7 +168,7 @@ namespace Page_PVC {
                         Console.CursorVisible = true;
                         Console.Write("\n\nName: ");
                         name = Console.ReadLine();
-                        (string, bool, string) valid = Valid.ValidControl(name, isBad, validError);
+                        (string, bool, string) valid = Valid.ValidControlAdd(name, isBad, validError);
                         name = valid.Item1;
                         isBad = valid.Item2;
                         validError = valid.Item3;
@@ -171,7 +177,7 @@ namespace Page_PVC {
                             Console.CursorVisible = false;
                             Ranking.modePlayersInfo[PVC_mode].Add(new List<string>() { name, "0", "0", "?", "0", "0", "0%" } );
                             File.WriteAllText(PVC_filePath, GlobalMethod.StringPlayersInfo(Ranking.modePlayersInfo[PVC_mode]));
-                            Console.WriteLine("User: [" + name + "] has been added to this game mode.");
+                            isEmpty = false;
                             PVC pvc = new PVC();
                             pvc.RenderPage();
                         } else {
@@ -180,10 +186,43 @@ namespace Page_PVC {
                     }
                 }
                 public static void DeleteUser() {
-                    Console.WriteLine("DeleteUser");
+                    Console.WriteLine("GUIDE: Selected [user] -> Write \"yes\" or \"no\" -> [ENTER]");
+                    string name = Ranking.modePlayersInfo[PVC_mode][currentButton][0];
+                    string querry = "";
+                    string validError = "";
+                    bool isBad = false;
+                    bool isLoop = true;
+                    while (isLoop) {
+                        isBad = false;
+                        Console.CursorVisible = true;
+                        Console.WriteLine("\n\nDo you want delete [" + name + "] user?:\n");
+                        querry = Console.ReadLine();
+
+
+                        // OGARNIJ WALIDACJĘ:   // A POTEM TE DWA STANY OPCJI!
+
+                        //(string, bool, string) valid = Valid.ValidControl("delete", name, isBad, validError);
+                        //name = valid.Item1;
+                        //isBad = valid.Item2;
+                        //validError = valid.Item3;
+
+
+                        if (isBad == false) {
+                            isLoop = false;
+                            Console.CursorVisible = false;
+                            Ranking.modePlayersInfo[PVC_mode].RemoveAt(currentButton);
+                            File.WriteAllText(PVC_filePath, GlobalMethod.StringPlayersInfo(Ranking.modePlayersInfo[PVC_mode]));
+                            if (currentButton > Ranking.modePlayersInfo[PVC_mode].Count - 1) currentButton--;
+                            if (Ranking.modePlayersInfo[PVC_mode].Count == 0) isEmpty = true;
+                            PVC pvc = new PVC();
+                            pvc.RenderPage();
+                        } else {
+                            Console.WriteLine("\n" + validError);
+                        }
+                    }
                 }
                 public class Valid {   // Do globalnych metod, kiedy będziesz robił tryb PVP
-                    public static (string, bool, string) ValidControl(string name, bool isBad, string validError) {
+                    public static (string, bool, string) ValidControlAdd(string name, bool isBad, string validError) {
                         name = TrimNameOneSpace(name);
                         if (name == "" || name == " ") {
                             isBad = true;
@@ -198,7 +237,7 @@ namespace Page_PVC {
                                     validError = "This value can only contain word characters and signs from 0 to 9. Write correct value.";
                                 }
                                 else {
-                                    if (SameNames(name)) {
+                                    if (SameName(name)) {
                                         isBad = true;
                                         validError = "This user exists. Create another user.";
                                     }
@@ -254,12 +293,19 @@ namespace Page_PVC {
                         }
                         return isBadSign;
                     }
-                    public static bool SameNames(string name) {
+                    public static bool SameName(string name) {
                         bool isSameName = false;
                         for (int i = 0; i < Ranking.modePlayersInfo[PVC_mode].Count; i++) {
                             if (name == Ranking.modePlayersInfo[PVC_mode][i][0]) isSameName = true;
                         }
                         return isSameName;
+                    }
+                    public static bool NotFound(string name) {
+                        bool isNotFound = true;
+                        for (int i = 0; i < Ranking.modePlayersInfo[PVC_mode].Count; i++) {
+                            if (name == Ranking.modePlayersInfo[PVC_mode][i][0]) isNotFound = false;
+                        }
+                        return isNotFound;
                     }
                 }
                 
