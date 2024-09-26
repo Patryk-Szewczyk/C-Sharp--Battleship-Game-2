@@ -22,7 +22,7 @@ namespace Page_Ranking {
         public static List<string> errorFile = new List<string>();  // błąd odczutu bieżącego pliku = index
         public static List<string> errorCorrectContent = new List<string>();  // błąd odczutu bieżącego pliku = index
         public static List<List<List<string>>> modePlayersInfo = new List<List<List<string>>>();
-        public static string errorEmpty = "This data file is empty.Create new user and play game.";   // Dlaczego wziąłem to globalnie? Ponieważ klasa "PVC" kożysta z tej zmiennej w celu poprawnej walidacji do określenia pustej ilości graczy, aby wyświetlała się poprawna zawartość na stronie, a nie ekran błędu (aby dało się utworzyć użytkowanika, a nie aby pojawił sie ekran błędu).
+        public static string errorEmpty = "This data file is empty. Create new user and play game.";   // Dlaczego wziąłem to globalnie? Ponieważ klasa "PVC" kożysta z tej zmiennej w celu poprawnej walidacji do określenia pustej ilości graczy, aby wyświetlała się poprawna zawartość na stronie, a nie ekran błędu (aby dało się utworzyć użytkowanika, a nie aby pojawił sie ekran błędu).
         public void RenderPage() {
             ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);
             //Upload.SearchFile("players_PVC.txt");   // Przeniesiono do Intro.   // Jeżeli chcesz podpiąć kolejny ranking jedyne co trzeba zrobić, to dodać nazwę przycisku i skopiować tą metodę z podaniem nazwy pliku z rozszerzeniem.
