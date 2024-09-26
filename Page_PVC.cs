@@ -80,11 +80,6 @@ namespace Page_PVC {
                     case "user":
                         RenderTitle();
                         GetButtons(PVC_mode);
-
-                        //Console.WriteLine(buttons.Length);
-                        //Console.ReadLine();
-
-
                         Console.WriteLine(User.SelectUserInfo());   // Wyprubuj: buttons.Length == 0
                         if (buttons.Length > 0) GlobalMethod.Page.RenderButtons(buttons, currentButton);   // Options.options[Options.optDelete_PVC] != "EMPTY"
                         if (buttons.Length == 0) Error.EmptyMessage();   // Options.options[Options.optDelete_PVC] == "EMPTY"
@@ -174,9 +169,6 @@ namespace Page_PVC {
                             isLoop = false;
                             Console.CursorVisible = false;
                             Ranking.modePlayersInfo[PVC_mode].Add(new List<string>() { name, "0", "0", "?", "0", "0", "0%" } );
-
-                            
-
                             File.WriteAllText(PVC_filePath, GlobalMethod.StringPlayersInfo(Ranking.modePlayersInfo[PVC_mode]));
                             UpdateOptions("addUser");
                             PVC pvc = new PVC();
@@ -195,8 +187,10 @@ namespace Page_PVC {
                         Ranking.modePlayersInfo[PVC_mode].RemoveAt(currentButton);
                         File.WriteAllText(PVC_filePath, GlobalMethod.StringPlayersInfo(Ranking.modePlayersInfo[PVC_mode]));
                         if (currentButton > Ranking.modePlayersInfo[PVC_mode].Count - 1) currentButton--;
+                        if (Ranking.modePlayersInfo[PVC_mode].Count == 0) currentButton = 0;   // Resetowanie wartości kursora na 0, inaczej jest -1 i wywala błąd, w sytuacji kiedy: usuniemy wszystkich użytkowników za pomocą [P] i utworzymy nowego użytkownika.
                         UpdateOptions("deleteUser");
                         PVC pvc = new PVC();
+                        if (Ranking.modePlayersInfo[PVC_mode].Count == 0) Console.WriteLine(buttons.Length);
                         pvc.RenderPage();
                     }
                 }
