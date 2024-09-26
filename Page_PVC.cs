@@ -207,8 +207,8 @@ namespace Page_PVC {
                             if (i < Options.buttonsAmount - 1) fileContent += "*";
                         }
                         File.WriteAllText(Options.optionsPath, fileContent);
-                        //Options.isCorrectContent = true;   // Nie wiem dlaczego, ale pojawiał mi się error message, bo jakoś boole się pozmianiały WTF....
-                        //Ranking.isCorrectContent[PVC_mode] = true;
+                        Options.isCorrectContent = true;   // Dzięki temu mogę zdjąć blokady na funkcję resetu danych użytkowników i usunięcia użytkowników, aby umożliwić te funkcje, gdyż wyłączam je w "else if" tej metody.
+                        Ranking.isCorrectContent[PVC_mode] = true;   // Dodatkowo opcja resetu danych z sytuacją [CLEAN] jest obsłużona w opcjach, więc nie trzeba robić tutaj jej obsługi i psuć estetykę kodu - tzn chodzi o to, że jak mam [CLEAN] na resecie, to aby nie dało się ponownie czyścić danych użytkowników, bo już są wyczyszczone - to jest już obsłużone, więc nie musze tu (w tej metodzie) tego robić.
                     } else if (activityContext == "deleteUser") {
                         if (Ranking.modePlayersInfo[PVC_mode].Count == 0) {
                             Options.options[Options.optDelete_PVC] = "EMPTY";
@@ -221,10 +221,10 @@ namespace Page_PVC {
                             if (i < Options.buttonsAmount - 1) fileContent += "*";
                         }
                         File.WriteAllText(Options.optionsPath, fileContent);
-                        //Options.isCorrectContent = false;   // Nie wiem dlaczego, ale pojawiał mi się error message, bo jakoś boole się pozmianiały WTF....
-                        //Options.errorCorrectContent = Ranking.errorEmpty;
-                        //Ranking.isCorrectContent[PVC_mode] = false;
-                        //Ranking.errorCorrectContent[PVC_mode] = Ranking.errorEmpty;
+                        Options.isCorrectContent = false;   // Bez dego nie będą wyświetlone komunikaty o pustym pliku w Opcjach i tym samym nie będzie blokady na funkcję resetu danych użytkowników i usunięcia użytkowników.
+                        Options.errorCorrectContent = Ranking.errorEmpty;
+                        Ranking.isCorrectContent[PVC_mode] = false;
+                        Ranking.errorCorrectContent[PVC_mode] = Ranking.errorEmpty;
                     }
                 }
                 public class Valid {   // Do globalnych metod, kiedy będziesz robił tryb PVP
