@@ -115,6 +115,21 @@ namespace Library_GlobalMethods {
                 if (key.Key == ConsoleKey.Backspace) MenuReturn(page_ID);
                 return key;
             }
+            public static (bool, ConsoleKeyInfo) LoopCorrectKey_GameMode(bool isEnterPart, ConsoleKeyInfo key, List<ConsoleKey> usingKeys) {   //GameMode_WithoutFirstRead
+                bool isCorrSign = false;
+                while (isCorrSign == false) {
+                    if (isEnterPart == false) {
+                        key = Console.ReadKey(true);
+                    }
+                    for (int i = 0; i < usingKeys.Count; i++) {
+                        if (key.Key == usingKeys[i]) {
+                            isCorrSign = true;
+                        }
+                    }
+                }
+                if (isEnterPart) isEnterPart = false; ;
+                return (isEnterPart, key);
+            }
             public static void MenuReturn(int ID_page) {
                 switch (ID_page) {
                     case 0: PVC.isPage = false; break;
