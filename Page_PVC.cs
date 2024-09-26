@@ -14,8 +14,10 @@ namespace Page_PVC {
         public static int PVC_mode = 0;
         public static string PVC_filePath = "players_PVC.txt";
         public static string user = "";
-        public static string[] buttons = new string[Ranking.modePlayersInfo[PVC_mode].Count];
-        public static int currentButton = 0;
+        public static string[] users = new string[Ranking.modePlayersInfo[PVC_mode].Count];
+        public static int currentUser = 0;
+        public static int positioningCursor = 0;
+        public static bool isEnterPart = false;
         public static List<ConsoleKey> usingKeys_ERROR = new List<ConsoleKey> { ConsoleKey.Backspace };
         public void RenderPage() {   // Wyświetlenie strony PVC i zarazem panel kontrolny tej strony.
             bool isCorrect = false;
@@ -64,12 +66,15 @@ namespace Page_PVC {
                         User.RenderTitle();
                         User.GetUsers(PVC_mode);
                         Console.WriteLine(User.SelectUserInfo());   // Wyprubuj: buttons.Length == 0
-                        if (buttons.Length > 0) GlobalMethod.Page.RenderButtons(buttons, currentButton);   // Options.options[Options.optDelete_PVC] != "EMPTY"
-                        if (buttons.Length == 0) Error.EmptyMessage();   // Options.options[Options.optDelete_PVC] == "EMPTY"
+                        if (users.Length > 0) GlobalMethod.Page.RenderButtons(users, currentUser);   // Options.options[Options.optDelete_PVC] != "EMPTY"
+                        if (users.Length == 0) Error.EmptyMessage();   // Options.options[Options.optDelete_PVC] == "EMPTY"
                         GlobalMethod.Page.RenderDottedLine(pageLineLength);
                         break;
                     case "setting":
-                        Console.WriteLine("Ship positiog:");
+                        Console.WriteLine("Selected user: [" + user + "]\n");
+                        Console.WriteLine("Now set your ships:");
+                        GlobalMethod.Page.RenderDottedLine(pageLineLength);
+                        Console.WriteLine("Position: " + positioningCursor);
                         break;
                     case "battle":
                         break;
@@ -88,8 +93,16 @@ namespace Page_PVC {
                         break;
                     case "setting":
                         switch (key.Key) {
-                            case ConsoleKey.Enter: User.SelectUser(); break;
-                            case ConsoleKey.R: User.AddUser(); break;
+                            /*case ConsoleKey.W: Positioning.Top(); break;
+                            case ConsoleKey.UpArrow: Positioning.Top(); break;
+                            case ConsoleKey.S: Positioning.Down(); break;
+                            case ConsoleKey.DownArrow: Positioning.Down(); break;
+                            case ConsoleKey.A: Positioning.Left(); break;
+                            case ConsoleKey.LeftArrow: Positioning.Left(); break;
+                            case ConsoleKey.D: Positioning.Right(); break;
+                            case ConsoleKey.RightArrow: Positioning.Right(); break;*/
+                            case ConsoleKey.R: Positioning.Reset(); break;
+                            case ConsoleKey.Enter: Positioning.Set(); break;
                         }
                         break;
                     case "battle":
@@ -104,12 +117,16 @@ namespace Page_PVC {
                 List<ConsoleKey> usingKeys_USER_DOWN = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.UpArrow, ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
                 List<ConsoleKey> usingKeys_USER_ONE = new List<ConsoleKey> { ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
                 List<ConsoleKey> usingKeys_USER_ZERO = new List<ConsoleKey> { ConsoleKey.C, ConsoleKey.Backspace };
+                List<ConsoleKey> usingKeys_POSITIONING_STANDARD = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.A, ConsoleKey.D, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.LeftArrow, ConsoleKey.RightArrow, ConsoleKey.R, ConsoleKey.Enter };
                 switch (part) {
                     case "user":
-                        if (buttons.Length == 0) key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_USER_ZERO);   // Options.options[Options.optDelete_PVC] == "EMPTY"
-                        else key = GlobalMethod.Page.SelectUsingKeys(currentButton, page_ID, key, buttons, usingKeys_USER_STANDARD, usingKeys_USER_TOP, usingKeys_USER_DOWN, usingKeys_USER_ONE);
+                        if (users.Length == 0) key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_USER_ZERO);
+                        else key = GlobalMethod.Page.SelectUsingKeys(currentUser, page_ID, key, users, usingKeys_USER_STANDARD, usingKeys_USER_TOP, usingKeys_USER_DOWN, usingKeys_USER_ONE);
                         break;
                     case "setting":
+                        (bool, ConsoleKeyInfo) positCorr = GlobalMethod.Page.LoopCorrectKey_GameMode(isEnterPart, key, usingKeys_POSITIONING_STANDARD);
+                        isEnterPart = positCorr.Item1;
+                        key = positCorr.Item2;
                         break;
                     case "battle":
                         break;
@@ -120,8 +137,8 @@ namespace Page_PVC {
             }
             public static void MoveCursor(ConsoleKeyInfo key) {
                 switch (part) {
-                    case "user": currentButton = GlobalMethod.Page.MoveButtons(buttons, currentButton, key); break;
-                    case "setting":  break;
+                    case "user": currentUser = GlobalMethod.Page.MoveButtons(users, currentUser, key); break;
+                    case "setting": positioningCursor = Positioning.CursorNavigate(key); break;
                     case "battle":  break;
                     case "summary":  break;
                 }
@@ -139,21 +156,21 @@ namespace Page_PVC {
                     Console.WriteLine("PVC MODE: | Moving: arrows/[W][S] | Click: [ENTER] | Create player: [C] | Delete player: [P] | Back to menu: [BACKSPACE]\n");
                 }
                 public static void GetUsers(int mode) {
-                    buttons = new string[Ranking.modePlayersInfo[PVC_mode].Count];   // Ten trik rozwiązuje upierdliwy problem, który trzebaby było inaczej rozwiązać konwersją "List<string>" na "string[]".
+                    users = new string[Ranking.modePlayersInfo[PVC_mode].Count];   // Ten trik rozwiązuje upierdliwy problem, który trzebaby było inaczej rozwiązać konwersją "List<string>" na "string[]".
                     for (int i = 0; i < Ranking.modePlayersInfo[mode].Count; i++) {  // ^ Ale na szczęście zamiast tracić na to czas za każdym wywołaniem tej metody nadpisuję zmienną nową inicjacją zmiennej
-                        buttons[i] = Ranking.modePlayersInfo[mode][i][0];            // ^ "string[]" z nową aktualną długością, zaktualizowaną "statycznie" w klasie Ranking.
+                        users[i] = Ranking.modePlayersInfo[mode][i][0];            // ^ "string[]" z nową aktualną długością, zaktualizowaną "statycznie" w klasie Ranking.
                     }
                 }
                 public static string SelectUserInfo() {
-                    string selected = "Selected: [";   // Wyprubuj: buttons.Length == 0
-                    if (buttons.Length > 0) selected += Ranking.modePlayersInfo[PVC_mode][currentButton][0];   // Options.options[Options.optDelete_PVC] != "EMPTY"
+                    string selected = "Selected: [";
+                    if (users.Length > 0) selected += Ranking.modePlayersInfo[PVC_mode][currentUser][0];
                     selected += "]\n";
                     return selected;
                 }
                 public static void SelectUser() {
-                    user = Ranking.modePlayersInfo[PVC_mode][currentButton][0];
-                    //Console.WriteLine("Chosed user: [" + user + "]");
+                    user = Ranking.modePlayersInfo[PVC_mode][currentUser][0];
                     part = "setting";
+                    isEnterPart = true;
                 }
                 public static void AddUser() {
                     Console.WriteLine("GUIDE: Write new user name -> [ENTER]");
@@ -185,17 +202,17 @@ namespace Page_PVC {
                 }
                 public static void DeleteUser() {
                     Console.WriteLine("GUIDE: Selected [user] -> Write \"yes\" or \"no\" -> [ENTER]");
-                    string name = Ranking.modePlayersInfo[PVC_mode][currentButton][0];
+                    string name = Ranking.modePlayersInfo[PVC_mode][currentUser][0];
                     Console.WriteLine("\n\nDo you want delete [" + name + "] user?:\n");
                     bool isDelete = Valid.ValidDelete();
                     if (isDelete) {
-                        Ranking.modePlayersInfo[PVC_mode].RemoveAt(currentButton);
+                        Ranking.modePlayersInfo[PVC_mode].RemoveAt(currentUser);
                         File.WriteAllText(PVC_filePath, GlobalMethod.StringPlayersInfo(Ranking.modePlayersInfo[PVC_mode]));
-                        if (currentButton > Ranking.modePlayersInfo[PVC_mode].Count - 1) currentButton--;
-                        if (Ranking.modePlayersInfo[PVC_mode].Count == 0) currentButton = 0;   // Resetowanie wartości kursora na 0, inaczej jest -1 i wywala błąd, w sytuacji kiedy: usuniemy wszystkich użytkowników za pomocą [P] i utworzymy nowego użytkownika.
+                        if (currentUser > Ranking.modePlayersInfo[PVC_mode].Count - 1) currentUser--;
+                        if (Ranking.modePlayersInfo[PVC_mode].Count == 0) currentUser = 0;   // Resetowanie wartości kursora na 0, inaczej jest -1 i wywala błąd, w sytuacji kiedy: usuniemy wszystkich użytkowników za pomocą [P] i utworzymy nowego użytkownika.
                         UpdateOptions("deleteUser");
                         PVC pvc = new PVC();
-                        if (Ranking.modePlayersInfo[PVC_mode].Count == 0) Console.WriteLine(buttons.Length);
+                        if (Ranking.modePlayersInfo[PVC_mode].Count == 0) Console.WriteLine(users.Length);
                         pvc.RenderPage();
                     }
                 }
@@ -342,46 +359,54 @@ namespace Page_PVC {
                     }
                 }
             }
-            public class Setting {
-
+            public class Positioning {   // WAŻNE!!! NIE ZAPOMNIJ ZRESETOWAĆ ZMIENNEJ "positioningCursor" DO ZERA (0), PO ZAKOŃCZENIU OPERACJI W TEJ KLASIE! (ustawienie wszystkcich statków przez gracza)
+                public static int CursorNavigate(System.ConsoleKeyInfo key) {
+                    /*System.ConsoleKey[] direction_1 = new ConsoleKey[4] { System.ConsoleKey.UpArrow, System.ConsoleKey.DownArrow, System.ConsoleKey.RightArrow, System.ConsoleKey.LeftArrow };
+                    System.ConsoleKey[] direction_2 = new ConsoleKey[4] { System.ConsoleKey.W, System.ConsoleKey.S, System.ConsoleKey.D, System.ConsoleKey.A };
+                    int[] add = new int[4] { -10, 10, 1, -1 };
+                    bool[] stop = new bool[4] { false, false, false, false };
+                    int[,] valNum = new int[4, 10] {
+                        ///*Up:    { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 },
+                        //*Down:  { 90, 91, 92, 93, 94, 95, 96, 97, 98, 99 },
+                        //*Right  { 9, 19, 29, 39, 49, 59, 69, 79, 89, 99 },
+                        //*Left:  { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90 }
+                    };
+                    for (int i = 0; i < valNum.GetLength(0); i++) {
+                        stop[i] = false;
+                        for (int j = 0; j < valNum.GetLength(1); j++) {
+                            if (positioningCursor == valNum[i, j]) stop[i] = true;
+                        }
+                        if (!stop[i]) {
+                            if (key.Key == direction_1[i] || key.Key == direction_2[i]) {
+                                positioningCursor += add[i];
+                            }
+                        }
+                    }*/
+                    return positioningCursor;
+                }
+                /*public static void Top() {
+                    positioningCursor -= (positioningCursor > 0) ? 10 : 0;
+                }
+                public static void Down() {
+                    positioningCursor += (positioningCursor < 90) ? 10 : 0;
+                }
+                public static void Left() {
+                    positioningCursor -= (positioningCursor > 0) ? 10 : 0;
+                }
+                public static void Right() {
+                    positioningCursor += 1;
+                }*/
+                public static void Reset() {
+                    positioningCursor = 0;
+                }
+                public static void Set() {
+                }
             }
             public class Battle {
 
             }
             public class Summary {
 
-            }
-        }
-
-
-
-
-
-        public class SetShipsPVC {
-            public static int cursor = 0;
-            public static int CursorNavigate(System.ConsoleKeyInfo key) {
-                System.ConsoleKey[] direction_1 = new ConsoleKey[4] { System.ConsoleKey.UpArrow, System.ConsoleKey.DownArrow, System.ConsoleKey.RightArrow, System.ConsoleKey.LeftArrow };
-                System.ConsoleKey[] direction_2 = new ConsoleKey[4] { System.ConsoleKey.W, System.ConsoleKey.S, System.ConsoleKey.D, System.ConsoleKey.A };
-                int[] add = new int[4] { -10, 10, 1, -1 };
-                bool[] stop = new bool[4] { false, false, false, false };
-                int[,] valNum = new int[4, 10] {
-                    /*Up:*/    { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 },
-                    /*Down:*/  { 90, 91, 92, 93, 94, 95, 96, 97, 98, 99 },
-                    /*Right:*/ { 9, 19, 29, 39, 49, 59, 69, 79, 89, 99 },
-                    /*Left:*/  { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90 }
-                };
-                for (int i = 0; i < valNum.GetLength(0); i++) {
-                    stop[i] = false;
-                    for (int j = 0; j < valNum.GetLength(1); j++) {
-                        if (cursor == valNum[i,j]) stop[i] = true;
-                    }
-                    if (!stop[i]) {
-                        if (key.Key == direction_1[i] || key.Key == direction_2[i]) {
-                            cursor += add[i];
-                        }
-                    }
-                }
-                return cursor;
             }
         }
     }
