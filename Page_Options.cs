@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Library_GlobalMethods;
+using Page_PVC;
 using Page_Ranking;
 
 namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM ZAPISUJESZ I ZAMIENIASZ DANE ODNOŚNIE OPCJI!!!
@@ -18,12 +19,12 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
         public static int optDelete_PVC = 5;
         public static string[] buttons = new string[buttonsAmount];
         public static string[] buttonsTitle = { 
-            "Music:                                 ",   // OK
-            "Equal ships direction for AI:          ",   // "RandomShips"
-            "Show only top 10 players in ranking:   ",   // "RenderRanking"
-            "Change ships in battle - PVC mode:     ",   // OK
-            "Reset ranking data - - - PVC mode:     ",   // [DATA], [CLEAN], [EMPTY] | [DATA] = kiedy gracz ma wpisywany wynik do pliku
-            "Delete users - - - - - - PVC mode:     "    // [CONTENT], [EMPTY] | [CONTENT] = kiedy jest dodawany nowy gracz
+            "Music:                                   ",   // OK
+            "Equal ships direction for AI:            ",   // "RandomShips"
+            "Show only top 10 players in ranking:     ",   // "RenderRanking"
+            "Change ships in battle - PVC mode:       ",   // OK
+            "Reset ranking data - - - PVC mode:       ",   // [DATA], [CLEAN], [EMPTY] | [DATA] = kiedy gracz ma wpisywany wynik do pliku
+            "Delete users - - - - - - PVC mode:       "    // [CONTENT], [EMPTY] | [CONTENT] = kiedy jest dodawany nowy gracz
         };
         public static string[] guide = new string[buttonsAmount] {
             "ON = [E] | OFF = [D]",
@@ -392,6 +393,7 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
                             Ranking.errorCorrectContent[modeNum] = "This data file is empty. Create new user and play game.";
                             options[option] = "EMPTY";
                             options[optReset_PVC] = "EMPTY";   // Wartość opcji od resetowania. | Kiedy pojawi/wią się gracze z początkowymi danymi, albo zostanie aktywowana metoda resetu = [CLEAN] | Kiedy dane któegokolwiek z graczy zostaną uzupełnione = [DATA]
+                            PVC.currentButton = 0;   // Resetowanie wartości kursora klasy "PVC" na 0, inaczej jest -1 i wywala błąd, w sytuacji kiedy: usuniemy wszystkich użytkowników za pomocą [P] i utworzymy nowego użytkownika.
                             PageUpdate();
                         } else if (answer == "no") {
                             isLoop = false;
