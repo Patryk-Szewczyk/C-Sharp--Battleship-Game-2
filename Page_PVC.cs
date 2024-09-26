@@ -17,11 +17,6 @@ namespace Page_PVC {
         public static string[] buttons = new string[Ranking.modePlayersInfo[PVC_mode].Count];
         public static int currentButton = 0;
         public static List<ConsoleKey> usingKeys_ERROR = new List<ConsoleKey> { ConsoleKey.Backspace };
-        public static List<ConsoleKey> usingKeys_USER_STANDARD = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
-        public static List<ConsoleKey> usingKeys_USER_TOP = new List<ConsoleKey> { ConsoleKey.S, ConsoleKey.DownArrow, ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
-        public static List<ConsoleKey> usingKeys_USER_DOWN = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.UpArrow, ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
-        public static List<ConsoleKey> usingKeys_USER_ONE = new List<ConsoleKey> { ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
-        public static List<ConsoleKey> usingKeys_USER_ZERO = new List<ConsoleKey> { ConsoleKey.C, ConsoleKey.P, ConsoleKey.Backspace };
         public void RenderPage() {   // Wyświetlenie strony PVC i zarazem panel kontrolny tej strony.
             bool isCorrect = false;
             isCorrect = Error.CheckRankingValid(isCorrect, PVC_mode);
@@ -85,9 +80,14 @@ namespace Page_PVC {
                     case "user":
                         RenderTitle();
                         GetButtons(PVC_mode);
-                        Console.WriteLine(User.SelectUserInfo());
-                        if (Options.options[Options.optDelete_PVC] != "EMPTY") GlobalMethod.Page.RenderButtons(buttons, currentButton);
-                        if (Options.options[Options.optDelete_PVC] == "EMPTY") Error.EmptyMessage();   // Po utworzeniu użytkowania: isEmpty = false
+
+                        //Console.WriteLine(buttons.Length);
+                        //Console.ReadLine();
+
+
+                        Console.WriteLine(User.SelectUserInfo());   // Wyprubuj: buttons.Length == 0
+                        if (buttons.Length > 0) GlobalMethod.Page.RenderButtons(buttons, currentButton);   // Options.options[Options.optDelete_PVC] != "EMPTY"
+                        if (buttons.Length == 0) Error.EmptyMessage();   // Options.options[Options.optDelete_PVC] == "EMPTY"
                         GlobalMethod.Page.RenderDottedLine(pageLineLength);
                         break;
                     case "setting":
@@ -116,9 +116,14 @@ namespace Page_PVC {
                 }
             }
             public static ConsoleKeyInfo KeysControl(ConsoleKeyInfo key) {
+                List<ConsoleKey> usingKeys_USER_STANDARD = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
+                List<ConsoleKey> usingKeys_USER_TOP = new List<ConsoleKey> { ConsoleKey.S, ConsoleKey.DownArrow, ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
+                List<ConsoleKey> usingKeys_USER_DOWN = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.UpArrow, ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
+                List<ConsoleKey> usingKeys_USER_ONE = new List<ConsoleKey> { ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
+                List<ConsoleKey> usingKeys_USER_ZERO = new List<ConsoleKey> { ConsoleKey.C, ConsoleKey.Backspace };
                 switch (part) {
                     case "user":
-                        if (buttons.Length == 0) key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_USER_ZERO);
+                        if (buttons.Length == 0) key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_USER_ZERO);   // Options.options[Options.optDelete_PVC] == "EMPTY"
                         else key = GlobalMethod.Page.SelectUsingKeys(currentButton, page_ID, key, buttons, usingKeys_USER_STANDARD, usingKeys_USER_TOP, usingKeys_USER_DOWN, usingKeys_USER_ONE);
                         break;
                     case "setting":
@@ -140,8 +145,8 @@ namespace Page_PVC {
             }
             public class User {
                 public static string SelectUserInfo() {
-                    string selected = "Selected: [";
-                    if (Options.options[Options.optDelete_PVC] != "EMPTY") selected += Ranking.modePlayersInfo[PVC_mode][currentButton][0];
+                    string selected = "Selected: [";   // Wyprubuj: buttons.Length == 0
+                    if (buttons.Length > 0) selected += Ranking.modePlayersInfo[PVC_mode][currentButton][0];   // Options.options[Options.optDelete_PVC] != "EMPTY"
                     selected += "]";
                     return selected;
                 }
@@ -169,6 +174,9 @@ namespace Page_PVC {
                             isLoop = false;
                             Console.CursorVisible = false;
                             Ranking.modePlayersInfo[PVC_mode].Add(new List<string>() { name, "0", "0", "?", "0", "0", "0%" } );
+
+                            
+
                             File.WriteAllText(PVC_filePath, GlobalMethod.StringPlayersInfo(Ranking.modePlayersInfo[PVC_mode]));
                             UpdateOptions("addUser");
                             PVC pvc = new PVC();
@@ -205,8 +213,8 @@ namespace Page_PVC {
                             if (i < Options.buttonsAmount - 1) fileContent += "*";
                         }
                         File.WriteAllText(Options.optionsPath, fileContent);
-                        Options.isCorrectContent = true;   // Nie wiem dlaczego, ale pojawiał mi się error message, bo jakoś boole się pozmianiały WTF....
-                        Ranking.isCorrectContent[PVC_mode] = true;
+                        //Options.isCorrectContent = true;   // Nie wiem dlaczego, ale pojawiał mi się error message, bo jakoś boole się pozmianiały WTF....
+                        //Ranking.isCorrectContent[PVC_mode] = true;
                     } else if (activityContext == "deleteUser") {
                         if (Ranking.modePlayersInfo[PVC_mode].Count == 0) {
                             Options.options[Options.optDelete_PVC] = "EMPTY";
@@ -219,10 +227,10 @@ namespace Page_PVC {
                             if (i < Options.buttonsAmount - 1) fileContent += "*";
                         }
                         File.WriteAllText(Options.optionsPath, fileContent);
-                        Options.isCorrectContent = false;   // Nie wiem dlaczego, ale pojawiał mi się error message, bo jakoś boole się pozmianiały WTF....
-                        Options.errorCorrectContent = Ranking.errorEmpty;
-                        Ranking.isCorrectContent[PVC_mode] = false;
-                        Ranking.errorCorrectContent[PVC_mode] = Ranking.errorEmpty;
+                        //Options.isCorrectContent = false;   // Nie wiem dlaczego, ale pojawiał mi się error message, bo jakoś boole się pozmianiały WTF....
+                        //Options.errorCorrectContent = Ranking.errorEmpty;
+                        //Ranking.isCorrectContent[PVC_mode] = false;
+                        //Ranking.errorCorrectContent[PVC_mode] = Ranking.errorEmpty;
                     }
                 }
                 public class Valid {   // Do globalnych metod, kiedy będziesz robił tryb PVP
