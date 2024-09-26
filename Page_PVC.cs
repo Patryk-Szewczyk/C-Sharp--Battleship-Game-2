@@ -54,38 +54,22 @@ namespace Page_PVC {
                 GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_ERROR);
             }
             public static void EmptyMessage() {
-                Console.WriteLine("\nThere isn't any user to play this game mode. Create new user and play game.");
-            }
-        }
-        public static void RenderTitle() {
-            Console.WriteLine("BBBBBBB   BB    BB   BBBBBBB");
-            Console.WriteLine("BB    BB  BB    BB  BB      ");
-            Console.WriteLine("BB    BB  BB    BB  BB      ");
-            Console.WriteLine("BBBBBBB   BB    BB  BB      ");
-            Console.WriteLine("BB         BB  BB   BB      ");
-            Console.WriteLine("BB          BBBB    BB      ");
-            Console.WriteLine("BB           BB      BBBBBBB");
-            GlobalMethod.Page.RenderDottedLine(pageLineLength);
-            Console.WriteLine("PVC MODE: | Moving: arrows/[W][S] | Click: [ENTER] | Create player: [C] | Delete player: [P] | Back to menu: [BACKSPACE]\n");
-        }
-        public static void GetButtons(int mode) {
-            buttons = new string[Ranking.modePlayersInfo[PVC_mode].Count];   // Ten trik rozwiązuje upierdliwy problem, który trzebaby było inaczej rozwiązać konwersją "List<string>" na "string[]".
-            for (int i = 0; i < Ranking.modePlayersInfo[mode].Count; i++) {  // ^ Ale na szczęście zamiast tracić na to czas za każdym wywołaniem tej metody nadpisuję zmienną nową inicjacją zmiennej
-                buttons[i] = Ranking.modePlayersInfo[mode][i][0];            // ^ "string[]" z nową aktualną długością, zaktualizowaną "statycznie" w klasie Ranking.
+                Console.WriteLine("There isn't any user to play this game mode. Create new user and play game.");
             }
         }
         public class Part {
             public static void Content() {
                 switch (part) {
                     case "user":
-                        RenderTitle();
-                        GetButtons(PVC_mode);
+                        User.RenderTitle();
+                        User.GetUsers(PVC_mode);
                         Console.WriteLine(User.SelectUserInfo());   // Wyprubuj: buttons.Length == 0
                         if (buttons.Length > 0) GlobalMethod.Page.RenderButtons(buttons, currentButton);   // Options.options[Options.optDelete_PVC] != "EMPTY"
                         if (buttons.Length == 0) Error.EmptyMessage();   // Options.options[Options.optDelete_PVC] == "EMPTY"
                         GlobalMethod.Page.RenderDottedLine(pageLineLength);
                         break;
                     case "setting":
+                        Console.WriteLine("Ship positiog:");
                         break;
                     case "battle":
                         break;
@@ -103,6 +87,10 @@ namespace Page_PVC {
                         }
                         break;
                     case "setting":
+                        switch (key.Key) {
+                            case ConsoleKey.Enter: User.SelectUser(); break;
+                            case ConsoleKey.R: User.AddUser(); break;
+                        }
                         break;
                     case "battle":
                         break;
@@ -139,16 +127,33 @@ namespace Page_PVC {
                 }
             }
             public class User {
+                public static void RenderTitle() {
+                    Console.WriteLine("BBBBBBB   BB    BB   BBBBBBB");
+                    Console.WriteLine("BB    BB  BB    BB  BB      ");
+                    Console.WriteLine("BB    BB  BB    BB  BB      ");
+                    Console.WriteLine("BBBBBBB   BB    BB  BB      ");
+                    Console.WriteLine("BB         BB  BB   BB      ");
+                    Console.WriteLine("BB          BBBB    BB      ");
+                    Console.WriteLine("BB           BB      BBBBBBB");
+                    GlobalMethod.Page.RenderDottedLine(pageLineLength);
+                    Console.WriteLine("PVC MODE: | Moving: arrows/[W][S] | Click: [ENTER] | Create player: [C] | Delete player: [P] | Back to menu: [BACKSPACE]\n");
+                }
+                public static void GetUsers(int mode) {
+                    buttons = new string[Ranking.modePlayersInfo[PVC_mode].Count];   // Ten trik rozwiązuje upierdliwy problem, który trzebaby było inaczej rozwiązać konwersją "List<string>" na "string[]".
+                    for (int i = 0; i < Ranking.modePlayersInfo[mode].Count; i++) {  // ^ Ale na szczęście zamiast tracić na to czas za każdym wywołaniem tej metody nadpisuję zmienną nową inicjacją zmiennej
+                        buttons[i] = Ranking.modePlayersInfo[mode][i][0];            // ^ "string[]" z nową aktualną długością, zaktualizowaną "statycznie" w klasie Ranking.
+                    }
+                }
                 public static string SelectUserInfo() {
                     string selected = "Selected: [";   // Wyprubuj: buttons.Length == 0
                     if (buttons.Length > 0) selected += Ranking.modePlayersInfo[PVC_mode][currentButton][0];   // Options.options[Options.optDelete_PVC] != "EMPTY"
-                    selected += "]";
+                    selected += "]\n";
                     return selected;
                 }
                 public static void SelectUser() {
                     user = Ranking.modePlayersInfo[PVC_mode][currentButton][0];
-                    Console.WriteLine("Chosed user: [" + user + "]");
-                    // part = "setting"
+                    //Console.WriteLine("Chosed user: [" + user + "]");
+                    part = "setting";
                 }
                 public static void AddUser() {
                     Console.WriteLine("GUIDE: Write new user name -> [ENTER]");
