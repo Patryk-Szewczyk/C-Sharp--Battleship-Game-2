@@ -228,7 +228,7 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
                                     isBad = true;
                                     dtrmError = "This value can only contain characters from 1 to 9 and a comma [,].\nWrite correct value.";
                                     break;
-                                };
+                                }
                             }
                             if (isBad == false) {
                                 List<string> splitValue = new List<string>(newValue.Split(','));
@@ -387,13 +387,7 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
                             isLoop = false;
                             Console.CursorVisible = false;
                             File.WriteAllText("players_" + modeText + ".txt", "");   // Kasowanie użytkowników.
-                            string fileContent = File.ReadAllText("players_" + modeText + ".txt");
-                            List<List<string>> playersInfo = new List<List<string>>();
-                            List<string> players = new List<string>(fileContent.Split('*'));
-                            for (int i = 0; i < players.Count; i++) {
-                                playersInfo.Add(new List<string>(players[i].Split('#')));
-                            }
-                            Ranking.modePlayersInfo[modeNum] = playersInfo;   // Aktualizacja danych gry z pliku. | Ranking.modePlayersInfo[modeNum] = 0 = PVC mode
+                            Ranking.modePlayersInfo[modeNum].Clear();   // Czyszczenie danych w programie.   // Inaczej kiedy usuniemy wszystkich użytkowników w opcjach i wrócimy do danego trybu aby utworzyć nowego użytkownika - (wówczas) pojawi się błąd. Tablica "buttons" Będzie miała długość równą 1, gdyż jakimś cudem (nie mam pojęcia dlaczego) do tablicy użytkowników danego trybu zostanie dodane jedno miejce. Dlatego trzeba to skasować to skasować za pomocą metody ".Clear()" listy dynamicznej.
                             Ranking.isCorrectContent[modeNum] = false;
                             Ranking.errorCorrectContent[modeNum] = "This data file is empty. Create new user and play game.";
                             options[option] = "EMPTY";
