@@ -13,7 +13,8 @@ namespace Page_PVC {
         public static int pageLineLength = 80;
         public static int PVC_mode = 0;
         public static string PVC_filePath = "players_PVC.txt";
-        public static string user = "";
+        public static string userStr = "";
+        public static int userInt = 0;
         public static string[] users = new string[Ranking.modePlayersInfo[PVC_mode].Count];
         public static int currentUser = 0;
         public static int positioningCursor = 0;
@@ -71,7 +72,7 @@ namespace Page_PVC {
                         GlobalMethod.Page.RenderDottedLine(pageLineLength);
                         break;
                     case "setting":
-                        Console.WriteLine("Selected user: [" + user + "]\n");
+                        Console.WriteLine("Selected user: [" + userStr + "] | [" + userInt + "]\n");
                         Console.WriteLine("Now set your ships:");
                         GlobalMethod.Page.RenderDottedLine(pageLineLength);
                         Console.WriteLine("Position: " + positioningCursor);
@@ -93,14 +94,6 @@ namespace Page_PVC {
                         break;
                     case "setting":
                         switch (key.Key) {
-                            /*case ConsoleKey.W: Positioning.Top(); break;
-                            case ConsoleKey.UpArrow: Positioning.Top(); break;
-                            case ConsoleKey.S: Positioning.Down(); break;
-                            case ConsoleKey.DownArrow: Positioning.Down(); break;
-                            case ConsoleKey.A: Positioning.Left(); break;
-                            case ConsoleKey.LeftArrow: Positioning.Left(); break;
-                            case ConsoleKey.D: Positioning.Right(); break;
-                            case ConsoleKey.RightArrow: Positioning.Right(); break;*/
                             case ConsoleKey.R: Positioning.Reset(); break;
                             case ConsoleKey.Enter: Positioning.Set(); break;
                         }
@@ -168,7 +161,8 @@ namespace Page_PVC {
                     return selected;
                 }
                 public static void SelectUser() {
-                    user = Ranking.modePlayersInfo[PVC_mode][currentUser][0];
+                    userStr = Ranking.modePlayersInfo[PVC_mode][currentUser][0];
+                    userInt = currentUser;
                     part = "setting";
                     isEnterPart = true;
                 }
@@ -360,7 +354,7 @@ namespace Page_PVC {
                 }
             }
             public class Positioning {   // WAŻNE!!! NIE ZAPOMNIJ ZRESETOWAĆ ZMIENNEJ "positioningCursor" DO ZERA (0), PO ZAKOŃCZENIU OPERACJI W TEJ KLASIE! (ustawienie wszystkcich statków przez gracza)
-                public static int CursorNavigate(System.ConsoleKeyInfo key) {
+                public static int CursorNavigate(ConsoleKeyInfo key) {
                     /*System.ConsoleKey[] direction_1 = new ConsoleKey[4] { System.ConsoleKey.UpArrow, System.ConsoleKey.DownArrow, System.ConsoleKey.RightArrow, System.ConsoleKey.LeftArrow };
                     System.ConsoleKey[] direction_2 = new ConsoleKey[4] { System.ConsoleKey.W, System.ConsoleKey.S, System.ConsoleKey.D, System.ConsoleKey.A };
                     int[] add = new int[4] { -10, 10, 1, -1 };
@@ -384,18 +378,6 @@ namespace Page_PVC {
                     }*/
                     return positioningCursor;
                 }
-                /*public static void Top() {
-                    positioningCursor -= (positioningCursor > 0) ? 10 : 0;
-                }
-                public static void Down() {
-                    positioningCursor += (positioningCursor < 90) ? 10 : 0;
-                }
-                public static void Left() {
-                    positioningCursor -= (positioningCursor > 0) ? 10 : 0;
-                }
-                public static void Right() {
-                    positioningCursor += 1;
-                }*/
                 public static void Reset() {
                     positioningCursor = 0;
                 }
