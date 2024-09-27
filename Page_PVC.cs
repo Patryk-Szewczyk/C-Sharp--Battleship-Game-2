@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Runtime.Remoting.Messaging;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.RegularExpressions;
 using Library_GlobalMethods;
 using Page_Options;
 using Page_Ranking;
@@ -16,16 +18,20 @@ namespace Page_PVC {
         public static int pageLineLength = 80;
         public static int PVC_mode = 0;
         public static string PVC_filePath = "players_PVC.txt";
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - - Przenieś później do klasy "Part":
         public static string userStr = "";
         public static int userInt = 0;
         public static string[] users = new string[Ranking.modePlayersInfo[PVC_mode].Count];
         public static int currentUser = 0;
-        public static int positioningCursor = 0;
-        public static string positUsingKeys_BOARD = "all";   // all, top, down, left, right
-        public static string positUsingKeys_SHIPS = "all";   // all, left, right, one, zero
+        public static int positBoardCursor = 0;
+        public static int positShipsCursor = 0;
+        public static string positUsingKeys_BOARD = "";   // all, top, down, left, right
+        public static string positUsingKeys_SHIPS = "";   // all, left, right, one, zero
         public static bool isPositReset = false;
+        public static List<string> positShips = new List<string>();
         public static bool isEnterPart = false;
         public static List<ConsoleKey> usingKeys_ERROR = new List<ConsoleKey> { ConsoleKey.Backspace };
+        // - - - - - - - - - - - - - - - - - - - - - - - - - - -
         public void RenderPage() {   // Wyświetlenie strony PVC i zarazem panel kontrolny tej strony.
             bool isCorrect = false;
             isCorrect = Error.CheckRankingValid(isCorrect, PVC_mode);
@@ -97,7 +103,7 @@ namespace Page_PVC {
                         break;
                     case "positioning":
                         switch (key.Key) {
-                            case ConsoleKey.R: Positioning.Reset(); break;
+                            case ConsoleKey.P: Positioning.Reset(); break;
                             case ConsoleKey.Enter: Positioning.Set(); break;
                         }
                         break;
@@ -133,10 +139,13 @@ namespace Page_PVC {
                         else key = GlobalMethod.Page.SelectUsingKeys(currentUser, page_ID, key, users, USER_standard, USER_top, USER_down, USER_one);
                         break;
                     case "positioning":
-                        Positioning.DetermineCursorUsingKeys(positioningCursor);
+                        Positioning.DetermineBoardUsingKeys();
+                        Positioning.DetermineShipsUsingKeys();
                         POSIT_fusion.Clear();
-                        if (isPositReset) POSIT_fusion.Add(ConsoleKey.R);
+                        isPositReset = true;   // TYLKO DLA TESTÓW!!! Jest true kiedy ustawisz statek!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        if (isPositReset) POSIT_fusion.Add(ConsoleKey.P);
                         POSIT_fusion.Add(ConsoleKey.Enter);
+                        //POSIT_fusion.Add(ConsoleKey.Backspace);   // TYLKO DLA TESTÓW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         switch (positUsingKeys_BOARD) {
                             case "all":
                                 for (int i = 0; i < POSIT_BOARD_all.Count; i++) {
@@ -201,10 +210,6 @@ namespace Page_PVC {
                                 }
                                 break;
                         }
-                        /*if (positUsingKeys_BOARD == "zero" && (positUsingKeys_SHIPS == "one" || positUsingKeys_SHIPS == "zero")) {
-                            usingKeys_POSITIONING.Add(ConsoleKey.R);
-                            usingKeys_POSITIONING.Add(ConsoleKey.Enter);
-                        }*/
                         (bool, ConsoleKeyInfo) positCorr = GlobalMethod.Page.LoopCorrectKey_GameMode(isEnterPart, key, POSIT_fusion);
                         isEnterPart = positCorr.Item1;
                         key = positCorr.Item2;
@@ -219,7 +224,7 @@ namespace Page_PVC {
             public static void MoveCursor(ConsoleKeyInfo key) {
                 switch (part) {
                     case "user": currentUser = GlobalMethod.Page.MoveButtons(users, currentUser, key); break;
-                    case "positioning": positioningCursor = Positioning.CursorNavigate(positioningCursor, key); break;
+                    case "positioning": Positioning.CursorBoard(key); Positioning.CursorShips(key); break;
                     case "battle":  break;
                     case "summary":  break;
                 }
@@ -253,6 +258,7 @@ namespace Page_PVC {
                     userInt = currentUser;
                     part = "positioning";
                     isEnterPart = true;
+                    Positioning.Reset();   // Ustawienie listy dynamicznej statków z opcji jeden raz, kolejne, tylko przy resecie.
                 }
                 public static void AddUser() {
                     Console.WriteLine("GUIDE: Write new user name -> [ENTER]");
@@ -437,12 +443,21 @@ namespace Page_PVC {
             public class Positioning {   // WAŻNE!!! NIE ZAPOMNIJ ZRESETOWAĆ ZMIENNEJ "positioningCursor" DO ZERA (0), PO ZAKOŃCZENIU OPERACJI W TEJ KLASIE! (ustawienie wszystkcich statków przez gracza)
                 public static void RenderTitle() {
                     Console.WriteLine("User: [" + userStr + "] | [" + userInt + "]\n");
+                    Console.WriteLine("POSITIONING: | Choose ship: [Q][E] -> [ENTER] | Change direction: [C] | Set ship: [W][S][A][D]/arrows -> [ENTER] | Reset: [P]");
                     GlobalMethod.Page.RenderDottedLine(pageLineLength);
-                    Console.WriteLine("Ships: " + "{ 2  2  2  3  3  4  5 }"); // KONCEPT
-                    Console.WriteLine("                    " + "  ^");
-                    Console.WriteLine("Position: " + positioningCursor);   // TYMCZASOWO
+                    Console.WriteLine("Ships: " + "{" + RenderShipsInfo() + " }"); // KONCEPT
+                    Console.WriteLine("       " + RenderShipSpace() + "  ^");
+                    Console.WriteLine("Ship: " + positShipsCursor + " | Position: " + positBoardCursor);   // TYMCZASOWO
                 }
-                public static int CursorNavigate(int cursor, ConsoleKeyInfo key) {
+                public static string RenderShipsInfo() {
+                    string result = "";
+                    for (int i = 0; i < positShips.Count; i++) {
+                        result += " " + positShips[i];
+                    }
+                    return result;
+                }
+                public static void CursorBoard(ConsoleKeyInfo key) {
+                    int cursor = positBoardCursor;
                     if (key.Key == ConsoleKey.W || key.Key == ConsoleKey.UpArrow) {
                         if (cursor > 9) cursor -= 10;
                     } else if (key.Key == ConsoleKey.S || key.Key == ConsoleKey.DownArrow) {
@@ -456,7 +471,7 @@ namespace Page_PVC {
                             if (cursor >= i && cursor < j) cursor += 1;
                         }
                     }
-                    return cursor;
+                    positBoardCursor = cursor;
                     /*if (cursor > 0 && cursor < 10) cursor -= 1;  // Jeżeli kursor jest w przedziale {1,2,3,4,5,6,7,8,9}
                     if (cursor > 10 && cursor < 20) cursor -= 1;   // Jeżeli kursor jest w przedziale {11,12,13,14,15,16,17,18,19}
                     if (cursor > 20 && cursor < 30) cursor -= 1;   // Jeżeli kursor jest w przedziale {21,22,23,...}
@@ -466,7 +481,17 @@ namespace Page_PVC {
                     if (cursor >= 20 && cursor < 29) cursor += 1;   // Jeżeli kursor jest w przedziale {20,21,22...}
                     if (cursor >= 30 && cursor < 39) cursor += 1;*/ // ...
                 }
-                public static void DetermineCursorUsingKeys(int cursor) {   // MIXED: top-left, top-right, down-left, top-right
+                public static void CursorShips(ConsoleKeyInfo key) {
+                    int cursor = positShipsCursor;
+                    if (key.Key == ConsoleKey.Q) {
+                        if (cursor > 0) cursor -= 1;
+                    } else if (key.Key == ConsoleKey.E) {
+                        if (cursor < positShips.Count - 1) cursor += 1;
+                    }
+                    positShipsCursor = cursor;
+                }
+                public static void DetermineBoardUsingKeys() {   // MIXED: top-left, top-right, down-left, top-right
+                    int cursor = positBoardCursor;
                     int[] top = new int[10] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
                     int[] down = new int[10] { 90, 91, 92, 93, 94, 95, 96, 97, 98, 99 };
                     int[] left = new int[10] { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90 };
@@ -522,8 +547,42 @@ namespace Page_PVC {
                     if (downRight == 2) positUsingKeys_BOARD = "down-right";
                     if (all == 4) positUsingKeys_BOARD = "all";
                 }
-                public static void Reset() {
-                    positioningCursor = 0;
+                public static void DetermineShipsUsingKeys() {   // NAPRAW TO!
+                    int cursor = positShipsCursor;
+                    int ships = positShips.Count - 1;
+                    if (cursor > 0 && cursor < ships - 1) positUsingKeys_SHIPS = "all";
+                    if (cursor == 0) positUsingKeys_SHIPS = "left";
+                    if (cursor == ships) positUsingKeys_SHIPS = "right";
+                    if (ships <= 1) positUsingKeys_SHIPS = "";
+                }
+                public static string RenderShipSpace() {
+                    string space = "";
+                    for (int i = 0; i < positShipsCursor; i++) {
+                        space += "  ";
+                    }
+                    return space;
+                }
+                public static void RenderBoard() {
+                    // Wyświetlanie tablicy z kursorem i utworzonymi statkami
+                }
+                public static void Reset() {   // RESET ma znajdować się jeszcze po bitwie, kiedy przejdzie się do podsumowania.  // Zrób potem z tego dwie metody!
+                    // - - - - - - - - - - - - Statki:
+                    positShipsCursor = 0;
+                    positShips.Clear();
+                    string[] ships = Options.options[Options.optShips].Split(',');   // TUTAJ!!!!!!!!!   Trzeba pobrać aktualne dane z pliku
+                    List<string> result = new List<string>();
+                    for (int i = 0; i < ships.Length; i++) {
+                        result.Add(ships[i]);
+                    }
+                    positShips = result;
+                    // - - - - - - - - - - - Plansza:
+                    positBoardCursor = 0;
+                    // - - - - - - - - - - - 
+                    if (isPositReset) {
+                        isPositReset = false;
+                        PVC pvc = new PVC();
+                        pvc.RenderPage();
+                    }
                 }
                 public static void Set() {
                     // Ustawienie wybranego statku
