@@ -4,6 +4,7 @@ using System.IO;
 using Library_GlobalMethods;
 using Page_PVC;
 using Page_Ranking;
+using static Page_PVC.PVC.Part;
 
 namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM ZAPISUJESZ I ZAMIENIASZ DANE ODNOŚNIE OPCJI!!!
     public class Options {
@@ -15,6 +16,7 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
         public static int optMusic = 0;  // W razie zmiany pozycji tego przycisku odpowiedzialnego za włącznie i wyłączanie muzyki.
         public static int optEqualShipsAI = 1;
         public static int optTopPlayers = 2;
+        public static int optShips = 3;
         public static int optReset_PVC = 4;   // Metoda "DetermineShips" i "DeleteUsers" odwołuje się do danych opcji resetu, a przy dodawaniu opcji nowego trybu, opcję tą mogę przenieść np. do dołu, jeżeli zajdzie taka potrzeba.
         public static int optDelete_PVC = 5;
         public static string[] buttons = new string[buttonsAmount];
@@ -303,6 +305,7 @@ namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓ
                             }
                             if (options[optReset_PVC] == "CLEAN" || options[optReset_PVC] == "EMPTY") options[option] = newValue;
                             if (isReset) ResetProper(modeText, modeNum);
+                            Positioning.Reset();   // Ustawienie listy dynamicznej statków z opcji jeden raz, kolejne, tylko przy rasecie.
                             PageUpdate();
                         }
                     }
