@@ -127,7 +127,8 @@ namespace Library_GlobalMethods {
                         }
                     }
                 }
-                if (isEnterPart) isEnterPart = false; ;
+                if (isEnterPart) isEnterPart = false;
+                //if (key.Key == ConsoleKey.Backspace) MenuReturn(0);   // TYLKO DLA TESTÓW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 return (isEnterPart, key);
             }
             public static void MenuReturn(int ID_page) {
