@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using Library_GlobalMethods;
 using Page_Options;
 using Page_Ranking;
@@ -18,6 +21,9 @@ namespace Page_PVC {
         public static string[] users = new string[Ranking.modePlayersInfo[PVC_mode].Count];
         public static int currentUser = 0;
         public static int positioningCursor = 0;
+        public static string positUsingKeys_BOARD = "all";   // all, top, down, left, right
+        public static string positUsingKeys_SHIPS = "all";   // all, left, right, one, zero
+        public static bool isPositReset = false;
         public static bool isEnterPart = false;
         public static List<ConsoleKey> usingKeys_ERROR = new List<ConsoleKey> { ConsoleKey.Backspace };
         public void RenderPage() {   // Wyświetlenie strony PVC i zarazem panel kontrolny tej strony.
@@ -71,11 +77,8 @@ namespace Page_PVC {
                         if (users.Length == 0) Error.EmptyMessage();   // Options.options[Options.optDelete_PVC] == "EMPTY"
                         GlobalMethod.Page.RenderDottedLine(pageLineLength);
                         break;
-                    case "setting":
-                        Console.WriteLine("Selected user: [" + userStr + "] | [" + userInt + "]\n");
-                        Console.WriteLine("Now set your ships:");
-                        GlobalMethod.Page.RenderDottedLine(pageLineLength);
-                        Console.WriteLine("Position: " + positioningCursor);
+                    case "positioning":
+                        Positioning.RenderTitle();
                         break;
                     case "battle":
                         break;
@@ -92,7 +95,7 @@ namespace Page_PVC {
                             case ConsoleKey.P: User.DeleteUser(); break;
                         }
                         break;
-                    case "setting":
+                    case "positioning":
                         switch (key.Key) {
                             case ConsoleKey.R: Positioning.Reset(); break;
                             case ConsoleKey.Enter: Positioning.Set(); break;
@@ -105,19 +108,104 @@ namespace Page_PVC {
                 }
             }
             public static ConsoleKeyInfo KeysControl(ConsoleKeyInfo key) {
-                List<ConsoleKey> usingKeys_USER_STANDARD = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
-                List<ConsoleKey> usingKeys_USER_TOP = new List<ConsoleKey> { ConsoleKey.S, ConsoleKey.DownArrow, ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
-                List<ConsoleKey> usingKeys_USER_DOWN = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.UpArrow, ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
-                List<ConsoleKey> usingKeys_USER_ONE = new List<ConsoleKey> { ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
-                List<ConsoleKey> usingKeys_USER_ZERO = new List<ConsoleKey> { ConsoleKey.C, ConsoleKey.Backspace };
-                List<ConsoleKey> usingKeys_POSITIONING_STANDARD = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.A, ConsoleKey.D, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.LeftArrow, ConsoleKey.RightArrow, ConsoleKey.R, ConsoleKey.Enter };
+                List<ConsoleKey> USER_standard = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
+                List<ConsoleKey> USER_top = new List<ConsoleKey> { ConsoleKey.S, ConsoleKey.DownArrow, ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
+                List<ConsoleKey> USER_down = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.UpArrow, ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
+                List<ConsoleKey> USER_one = new List<ConsoleKey> { ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
+                List<ConsoleKey> USER_zero = new List<ConsoleKey> { ConsoleKey.C, ConsoleKey.Backspace };
+                //List<ConsoleKey> usingKeys_POSITIONING_ALL = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.A, ConsoleKey.D, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.LeftArrow, ConsoleKey.RightArrow, ConsoleKey.Q, ConsoleKey.E, ConsoleKey.R, ConsoleKey.Enter };
+                List<ConsoleKey> POSIT_fusion = new List<ConsoleKey>();
+                List<ConsoleKey> POSIT_BOARD_all = new List<ConsoleKey>() { ConsoleKey.W, ConsoleKey.S, ConsoleKey.A, ConsoleKey.D, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.LeftArrow, ConsoleKey.RightArrow };
+                List<ConsoleKey> POSIT_BOARD_top = new List<ConsoleKey>() { ConsoleKey.S, ConsoleKey.A, ConsoleKey.D, ConsoleKey.DownArrow, ConsoleKey.LeftArrow, ConsoleKey.RightArrow };
+                List<ConsoleKey> POSIT_BOARD_down = new List<ConsoleKey>() { ConsoleKey.W, ConsoleKey.A, ConsoleKey.D, ConsoleKey.UpArrow, ConsoleKey.LeftArrow, ConsoleKey.RightArrow };
+                List<ConsoleKey> POSIT_BOARD_left = new List<ConsoleKey>() { ConsoleKey.W, ConsoleKey.S, ConsoleKey.D, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.RightArrow };
+                List<ConsoleKey> POSIT_BOARD_right = new List<ConsoleKey>() { ConsoleKey.W, ConsoleKey.S, ConsoleKey.A, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.LeftArrow };
+                List<ConsoleKey> POSIT_BOARD_topLeft = new List<ConsoleKey>() { ConsoleKey.S, ConsoleKey.D, ConsoleKey.DownArrow, ConsoleKey.RightArrow };
+                List<ConsoleKey> POSIT_BOARD_topRight = new List<ConsoleKey>() { ConsoleKey.S, ConsoleKey.A, ConsoleKey.DownArrow, ConsoleKey.LeftArrow };
+                List<ConsoleKey> POSIT_BOARD_downLeft = new List<ConsoleKey>() { ConsoleKey.W, ConsoleKey.D, ConsoleKey.UpArrow, ConsoleKey.RightArrow };
+                List<ConsoleKey> POSIT_BOARD_downRight = new List<ConsoleKey>() { ConsoleKey.W, ConsoleKey.A, ConsoleKey.UpArrow, ConsoleKey.LeftArrow };
+                List<ConsoleKey> POSIT_SHIPS_all = new List<ConsoleKey>() { ConsoleKey.Q, ConsoleKey.E };
+                List<ConsoleKey> POSIT_SHIPS_left = new List<ConsoleKey>() { ConsoleKey.E };
+                List<ConsoleKey> POSIT_SHIPS_right = new List<ConsoleKey>() { ConsoleKey.Q };
                 switch (part) {
                     case "user":
-                        if (users.Length == 0) key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_USER_ZERO);
-                        else key = GlobalMethod.Page.SelectUsingKeys(currentUser, page_ID, key, users, usingKeys_USER_STANDARD, usingKeys_USER_TOP, usingKeys_USER_DOWN, usingKeys_USER_ONE);
+                        if (users.Length == 0) key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, USER_zero);
+                        else key = GlobalMethod.Page.SelectUsingKeys(currentUser, page_ID, key, users, USER_standard, USER_top, USER_down, USER_one);
                         break;
-                    case "setting":
-                        (bool, ConsoleKeyInfo) positCorr = GlobalMethod.Page.LoopCorrectKey_GameMode(isEnterPart, key, usingKeys_POSITIONING_STANDARD);
+                    case "positioning":
+                        Positioning.DetermineCursorUsingKeys(positioningCursor);
+                        POSIT_fusion.Clear();
+                        if (isPositReset) POSIT_fusion.Add(ConsoleKey.R);
+                        POSIT_fusion.Add(ConsoleKey.Enter);
+                        switch (positUsingKeys_BOARD) {
+                            case "all":
+                                for (int i = 0; i < POSIT_BOARD_all.Count; i++) {
+                                    POSIT_fusion.Add(POSIT_BOARD_all[i]);
+                                }
+                                break;
+                            case "top":
+                                for (int i = 0; i < POSIT_BOARD_top.Count; i++) {
+                                    POSIT_fusion.Add(POSIT_BOARD_top[i]);
+                                }
+                                break;
+                            case "down":
+                                for (int i = 0; i < POSIT_BOARD_down.Count; i++) {
+                                    POSIT_fusion.Add(POSIT_BOARD_down[i]);
+                                }
+                                break;
+                            case "left":
+                                for (int i = 0; i < POSIT_BOARD_left.Count; i++) {
+                                    POSIT_fusion.Add(POSIT_BOARD_left[i]);
+                                }
+                                break;
+                            case "right":
+                                for (int i = 0; i < POSIT_BOARD_right.Count; i++) {
+                                    POSIT_fusion.Add(POSIT_BOARD_right[i]);
+                                }
+                                break;
+                            case "top-left":
+                                for (int i = 0; i < POSIT_BOARD_topLeft.Count; i++) {
+                                    POSIT_fusion.Add(POSIT_BOARD_topLeft[i]);
+                                }
+                                break;
+                            case "top-right":
+                                for (int i = 0; i < POSIT_BOARD_topRight.Count; i++) {
+                                    POSIT_fusion.Add(POSIT_BOARD_topRight[i]);
+                                }
+                                break;
+                            case "down-left":
+                                for (int i = 0; i < POSIT_BOARD_downLeft.Count; i++) {
+                                    POSIT_fusion.Add(POSIT_BOARD_downLeft[i]);
+                                }
+                                break;
+                            case "down-right":
+                                for (int i = 0; i < POSIT_BOARD_downRight.Count; i++) {
+                                    POSIT_fusion.Add(POSIT_BOARD_downRight[i]);
+                                }
+                                break;
+                        }
+                        switch (positUsingKeys_SHIPS) {
+                            case "all":
+                                for (int i = 0; i < POSIT_SHIPS_all.Count; i++) {
+                                    POSIT_fusion.Add(POSIT_SHIPS_all[i]);
+                                }
+                                break;
+                            case "left":
+                                for (int i = 0; i < POSIT_SHIPS_left.Count; i++) {
+                                    POSIT_fusion.Add(POSIT_SHIPS_left[i]);
+                                }
+                                break;
+                            case "right":
+                                for (int i = 0; i < POSIT_SHIPS_right.Count; i++) {
+                                    POSIT_fusion.Add(POSIT_SHIPS_right[i]);
+                                }
+                                break;
+                        }
+                        /*if (positUsingKeys_BOARD == "zero" && (positUsingKeys_SHIPS == "one" || positUsingKeys_SHIPS == "zero")) {
+                            usingKeys_POSITIONING.Add(ConsoleKey.R);
+                            usingKeys_POSITIONING.Add(ConsoleKey.Enter);
+                        }*/
+                        (bool, ConsoleKeyInfo) positCorr = GlobalMethod.Page.LoopCorrectKey_GameMode(isEnterPart, key, POSIT_fusion);
                         isEnterPart = positCorr.Item1;
                         key = positCorr.Item2;
                         break;
@@ -131,7 +219,7 @@ namespace Page_PVC {
             public static void MoveCursor(ConsoleKeyInfo key) {
                 switch (part) {
                     case "user": currentUser = GlobalMethod.Page.MoveButtons(users, currentUser, key); break;
-                    case "setting": positioningCursor = Positioning.CursorNavigate(key); break;
+                    case "positioning": positioningCursor = Positioning.CursorNavigate(positioningCursor, key); break;
                     case "battle":  break;
                     case "summary":  break;
                 }
@@ -163,7 +251,7 @@ namespace Page_PVC {
                 public static void SelectUser() {
                     userStr = Ranking.modePlayersInfo[PVC_mode][currentUser][0];
                     userInt = currentUser;
-                    part = "setting";
+                    part = "positioning";
                     isEnterPart = true;
                 }
                 public static void AddUser() {
@@ -344,44 +432,56 @@ namespace Page_PVC {
                         }
                         return isSameName;
                     }
-                    public static bool NotFound(string name) {
-                        bool isNotFound = true;
-                        for (int i = 0; i < Ranking.modePlayersInfo[PVC_mode].Count; i++) {
-                            if (name == Ranking.modePlayersInfo[PVC_mode][i][0]) isNotFound = false;
-                        }
-                        return isNotFound;
-                    }
                 }
             }
             public class Positioning {   // WAŻNE!!! NIE ZAPOMNIJ ZRESETOWAĆ ZMIENNEJ "positioningCursor" DO ZERA (0), PO ZAKOŃCZENIU OPERACJI W TEJ KLASIE! (ustawienie wszystkcich statków przez gracza)
-                public static int CursorNavigate(ConsoleKeyInfo key) {
-                    /*System.ConsoleKey[] direction_1 = new ConsoleKey[4] { System.ConsoleKey.UpArrow, System.ConsoleKey.DownArrow, System.ConsoleKey.RightArrow, System.ConsoleKey.LeftArrow };
-                    System.ConsoleKey[] direction_2 = new ConsoleKey[4] { System.ConsoleKey.W, System.ConsoleKey.S, System.ConsoleKey.D, System.ConsoleKey.A };
-                    int[] add = new int[4] { -10, 10, 1, -1 };
-                    bool[] stop = new bool[4] { false, false, false, false };
-                    int[,] valNum = new int[4, 10] {
-                        ///*Up:    { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 },
-                        //*Down:  { 90, 91, 92, 93, 94, 95, 96, 97, 98, 99 },
-                        //*Right  { 9, 19, 29, 39, 49, 59, 69, 79, 89, 99 },
-                        //*Left:  { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90 }
-                    };
-                    for (int i = 0; i < valNum.GetLength(0); i++) {
-                        stop[i] = false;
-                        for (int j = 0; j < valNum.GetLength(1); j++) {
-                            if (positioningCursor == valNum[i, j]) stop[i] = true;
+                public static void RenderTitle() {
+                    Console.WriteLine("User: [" + userStr + "] | [" + userInt + "]\n");
+                    GlobalMethod.Page.RenderDottedLine(pageLineLength);
+                    Console.WriteLine("Ships: " + "{ 2  2  2  3  3  4  5 }"); // KONCEPT
+                    Console.WriteLine("                    " + "  ^");
+                    Console.WriteLine("Position: " + positioningCursor);   // TYMCZASOWO
+                }
+                public static int CursorNavigate(int cursor, ConsoleKeyInfo key) {
+                    if (key.Key == ConsoleKey.W || key.Key == ConsoleKey.UpArrow) {
+                        if (cursor > 9) cursor -= 10;
+                    } else if (key.Key == ConsoleKey.S || key.Key == ConsoleKey.DownArrow) {
+                        if (cursor < 90) cursor += 10;
+                    } else if (key.Key == ConsoleKey.A || key.Key == ConsoleKey.LeftArrow) {
+                        for (int i = 0, j = 10; i < 100; i=i+10, j=j+10) {
+                            if (cursor > i && cursor < j) cursor -= 1;
                         }
-                        if (!stop[i]) {
-                            if (key.Key == direction_1[i] || key.Key == direction_2[i]) {
-                                positioningCursor += add[i];
-                            }
+                    } else if (key.Key == ConsoleKey.D || key.Key == ConsoleKey.RightArrow) {
+                        for (int i = 0, j = 9; i < 100; i=i+10, j=j+10) {
+                            if (cursor >= i && cursor < j) cursor += 1;
                         }
-                    }*/
-                    return positioningCursor;
+                    }
+                    return cursor;
+                    /*if (cursor > 0 && cursor < 10) cursor -= 1;  // Jeżeli kursor jest w przedziale {1,2,3,4,5,6,7,8,9}
+                    if (cursor > 10 && cursor < 20) cursor -= 1;   // Jeżeli kursor jest w przedziale {11,12,13,14,15,16,17,18,19}
+                    if (cursor > 20 && cursor < 30) cursor -= 1;   // Jeżeli kursor jest w przedziale {21,22,23,...}
+                    if (cursor > 30 && cursor < 40) cursor -= 1;*/ // ...
+                    /*if (cursor >= 0 && cursor < 9) cursor += 1;   // Jeżeli kursor jest w przedziale {0,1,2,3,4,5,6,7,8}
+                    if (cursor >= 10 && cursor < 19) cursor += 1;   // Jeżeli kursor jest w przedziale {10,11,12,13,14,15,16,17,18}
+                    if (cursor >= 20 && cursor < 29) cursor += 1;   // Jeżeli kursor jest w przedziale {20,21,22...}
+                    if (cursor >= 30 && cursor < 39) cursor += 1;*/ // ...
+                }
+                public static void DetermineCursorUsingKeys(int cursor) {   // MIXED: top-left, top-right, down-left, top-right
+                    int[] top = new int[10] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+                    int[] down = new int[10] { 90, 91, 92, 93, 94, 95, 96, 97, 98, 99 };
+                    int[] left = new int[10] { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90 };
+                    int[] right = new int[10] { 9, 19, 29, 39, 49, 59, 69, 79, 89, 99 };
+                    int allCounter = 0;
+                    for (int i = 0; i < top.Length; i++) {
+                        //if (cursor)
+                    }
+                    if (allCounter == 4) positUsingKeys_BOARD = "all";
                 }
                 public static void Reset() {
                     positioningCursor = 0;
                 }
                 public static void Set() {
+                    // Ustawienie wybranego statku
                 }
             }
             public class Battle {
