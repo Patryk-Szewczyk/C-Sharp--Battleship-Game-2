@@ -1,424 +1,259 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using Library_GlobalMethods;
+using System.Collections.Generic;
+using Page_Menu;
 using Page_PVC;
+using Page_Instructions;
 using Page_Ranking;
-using static Page_PVC.PVC.Part;
+using Page_Options;
+using Page_Credits;
 
-namespace Page_Options {    // DOŁĄCZ DO OPCJI ODDZIELNY PLIK TEKSTOWY, W KTÓRYM ZAPISUJESZ I ZAMIENIASZ DANE ODNOŚNIE OPCJI!!!
-    public class Options {
-        public static int page_ID = 3;   // ZMIEŃ "static" NA "const" i sprawdź w dokumentacji jej zasięg w kontekście KLASY !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        public static bool isPage = false;
-        public static int pageLineLength = 64;
-        public static int maxShipsLengthScore = 30;
-        public const int buttonsAmount = 6;   // Musiałem ustawić const, aby zadeklarować długość tablicy.
-        public static int optMusic = 0;  // W razie zmiany pozycji tego przycisku odpowiedzialnego za włącznie i wyłączanie muzyki.
-        public static int optEqualShipsAI = 1;
-        public static int optTopPlayers = 2;
-        public static int optShips = 3;
-        public static int optReset_PVC = 4;   // Metoda "DetermineShips" i "DeleteUsers" odwołuje się do danych opcji resetu, a przy dodawaniu opcji nowego trybu, opcję tą mogę przenieść np. do dołu, jeżeli zajdzie taka potrzeba.
-        public static int optDelete_PVC = 5;
-        public static string[] buttons = new string[buttonsAmount];
-        public static string[] buttonsTitle = { 
-            "Music:                                   ",   // OK
-            "Equal ships direction for AI:            ",   // "RandomShips"
-            "Show only top 10 players in ranking:     ",   // "RenderRanking"
-            "Change ships in battle - PVC mode:       ",   // OK
-            "Reset ranking data - - - PVC mode:       ",   // [DATA], [CLEAN], [EMPTY] | [DATA] = kiedy gracz ma wpisywany wynik do pliku
-            "Delete users - - - - - - PVC mode:       "    // [CONTENT], [EMPTY] | [CONTENT] = kiedy jest dodawany nowy gracz
-        };
-        public static string[] guide = new string[buttonsAmount] {
-            "ON = [E] | OFF = [D]",
-            "ON = [E] | OFF = [D]",
-            "ON = [E] | OFF = [D]",
-            "change = [C] -> Write value -> Write \"yes\" or \"no\" -> [ENTER]" +
-                "\n\nCorrect keys are numbers and comma. | Example: 2,2,3,4,5 " +
-                "\n\nAdditional the sum of lenght all ships can be max: " + maxShipsLengthScore + "." +
-                "\n\nWARNING: When you set new ships, you cause reset PVC ranking data!",
-            "reset = [R] -> Write \"yes\" or \"no\" -> [ENTER]",
-            "delete = [P] -> Write \"yes\" or \"no\" -> [ENTER]"
-        };
-        public static int currentButton = 0;   // Zawsze pierwszy, bo chcę mieć kursor na górze!
-        public static List<ConsoleKey> usingKeys_ENABLE = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace, ConsoleKey.E };
-        public static List<ConsoleKey> usingKeys_ENABLE_FIRST = new List<ConsoleKey> { ConsoleKey.S, ConsoleKey.DownArrow, ConsoleKey.Backspace, ConsoleKey.E };
-        public static List<ConsoleKey> usingKeys_DISABLE = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace, ConsoleKey.D };
-        public static List<ConsoleKey> usingKeys_DISABLE_FIRST = new List<ConsoleKey> { ConsoleKey.S, ConsoleKey.DownArrow, ConsoleKey.Backspace, ConsoleKey.D };
-        public static List<ConsoleKey> usingKeys_CHANGE = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace, ConsoleKey.C };
-        public static List<ConsoleKey> usingKeys_RESET_IS = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace, ConsoleKey.R };
-        public static List<ConsoleKey> usingKeys_RESET_NOT = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.Backspace};
-        public static List<ConsoleKey> usingKeys_DELETE_IS = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.UpArrow, ConsoleKey.Backspace, ConsoleKey.P };
-        public static List<ConsoleKey> usingKeys_DELETE_NOT = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.UpArrow, ConsoleKey.Backspace };
-        public const string optionsPath = "options.txt";   // Zmienna ta jest używana w klasie "Program"
-        public static bool isFile = true;
-        public static bool isCorrectContent = true;
-        public static string errorFile = "";  // błąd odczutu bieżącego pliku = index
-        public static string errorCorrectContent = "";  // błąd odczutu bieżącego pliku = index
-        public static List<string> options = new List<string>();
-        public static bool isDisable = false;
-        public void RenderPage() {
-            System.ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);   // Dowolny niewłaściwy klawisz.
-            while (isPage == true) {
-                Console.Clear();
-                RenderTitle();
-                // Dlaczego nie ma kontroli walidacji błędów? Ponieważ jest w klasie "Program" przy pierwszym pobraniu danych.
-                GlobalMethod.Page.RenderButtons(buttons, currentButton);
-                GlobalMethod.Page.RenderDottedLine(pageLineLength);
-                ShowOption(currentButton, key);
-                key = SelectUsingKeys(currentButton, page_ID, key);
-                //key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys);
-                currentButton = GlobalMethod.Page.MoveButtons(buttons, currentButton, key);
+namespace Library_GlobalMethods {
+    public class GlobalMethod {   // Metody o zasięgu globalnym, które mają niezmiennną formę i mogą przydać się wszędzie.
+        public class SoundControl {
+            public static void PlaySound(string filepath) {
+                try {
+                    Menu.currentSound.SoundLocation = filepath;
+                    if (Options.options[Options.optMusic] == "ON") Menu.currentSound.PlayLooping();
+                }
+                catch (Exception error) {
+                    Console.WriteLine("Music file is not found. Check your filepath.\n\n" + error);
+                }
+            }
+            public static void StopSound() {
+                Menu.currentSound.Stop();
+            }
+            public static void ResumeSound() {
+                Menu.currentSound.PlayLooping();
             }
         }
-        public static void RenderTitle() {
-            Console.WriteLine(" BBBBBB   BBBBBBB   BBBBBBBB  BB   BBBBBB   BBBB  BB   BBBBBBB");
-            Console.WriteLine("BB    BB  BB    BB     BB     BB  BB    BB  BB BB BB  BB      ");
-            Console.WriteLine("BB    BB  BB    BB     BB     BB  BB    BB  BB BB BB  BB      ");
-            Console.WriteLine("BB    BB  BBBBBBB      BB     BB  BB    BB  BB BB BB   BBBBBB ");
-            Console.WriteLine("BB    BB  BB           BB     BB  BB    BB  BB BB BB        BB");
-            Console.WriteLine("BB    BB  BB           BB     BB  BB    BB  BB BB BB        BB");
-            Console.WriteLine(" BBBBBB   BB           BB     BB   BBBBBB   BB  BBBB  BBBBBBB ");
-            GlobalMethod.Page.RenderDottedLine(pageLineLength);
-            Console.WriteLine("OPTIONS: | Moving: arrows/[W][S] | Back to menu: [BACKSPACE]\n");
+        public static (bool, string, string) UploadFile(string filePath) {
+            (bool, string, string) fileInfo = (true, filePath, "");   // Krotkę nienazwaną można modyfikować, a nazwaną nie.
+            try {
+                //fileInfo.Item1 = true;
+                string fileContent = File.ReadAllText(filePath);
+                fileInfo.Item2 = filePath;
+            }
+            catch (IOException error) {
+                fileInfo.Item1 = false;
+                fileInfo.Item3 = "File cannot be found.\n\n" + error.Message;
+            }
+            return fileInfo;
         }
-        public static void ShowOption(int currentButton, ConsoleKeyInfo key) {
-            switch (currentButton) {
-                case 3:
-                    Console.WriteLine("GUIDE: " + guide[currentButton]);
-                    Data.DetermineShips(currentButton, key, "PVC", 0);
+        public static void Color(string text, ConsoleColor color) {   // Kolorowy tekst
+            Console.ForegroundColor = color;
+            Console.Write(text);
+            Console.ResetColor();
+        }
+        public static int SearchRemoveAt(List<int> array, int target) {   // Szukanie wartości i jej indeksu (lokalizacji) w tablicy:
+            int result = -1;   // W kontekście losowania statków dla komputera, oznacza to kolizję pola począttkowego nowego statku z już istniejącym.
+            for (int i = 0; i < array.Count; i++) {
+                if (target == array[i]) {
+                    result = i;
                     break;
-                case 4:
-                    if (Ranking.isFile[0] == true) {   // Walidacja na zawartość pliku danego rankingu | 0 = PVC mode
-                        if (Ranking.isCorrectContent[0] == true) {
-                            if (options[currentButton] == "DATA") {   // Jeżeli zawartość danego rankingu została już wyczyszczona, nie ma potrzeby czyścić jej ponownie.
-                                Console.WriteLine("GUIDE: " + guide[currentButton]);
-                                Data.ResetRanking(currentButton, key, "PVC", 0);
-                            } else {
-                                Console.WriteLine("The PVC ranking content has been cleared.");
-                            }
-                        } else {
-                            Console.WriteLine(Ranking.errorCorrectContent[0]);
-                        }
+                }
+            }
+            return result;
+        }
+        public static string TrimAllContent(string content) {
+            string text = "";
+            for (int i = 0; i < content.Length; i++) {
+                if (content[i] != ' ') {
+                    text += content[i];
+                }
+            }
+            return text;
+        }
+        public static string StringPlayersInfo(List<List<string>> playersInfo) {   // Zamienia stringową listę dwówymiarową na stringa według formatu dla players.
+            string text = "";
+            List<List<string>> content = playersInfo;
+            for (int i = 0; i < content.Count; i++) {
+                for (int j = 0; j < content[i].Count; j++) {
+                    text += content[i][j];
+                    if (j < content[i].Count - 1) text += "#";
+                }
+                if (i < content.Count - 1) text += "*";
+            }
+            return text;
+        }
+        public class Page {
+            public static void RenderDottedLine(int length) {
+                string text = "";
+                for (int i = 0; i < length; i = i + 2) {
+                    text += (i == length - 2) ? "-" : "- ";
+                }
+                Console.WriteLine("\n" + text + "\n");
+            }
+            public static void RenderButtons(string[] buttons, int currentButton) {
+                for (int i = 0, button = 0; i < buttons.Length; i++, button++) {
+                    if (button == currentButton) {
+                        Console.WriteLine("-> " + buttons[i]);
                     } else {
-                        Console.WriteLine(Ranking.errorFile[0]);
+                        Console.WriteLine("   " + buttons[i]);
                     }
-                    break;
-                case 5:
-                    if (Ranking.isFile[0] == true) {
-                        if (Ranking.isCorrectContent[0] == true) {
-                            Console.WriteLine("GUIDE: " + guide[currentButton]);
-                            Data.DeleteUsers(currentButton, key, "PVC", 0);
-                        } else {
-                            Console.WriteLine(Ranking.errorCorrectContent[0]);
+                }
+            }
+            public static ConsoleKeyInfo SelectUsingKeys(int currentButton, int page_ID, ConsoleKeyInfo key, string[] buttons, List<ConsoleKey> usingKeys_STANDARD, List<ConsoleKey> usingKeys_TOP, List<ConsoleKey> usingKeys_DOWN, List<ConsoleKey> usingKeys_ONE) {
+                if (buttons.Length == 1) key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_ONE);
+                else {
+                    if (currentButton == 0) key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_TOP);// Dlaczego nie użyłem "switch"? Ponieważ w switch można używać tylko stałych wartości i z tego powodu nie mogę zrobić stałej obliczonej na podstawie: "const int down = buttons.Length - 1;"
+                    else if (currentButton == buttons.Length - 1) key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_DOWN);
+                    else key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_STANDARD);
+                }
+                return key;
+            }
+            public static ConsoleKeyInfo LoopCorrectKey(int page_ID, ConsoleKeyInfo key, List<ConsoleKey> usingKeys) {
+                bool isCorrSign = false;
+                while (isCorrSign == false) {
+                    key = Console.ReadKey(true);
+                    for (int i = 0; i < usingKeys.Count; i++) {
+                        if (key.Key == usingKeys[i]) {
+                            isCorrSign = true;
                         }
-                    } else {
-                        Console.WriteLine(Ranking.errorFile[0]);
                     }
-                    break;
-                default:
-                    Console.WriteLine("GUIDE: " + guide[currentButton]);
-                    Data.EnableDisable(currentButton, key);
-                    break;
+                }
+                if (key.Key == ConsoleKey.Backspace) MenuReturn(page_ID);
+                return key;
+            }
+            public static (bool, ConsoleKeyInfo) LoopCorrectKey_GameMode(bool isEnterPart, ConsoleKeyInfo key, List<ConsoleKey> usingKeys) {   //GameMode_WithoutFirstRead
+                bool isCorrSign = false;
+                while (isCorrSign == false) {
+                    if (isEnterPart == false) {
+                        key = Console.ReadKey(true);
+                    }
+                    for (int i = 0; i < usingKeys.Count; i++) {
+                        if (key.Key == usingKeys[i]) {
+                            isCorrSign = true;
+                        }
+                    }
+                }
+                if (isEnterPart) isEnterPart = false;
+                //if (key.Key == ConsoleKey.Backspace) MenuReturn(0);   // TYLKO DLA TESTÓW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                return (isEnterPart, key);
+            }
+            public static void MenuReturn(int ID_page) {
+                switch (ID_page) {
+                    case 0: PVC.isPage = false; break;
+                    case 1: Instructions.isPage = false; break;
+                    case 2: Ranking.isPage = false; break;
+                    case 3: Options.isPage = false; break;
+                    case 4: Credits.isPage = false; break;
+                }
+                Menu.isPage = true;
+                Menu.RenderPage();
+            }
+            public static int MoveButtons(string[] buttons, int currentButton, ConsoleKeyInfo key) {
+                if (key.Key == ConsoleKey.UpArrow || key.Key == ConsoleKey.W) {   // Pierwszy element ma index 0, a ostatni 5, więc jeżeli idziemy do góry, czyli do pierwszego, musimy odejmować.
+                    currentButton = (currentButton > 0) ? currentButton - 1 : currentButton;
+                } else if (key.Key == ConsoleKey.DownArrow || key.Key == ConsoleKey.S) {
+                    currentButton = (currentButton < buttons.Length - 1) ? currentButton + 1 : currentButton;   // Pierwszy element ma index 0, a ostatni 5, więc jeżeli idziemy do dołu, czyli do szóstego, musimy dodawać.
+                }
+                return currentButton;
             }
         }
-        public static ConsoleKeyInfo SelectUsingKeys(int currentButton, int page_ID, ConsoleKeyInfo key) {
-            switch (currentButton) {
-                case 0: key = (isDisable == true) ? GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_DISABLE_FIRST) : GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_ENABLE_FIRST); break;
-                case 3: key = GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_CHANGE); break;   // ostatni argument = zestaw odpowiednich przycisków dla: metody "DetermineShips"
-                case 4: key = (Ranking.isFile[0] && Ranking.isCorrectContent[0] == true) ? GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_RESET_IS) : GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_RESET_NOT); break;   // ostatni argument = zestaw odpowiednich przycisków dla: metody "DetermineShips"
-                case 5: key = (Ranking.isFile[0] && Ranking.isCorrectContent[0] == true) ? GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_DELETE_IS) : GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_DELETE_NOT); break;
-                default: key = (isDisable == true) ? GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_DISABLE) : GlobalMethod.Page.LoopCorrectKey(page_ID, key, usingKeys_ENABLE); break;
-            }
-            return key;
-        }
-        public class Upload {
-            public static void SearchFile(string filePath) {   // Panel kontrolny
-                (bool, string, string) fileInfo = GlobalMethod.UploadFile(filePath);
-                isFile = fileInfo.Item1;
-                errorFile = fileInfo.Item3;
-                if (isFile == true) {
-                    UploadData(fileInfo.Item2);
-                }
-            }
-            public static void UploadData(string filePath) {
-                isCorrectContent = true;
-                errorCorrectContent = "";
-                string errorMessage = "The data format in \"" + filePath + "\" is not correct. It should be: " + GenerateFormat(buttonsAmount);
-                string content = File.ReadAllText(filePath);
-                string fileContent = GlobalMethod.TrimAllContent(content);
-                List<string> info = new List<string>();
-                if (fileContent == "") {
-                    isCorrectContent = false;
-                    errorCorrectContent = errorMessage;
-                } else if (fileContent != "") {
-                    try {
-                        info = new List<string>(fileContent.Split('*')); // Rozkład danych.
-                        for (int i = 0; i < info.Count; i++) {   // Sprawdzenie czy któraś z informacji każdego gracza jest pusta.
-                            if (info[i] == "") {
-                                isCorrectContent = false;
-                                errorCorrectContent = errorMessage;
-                                break;
-                            }
-                        }
-                        if (info.Count != buttonsAmount) {   // Sprawdzenie czy ilość danych opcji jest odpowiednia.
-                            isCorrectContent = false;
-                            errorCorrectContent = errorMessage;
-                        }
-                        if (isCorrectContent == true) { options = info; FillButtons(); }
-
-                    }
-                    catch {   // Nie podaje parametru błędu, ponieważ chcę jedynie poinformaować o nieprawidłowym formacie danych.
-                        isCorrectContent = false;
-                        errorCorrectContent = errorMessage;
-                    }
-                }
-            }
-            public static void FillButtons() {
-                for (int i = 0; i < buttonsAmount; i++) {
-                    buttons[i] = buttonsTitle[i] + "[" + options[i] + "]";
-                }
-            }
-            public static string GenerateFormat(int optionsNum) {
-                string format = "";
-                for (int i = 0; i < optionsNum; i++) {
-                    format += "data";
-                    if (i < optionsNum - 1) format += "*";
-                }
-                return format;
-            }
-        }
-        public class Data {
-            public static void EnableDisable(int option, ConsoleKeyInfo key) {
-                // Jako, że tak fajnie się składa, że te metody odpalają się po walidacji przycisków, przekazujesz przycisk tutaj i robisz robotę z właściwymi funkcjami :)
-                string prev = options[option];   // Zabezpieczenie, mające na celu zablokowanie akcji klawisza [E] i [D] klikniętego więcej niż jeden raz podczas bycia na tej samej opcji - np: [E] -> [E], aby nie przeładowała się niepotrzebnie strona za drugim razem.
-                string next = "";
-                isDisable = (options[option] == "ON") ? isDisable = true : isDisable = false;
-                if (key.Key == ConsoleKey.E) {
-                    options[option] = "ON";
-                    next = options[option];
-                    if (option == optMusic && prev != next) GlobalMethod.SoundControl.ResumeSound();
-                    if (prev != next) PageUpdate();
-                } else if (key.Key == ConsoleKey.D) {
-                    options[option] = "OFF";
-                    next = options[option];
-                    if (option == optMusic && prev != next) GlobalMethod.SoundControl.StopSound();
-                    if (prev != next) PageUpdate();
-                }
-            }
-            public static void DetermineShips(int option, ConsoleKeyInfo key, string modeText, int modeNum) {
-                if (key.Key == ConsoleKey.C) {
-                    string dtrmError = "";
-                    string newValue = "";
-                    string[] corrSigns = new string[10] { "1", "2", "3", "4", "5", "6", "7", "8", "9", "," };
-                    bool isLoop = true;
-                    bool isBad = false;
-                    while (isLoop) {
-                        isBad = false;
-                        Console.CursorVisible = true;
-                        Console.Write("\n\nNew value: ");
-                        newValue = GlobalMethod.TrimAllContent(Console.ReadLine());
-                        if (newValue != "") {
-                            bool idxSign = true;
-                            for (int i = 0; i < newValue.Length; i++) {   // Walidacja na poprawne znaki.
-                                idxSign = true;
-                                for (int j = 0; j < corrSigns.Length; j++) {
-                                    if (newValue[i] == Convert.ToChar(corrSigns[j])) {
-                                        idxSign = false;
-                                        break;
-                                    }
-                                }
-                                if (idxSign) {
-                                    isBad = true;
-                                    dtrmError = "This value can only contain characters from 1 to 9 and a comma [,].\nWrite correct value.";
-                                    break;
-                                }
-                            }
-                            if (isBad == false) {
-                                List<string> splitValue = new List<string>(newValue.Split(','));
-                                for (int i = 0; i < splitValue.Count; i++) {   // Walidacja na puste miejsce. '0' - odpowiednik pustego stringa.
-                                    if (splitValue[i] == "" || splitValue[i] == " ") {
-                                        isBad = true;
-                                        dtrmError = "No field can be empty. Write correct value.";
-                                        break;
-                                    }
-                                }
-                                if (isBad == false) {
-                                    for (int i = 0; i < splitValue.Count; i++) {   // Walidacja na tylko jedną cyfrę w sektorze.
-                                        if (splitValue[i].Length != 1) {
-                                            isBad = true;
-                                            dtrmError = "This value can only contain one number in field (1,2,3).\nWrite correct value.";
-                                            break;
-                                        }
-                                    }
-                                }
-                                if (isBad == false) {
-                                    int totalLength = 0;
-                                    for (int i = 0; i < splitValue.Count; i++) {   // Walidacja na maksymalne łączne miejsce zajęte przez statki, domyślnie: 30.
-                                        totalLength += int.Parse(splitValue[i]);
-                                    }
-                                    if (totalLength > maxShipsLengthScore) {
-                                        isBad = true;
-                                        dtrmError = "The total ships lenght is more than max limit: " + maxShipsLengthScore + ".\nYour total length: " + totalLength + ". Write correct value.";
-                                    }
-                                }
-                                if (isBad == false) {
-                                    newValue = SortShips(newValue);   // Sortowanie statków. | Sortowanie jest przeniesione do walidacji na takie same statki, aby nie wywoływać tej metody dwukrotnie.
-                                    if (options[option] == newValue) {   // Walidacja na takie same statki jak poprzednio.
-                                        isBad = true;
-                                        dtrmError = "The ships fleet is the same like previous ship fleet. You must change them.";
-                                    }
-                                }
-                            }
-                        } else {
-                            isBad = true;
-                            dtrmError = "This value is empty. Write correct value.";
-                        }
-                        if (isBad) {
-                            Console.WriteLine("\n" + dtrmError + "\n");
-                        } else {
-                            isLoop = false;
-                            Console.CursorVisible = true;
-                            bool isReset = false;
-                            if (options[optReset_PVC] == "DATA") {
-                                Console.WriteLine("\nDo you want create new ship fleet in " + modeText + " mode?" +
-                                "\nYou will cause RESET all " + modeText + " mode ranking data." +
-                                "\n\nWrite \"yes\" or \"no\".");
-                                string answer = "";
-                                bool confirmLoop = true;
-                                while (confirmLoop) {
-                                    answer = Console.ReadLine();
-                                    if (answer == "yes") {
-                                        confirmLoop = false;
-                                        isReset = true;
-                                    } else if (answer == "no") {
-                                        confirmLoop = false;
-                                        Console.WriteLine("\n\nYou can now move to other options.");
-                                    } else {
-                                        Console.WriteLine("\n\nBad value. Write correct value.\n");
-                                    }
-                                }
-                            }
-                            Console.CursorVisible = false;
-                            if (options[optReset_PVC] == "DATA" && isReset == true) {
-                                if (isReset) options[option] = newValue;   // Sortowanie jest przeniesione do walidacji na takie same statki, aby nie wywoływać tej metody dwukrotnie.
-                                options[optReset_PVC] = "CLEAN";
-                            }
-                            if (options[optReset_PVC] == "CLEAN" || options[optReset_PVC] == "EMPTY") options[option] = newValue;
-                            if (isReset) ResetProper(modeText, modeNum);
-                            Positioning.Reset();   // Ustawienie listy dynamicznej statków z opcji jeden raz, kolejne, tylko przy rasecie.
-                            PageUpdate();
-                        }
-                    }
-                }
-            }
-            public static string SortShips(string newValue) {
-                List<string> content = new List<string>(newValue.Split(','));
-                List<int> values = new List<int>();
-                for (int i = 0; i < content.Count; i++) {
-                    values.Add(int.Parse(content[i]));
-                }
-                bool isChange = true;
-                int smaller = 0;
-                while (isChange == true) {   // Algroytm sortowania bąbelkowego. Złożoność obliczeniowa maksymalna: O(n^2)
-                    isChange = false;
-                    for (int i = 0; i < values.Count - 1; i++) {
-                        if (values[i + 1] < values[i]) {
-                            smaller = values[i + 1];
-                            values[i + 1] = values[i];
-                            values[i] = smaller;
-                            isChange = true;
-                        }
-                    }
-                }
-                newValue = "";
-                for (int i = 0; i < values.Count; i++) {
-                    newValue += values[i];
-                    if (i < values.Count - 1) newValue += ",";
-                }
-                return newValue;
-            }
-            public static void ResetRanking(int option, ConsoleKeyInfo key, string modeText, int modeNum) {
+        public class Board {
+            public static void Top() {
+                Color(" _______________________________________________       _______________________________________________ ", ConsoleColor.Green);
                 Console.WriteLine();
-                if (key.Key == ConsoleKey.R) {
-                    Console.CursorVisible = true;
-                    Console.WriteLine("\nDo you want reset " + modeText + " ranking data?\n");
-                    string answer = "";
-                    bool isLoop = true;
-                    while (isLoop) {
-                        answer = Console.ReadLine();
-                        if (answer == "yes") {
-                            Console.CursorVisible = false;
-                            ResetProper(modeText, modeNum);
-                            options[option] = "CLEAN";
-                            PageUpdate();
-                        } else if (answer == "no") {
-                            isLoop = false;
-                            Console.CursorVisible = false;
-                            Console.WriteLine("\n\nYou can now move to other options.");
-                        } else {
-                            Console.WriteLine("\n\nBad value. Write correct value.\n");
-                        }
-                    }
-                }
             }
-            public static void ResetProper(string modeText, int modeNum) {   // Zrobiłem tą metodę, aby metoda "DetermineShips" miała dostęp do metody "WYŁĄCZNIE" kasującej.
-                List<List<string>> playersInfo = Ranking.modePlayersInfo[modeNum];
-                const int user = 0;
-                const int battle = 3;
-                const int accurate = 6;
-                for (int i = 0; i < playersInfo.Count; i++) {
-                    for (int j = 0; j < playersInfo[i].Count; j++) {
-                        switch(j) {
-                            case user: break;
-                            case battle: playersInfo[i][j] = "?"; break;
-                            case accurate: playersInfo[i][playersInfo[i].Count - 1] = "0%"; break;
-                            default: playersInfo[i][j] = "0"; break;
-                        }
-                    }
-                }
-                Ranking.modePlayersInfo[modeNum] = playersInfo;
-                File.WriteAllText("players_" + modeText + ".txt", GlobalMethod.StringPlayersInfo(playersInfo));
+            public static void Bottom() {
+                Color("|_______________________________________________|     |_______________________________________________|", ConsoleColor.Green);
             }
-            public static void DeleteUsers(int option, ConsoleKeyInfo key, string modeText, int modeNum) {
-                if (key.Key == ConsoleKey.P) {
-                    Console.CursorVisible = true;
-                    Console.WriteLine("\n\nDo you want delete " + modeText + " users?\n");
-                    string answer = "";
-                    bool isLoop = true;
-                    while (isLoop) {
-                        answer = Console.ReadLine();
-                        if (answer == "yes") {
-                            isLoop = false;
-                            Console.CursorVisible = false;
-                            File.WriteAllText("players_" + modeText + ".txt", "");   // Kasowanie użytkowników.
-                            Ranking.modePlayersInfo[modeNum].Clear();   // Czyszczenie danych w programie.   // Inaczej kiedy usuniemy wszystkich użytkowników w opcjach i wrócimy do danego trybu aby utworzyć nowego użytkownika - (wówczas) pojawi się błąd. Tablica "buttons" Będzie miała długość równą 1, gdyż jakimś cudem (nie mam pojęcia dlaczego) do tablicy użytkowników danego trybu zostanie dodane jedno miejce. Dlatego trzeba to skasować to skasować za pomocą metody ".Clear()" listy dynamicznej.
-                            Ranking.isCorrectContent[modeNum] = false;
-                            Ranking.errorCorrectContent[modeNum] = "This data file is empty. Create new user and play game.";
-                            options[option] = "EMPTY";
-                            options[optReset_PVC] = "EMPTY";   // Wartość opcji od resetowania. | Kiedy pojawi/wią się gracze z początkowymi danymi, albo zostanie aktywowana metoda resetu = [CLEAN] | Kiedy dane któegokolwiek z graczy zostaną uzupełnione = [DATA]
-                            PVC.currentUser = 0;   // Resetowanie wartości kursora klasy "PVC" na 0, inaczej jest -1 i wywala błąd, w sytuacji kiedy: usuniemy wszystkich użytkowników za pomocą [P] i utworzymy nowego użytkownika.
-                            PageUpdate();
-                        } else if (answer == "no") {
-                            isLoop = false;
-                            Console.CursorVisible = false;
-                            Console.WriteLine("\n\nYou can now move to other options.");
-                        } else {
-                            Console.WriteLine("\n\nBad value. Write correct value.\n");
-                        }
-                    }
-                }
+            public static void SpaceVertical() {
+                Color("|                                               |     |                                               |", ConsoleColor.Green);
+                Console.WriteLine();
             }
-            public static void PageUpdate() {
-                Upload.FillButtons();
-                string fileContent = "";
-                for (int i = 0; i < buttonsAmount; i++) {
-                    fileContent += options[i];
-                    if (i < buttonsAmount - 1) fileContent += "*";
-                }
-                File.WriteAllText(optionsPath, fileContent);
-                Options page = new Options();
-                page.RenderPage();
+            public static void SpaceHorizontal() {
+                Console.Write("     ");
+            }
+            public static void Left() {
+                Color("|    ", ConsoleColor.Green);
+            }
+            public static void Right() {
+                Color("    |", ConsoleColor.Green);
+            }
+            public static void Sign(string sign, bool isCursor) {
+                string text = (isCursor) ? sign : " " + sign + "  ";
+                Console.WriteLine(text);
+            }
+            public static void Cursor(string sign, bool isCursor) {
+                Console.WriteLine("{");
+                Sign(sign, isCursor);
+                Console.WriteLine("}");
+                isCursor = false;
+            }
+            public static void Render(List<int> board, string mode, string[,] data) {   // 3 parametr jest "jako wzór, zastanów się jak to ogarnąć..."
+                // Algorytm wyświetlający planszę dla instrukcji, ustawiania statków gracza i bitwy.
             }
         }
+
+        // Przenieś to do PVC:
+        public static List<List<int>> PrepareShips(List<int> shipsInfo) {
+            List<List<int>> shipsList = new List<List<int>>();
+            for (int i = 0; i < shipsInfo.Count; i++) {
+                List<int> ship = new List<int>();
+                shipsList.Add(ship);
+                for (int j = 0; j < shipsInfo[i]; j++) {
+                    shipsList[i].Add(i + 1);
+                }
+            }
+            return shipsList;
+        }
+        public static List<List<int>> RandomShips(List<int> array, List<List<int>> shipsList) {   // Zrób klasę RandomShips - w której zadeklarujesz zmienne globalne aby później ich już nie deklarować
+
+
+            // Powróć do prostrzej wersji tego algorytmu: odzielny "toRight" i "toBottom"
+
+
+            bool isCor = false;
+            List<int> board = array;
+            string dirVal = "";
+            string[] dirAr = new string[2] { "toRight", "toBottom" };
+            Random rand = new Random();
+            int init = 0;
+            int rem = 0;
+            int dirDist = 1, numSlice = 0, numVal = 10;
+            int shipDist = 0, limit = 0;
+            double minBott = shipsList.Count / 2, bottCount = 0;
+            minBott = (shipsList.Count % 2 == 1) ? minBott = Math.Floor(minBott) + rand.Next(0, 2) : minBott = shipsList.Count / 2;   // Jeżeli mam liczbę nieparzystą, to czy będzie więcej czy mniej statków "toBottom" o 1 zależy od losowości.
+            bool isShip = false;
+            while (!isCor) {
+                board = new List<int>(array);   // Dlaczego tak, a nie board = array ? Gdyż lista jest przekazywana nie kopią a referencją, w związku z czym odwołuję się do pierwotnie zadeklarowanej listy i zmniejszam ją w nieskończoność, zamiast tworzyć nową kopię.
+                bottCount = 0;
+                for (int i = 0; i < shipsList.Count; i++) {
+                    init = rand.Next(0, board.Count);
+                    rem = GlobalMethod.SearchRemoveAt(board, init);
+                    if (rem == -1) break;   // Kolizję pola początkowego nowego statku z już istniejącym.
+                    board.RemoveAt(rem);
+                    dirVal = dirAr[rand.Next(0, dirAr.Length)];
+                    dirDist = (dirVal == "toRight") ? 1 : 10;
+                    numSlice = (dirVal == "toRight") ? 0 : 1;
+                    numVal = (dirVal == "toRight") ? 10 : 1;
+                    if (dirVal == "toBottom") bottCount++;
+                    shipDist = (init * dirDist) + ((shipsList[i].Count * dirDist) - dirDist);   // Obliczanie długości statku na planszy.
+                    limit = (Convert.ToString(init).Length == 1) ? (9 * dirDist) : (9 * dirDist) + (numVal * (int)char.GetNumericValue(Convert.ToChar(Convert.ToString(init)[numSlice])));   // Jeżeli statek jest większy niż 1 pole długości - współrzędna inicjacyjna jest "ciachana" w celu dodania odpowiedniej jej częsci do bazowej liczby limitu, aby ostatecznie wyznaczyć odpowiedni limit dla statku znajdującym się w odpowiednim polu. Np. Dla statku o długości 3, w kierunku "toRight" bazawa wartość limitu wynosi 9, jeżeli współrzędna początkowa wynosi 54, to wycinana jest 5, mnożona przez 10 i dodawana do 9, w związku z czym mamy 59. Analogicznie jest w przypadku toBottom, tylko wartości są tak dostosowane aby dotyczyły NIE częsści dziesiętnej, a części jedności. Wówczas będziemy mięli 94.
+                    if (shipDist > limit) break;   // Jeżeli statek wychodzi poza planszę, losuj statki od nowa. Jeżeli np. mamy statek długości 3, "toRight", a współrzędną początkową 54, to limit wynosi 59, a "shipDist" wynosi [współrzędna początkowo] + [długość statku] - 1, czyli 56. Wówczas mamy 56 <= 59, co jest prawdą, więc tworzenie staatku przechodzi ten etap.
+                    if (shipsList[i].Count > 1) {   // Tworzenie pól długości dla statków powyżej 1 pola długości (2, 3, 4 ...).
+                        for (int j = 1 * dirDist; j < shipsList[i].Count * dirDist; j=j+dirDist) {
+                            isShip = false;
+                            rem = GlobalMethod.SearchRemoveAt(board, init + j);
+                            if (rem != -1) {   // Jeżeli nie ma kolizji statku
+                                board.RemoveAt(rem);
+                                shipsList[i][j/dirDist] = init + j;
+                                isShip = true;
+                            }
+                            if (!isShip) break;   // Dlaczego dwa "break" i warunek? Normalnie wystarczyłby ten, ale ponieważ "break" ogranicza się do najbliższego "for", więc zrobiłem specjalny warunek, za pomocą którego będziemy kontrolować "break" pętli for wewnętrznej i "właściwej" nadrzędnej.
+                        }
+                        if (!isShip) break;
+                    }
+                    shipsList[i][0] = init;   // Jest to na końcu aby nie wciskać wartości gdy reszta pól długości statku będzie miała nieprawidłowe współrzędne. Operacja ta zaoszczędza mocy obliczeniowej.
+                    if (i == shipsList.Count - 1) if (bottCount == minBott) isCor = true;   // Jeżeli 7 statków uzyskało poprawne wspoółrzędne, przejdź dalej -> Jeżeli liczba statków "toBottom" jest właściwa, zakończ algorytm.
+                }
+            }
+            return shipsList;
+        } 
+    
+    
+    
     }
 }
