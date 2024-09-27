@@ -471,11 +471,56 @@ namespace Page_PVC {
                     int[] down = new int[10] { 90, 91, 92, 93, 94, 95, 96, 97, 98, 99 };
                     int[] left = new int[10] { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90 };
                     int[] right = new int[10] { 9, 19, 29, 39, 49, 59, 69, 79, 89, 99 };
-                    int allCounter = 0;
+                    int all = 0;
+                    int topLeft = 0;
+                    int topRight = 0;
+                    int downLeft = 0;
+                    int downRight = 0;
+                    all++;
                     for (int i = 0; i < top.Length; i++) {
-                        //if (cursor)
+                        if (cursor == top[i]) {
+                            positUsingKeys_BOARD = "top";
+                            topLeft++;
+                            topRight++;
+                            all--;
+                            break;
+                        }
                     }
-                    if (allCounter == 4) positUsingKeys_BOARD = "all";
+                    all++;
+                    for (int i = 0; i < down.Length; i++) {
+                        if (cursor == down[i]) {
+                            positUsingKeys_BOARD = "down";
+                            downLeft++;
+                            downRight++;
+                            all--;
+                            break;
+                        }
+                    }
+                    all++;
+                    for (int i = 0; i < left.Length; i++) {
+                        if (cursor == left[i]) {
+                            positUsingKeys_BOARD = "left";
+                            topLeft++;
+                            downLeft++;
+                            all--;
+                            break;
+                        }
+                    }
+                    all++;
+                    for (int i = 0; i < right.Length; i++) {
+                        if (cursor == right[i]) {
+                            positUsingKeys_BOARD = "right";
+                            topRight++;
+                            downRight++;
+                            all--;
+                            break;
+                        }
+                    }
+                    if (topLeft == 2) positUsingKeys_BOARD = "top-left";
+                    if (topRight == 2) positUsingKeys_BOARD = "top-right";
+                    if (downLeft == 2) positUsingKeys_BOARD = "down-left";
+                    if (downRight == 2) positUsingKeys_BOARD = "down-right";
+                    if (all == 4) positUsingKeys_BOARD = "all";
                 }
                 public static void Reset() {
                     positioningCursor = 0;
