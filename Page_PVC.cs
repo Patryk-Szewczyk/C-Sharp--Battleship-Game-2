@@ -112,6 +112,9 @@ namespace Page_PVC {
                         }
                         break;
                     case "positioning":
+                        if (positShips.Count == 0) {   // Wyświetl statki:
+                            Positioning.User.ShowUserShips();
+                        }
                         switch (key.Key) {
                             case ConsoleKey.P: Positioning.User.Reset(); break;
                             case ConsoleKey.C: Positioning.User.ChangeDirection(); break;
@@ -658,12 +661,12 @@ namespace Page_PVC {
                                     Console.WriteLine("\n" + error + "\n");
                                 } else {
                                     // DO TESTÓW: - - - - - - - - - - - - - - - - - -
-                                    for (int i = 0; i < shipCoor.Count; i++) {
+                                    /*for (int i = 0; i < shipCoor.Count; i++) {
                                         Console.Write(shipCoor[i] + ", ");
                                     }
                                     for (int i = 0; i < positBoard.Count; i++) {
                                         Console.Write(positBoard[i] + ", ");
-                                    }
+                                    }*/
                                     // - - - - - - - - - - - - - - - - - - - - - - -
                                     // Właściwe usuwanie pól zajętych przez dany statek:
                                     for (int i = 0; i < remList.Count; i++) {
@@ -672,13 +675,15 @@ namespace Page_PVC {
                                     userShipsCoor.Add(shipCoor);
                                     // - - - - - - - - - - - - - - - - - -
                                     positShips.RemoveAt(positShipsCursor);   // Usuwanie ustawionego statku
-
-                                    Console.ReadKey();
-
+                                    //Console.ReadKey();
                                     if (positShipsCursor > positShips.Count - 1) positShipsCursor -= 1;
                                     isPositReset = true;
                                     ReloadPage();
                                 }
+                            } else if (positShips.Count == 0) {
+                                // 1. Przejdź do losowania statków dla komputera i zablokuj [ENTER]!!
+                                // 2. Wówczas pojawia się strona na której jest informacja o ładowaniu statków dla komputera z napisem "Loading..."
+                                // 3. Po wyslosowaniu statków program przechodzi dalej, czyści tą stronę i pojawia się strona bitwy.
                             }
                         }
                     }
@@ -703,7 +708,7 @@ namespace Page_PVC {
                             remList.Add(rem);
                             shipCoor.Add(init);
                             if (dirVal == "horizontal") {
-                                shipDist = init + ship - 1;
+                                shipDist = init + (ship - 1);
                                 limit = (Convert.ToString(init).Length == 1) ? 9 : 9 + (10 * (int)char.GetNumericValue(Convert.ToChar(Convert.ToString(init)[0])));
                                 if (shipDist > limit) {
                                     isBad = true;
@@ -725,11 +730,44 @@ namespace Page_PVC {
                                         }
                                     }
                                 }
-                            } else if (dirVal == "vertical") {
-
+                            } else if (dirVal == "vertical") {   // Napraw tą walidację!
+                                shipDist = (init * 10) + ((ship * 10) - 10);
+                                limit = (Convert.ToString(init).Length == 1) ? 90 : 90 + (1 * (int)char.GetNumericValue(Convert.ToChar(Convert.ToString(init)[1])));
+                                if (shipDist > limit) {
+                                    isBad = true;
+                                    error = "The ship can't leave the board.";
+                                }
+                                if (!isBad) {
+                                    if (ship > 1) {
+                                        for (int i = 10; i < ship * 10; i=i+10) {
+                                            rem = GlobalMethod.SearchRemoveAt(board, init + i);
+                                            if (rem == -1) {
+                                                isBad = true;
+                                                error = "Ship can't overlap another ship.";
+                                                break;
+                                            } else {
+                                                board.RemoveAt(rem);
+                                                remList.Add(rem);
+                                                shipCoor.Add(init + i);
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                         return (remList, shipCoor, isBad, error);
+                    }
+                    public static void ShowUserShips() {
+                        Console.WriteLine();
+                        for (int i = 0; i < userShipsCoor.Count; i++) {
+                            Console.Write((i + 1) + ". { ");
+                            for (int j = 0; j < userShipsCoor[i].Count; j++) {
+                                if (j < userShipsCoor[i].Count - 1) Console.Write(userShipsCoor[i][j] + ", ");
+                                else Console.Write(userShipsCoor[i][j]);
+                            }
+                            Console.Write(" }");
+                            Console.WriteLine();
+                        }
                     }
                     public static void ReloadPage() {
                         PVC pvc = new PVC();
