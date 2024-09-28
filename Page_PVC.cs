@@ -25,18 +25,21 @@ namespace Page_PVC {
         public static int currentUser = 0;
         public static int positBoardCursor = 0;
         public static int positShipsCursor = 0;
+        public static string positDirection = "horizontal";
         public static string positUsingKeys_BOARD = "";   // all, top, down, left, right
         public static string positUsingKeys_SHIPS = "";   // all, left, right, one, zero
         public static bool isPositReset = false;
         public static List<string> positShips = new List<string>();
         public static bool isEnterPart = false;
+        public static int counterEnter = 0;
         public static List<ConsoleKey> usingKeys_ERROR = new List<ConsoleKey> { ConsoleKey.Backspace };
         // - - - - - - - - - - - - - - - - - - - - - - - - - - -
         public void RenderPage() {   // Wyświetlenie strony PVC i zarazem panel kontrolny tej strony.
             bool isCorrect = false;
             isCorrect = Error.CheckRankingValid(isCorrect, PVC_mode);
-            if (isCorrect) {
-                ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);   // Dowolna niewłaściwa wartość.
+
+            ConsoleKeyInfo key = new ConsoleKeyInfo('\0', ConsoleKey.NoName, false, false, false);
+            if (isCorrect) {   // Dowolna niewłaściwa wartość.
                 while (isPage == true) {
                     Console.Clear();
                     Part.Content();
@@ -93,6 +96,8 @@ namespace Page_PVC {
                 }
             }
             public static void Action(ConsoleKeyInfo key) {
+                //Console.WriteLine(key.Key);
+                //Console.ReadKey();
                 switch (part) {
                     case "user":
                         switch (key.Key) {
@@ -104,7 +109,8 @@ namespace Page_PVC {
                     case "positioning":
                         switch (key.Key) {
                             case ConsoleKey.P: Positioning.Reset(); break;
-                            case ConsoleKey.Enter: Positioning.Set(); break;
+                            case ConsoleKey.C: Positioning.ChangeDirection(); break;
+                            case ConsoleKey.Enter: Positioning.SetShip(); break;
                         }
                         break;
                     case "battle":
@@ -119,7 +125,6 @@ namespace Page_PVC {
                 List<ConsoleKey> USER_down = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.UpArrow, ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
                 List<ConsoleKey> USER_one = new List<ConsoleKey> { ConsoleKey.C, ConsoleKey.P, ConsoleKey.Enter, ConsoleKey.Backspace };
                 List<ConsoleKey> USER_zero = new List<ConsoleKey> { ConsoleKey.C, ConsoleKey.Backspace };
-                //List<ConsoleKey> usingKeys_POSITIONING_ALL = new List<ConsoleKey> { ConsoleKey.W, ConsoleKey.S, ConsoleKey.A, ConsoleKey.D, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.LeftArrow, ConsoleKey.RightArrow, ConsoleKey.Q, ConsoleKey.E, ConsoleKey.R, ConsoleKey.Enter };
                 List<ConsoleKey> POSIT_fusion = new List<ConsoleKey>();
                 List<ConsoleKey> POSIT_BOARD_all = new List<ConsoleKey>() { ConsoleKey.W, ConsoleKey.S, ConsoleKey.A, ConsoleKey.D, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.LeftArrow, ConsoleKey.RightArrow };
                 List<ConsoleKey> POSIT_BOARD_top = new List<ConsoleKey>() { ConsoleKey.S, ConsoleKey.A, ConsoleKey.D, ConsoleKey.DownArrow, ConsoleKey.LeftArrow, ConsoleKey.RightArrow };
@@ -142,73 +147,75 @@ namespace Page_PVC {
                         Positioning.DetermineBoardUsingKeys();
                         Positioning.DetermineShipsUsingKeys();
                         POSIT_fusion.Clear();
-                        isPositReset = true;   // TYLKO DLA TESTÓW!!! Jest true kiedy ustawisz statek!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         if (isPositReset) POSIT_fusion.Add(ConsoleKey.P);
                         POSIT_fusion.Add(ConsoleKey.Enter);
                         //POSIT_fusion.Add(ConsoleKey.Backspace);   // TYLKO DLA TESTÓW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                        switch (positUsingKeys_BOARD) {
-                            case "all":
-                                for (int i = 0; i < POSIT_BOARD_all.Count; i++) {
-                                    POSIT_fusion.Add(POSIT_BOARD_all[i]);
-                                }
-                                break;
-                            case "top":
-                                for (int i = 0; i < POSIT_BOARD_top.Count; i++) {
-                                    POSIT_fusion.Add(POSIT_BOARD_top[i]);
-                                }
-                                break;
-                            case "down":
-                                for (int i = 0; i < POSIT_BOARD_down.Count; i++) {
-                                    POSIT_fusion.Add(POSIT_BOARD_down[i]);
-                                }
-                                break;
-                            case "left":
-                                for (int i = 0; i < POSIT_BOARD_left.Count; i++) {
-                                    POSIT_fusion.Add(POSIT_BOARD_left[i]);
-                                }
-                                break;
-                            case "right":
-                                for (int i = 0; i < POSIT_BOARD_right.Count; i++) {
-                                    POSIT_fusion.Add(POSIT_BOARD_right[i]);
-                                }
-                                break;
-                            case "top-left":
-                                for (int i = 0; i < POSIT_BOARD_topLeft.Count; i++) {
-                                    POSIT_fusion.Add(POSIT_BOARD_topLeft[i]);
-                                }
-                                break;
-                            case "top-right":
-                                for (int i = 0; i < POSIT_BOARD_topRight.Count; i++) {
-                                    POSIT_fusion.Add(POSIT_BOARD_topRight[i]);
-                                }
-                                break;
-                            case "down-left":
-                                for (int i = 0; i < POSIT_BOARD_downLeft.Count; i++) {
-                                    POSIT_fusion.Add(POSIT_BOARD_downLeft[i]);
-                                }
-                                break;
-                            case "down-right":
-                                for (int i = 0; i < POSIT_BOARD_downRight.Count; i++) {
-                                    POSIT_fusion.Add(POSIT_BOARD_downRight[i]);
-                                }
-                                break;
-                        }
-                        switch (positUsingKeys_SHIPS) {
-                            case "all":
-                                for (int i = 0; i < POSIT_SHIPS_all.Count; i++) {
-                                    POSIT_fusion.Add(POSIT_SHIPS_all[i]);
-                                }
-                                break;
-                            case "left":
-                                for (int i = 0; i < POSIT_SHIPS_left.Count; i++) {
-                                    POSIT_fusion.Add(POSIT_SHIPS_left[i]);
-                                }
-                                break;
-                            case "right":
-                                for (int i = 0; i < POSIT_SHIPS_right.Count; i++) {
-                                    POSIT_fusion.Add(POSIT_SHIPS_right[i]);
-                                }
-                                break;
+                        if (positShips.Count > 0) {
+                            POSIT_fusion.Add(ConsoleKey.C);
+                            switch (positUsingKeys_BOARD) {
+                                case "all":
+                                    for (int i = 0; i < POSIT_BOARD_all.Count; i++) {
+                                        POSIT_fusion.Add(POSIT_BOARD_all[i]);
+                                    }
+                                    break;
+                                case "top":
+                                    for (int i = 0; i < POSIT_BOARD_top.Count; i++) {
+                                        POSIT_fusion.Add(POSIT_BOARD_top[i]);
+                                    }
+                                    break;
+                                case "down":
+                                    for (int i = 0; i < POSIT_BOARD_down.Count; i++) {
+                                        POSIT_fusion.Add(POSIT_BOARD_down[i]);
+                                    }
+                                    break;
+                                case "left":
+                                    for (int i = 0; i < POSIT_BOARD_left.Count; i++) {
+                                        POSIT_fusion.Add(POSIT_BOARD_left[i]);
+                                    }
+                                    break;
+                                case "right":
+                                    for (int i = 0; i < POSIT_BOARD_right.Count; i++) {
+                                        POSIT_fusion.Add(POSIT_BOARD_right[i]);
+                                    }
+                                    break;
+                                case "top-left":
+                                    for (int i = 0; i < POSIT_BOARD_topLeft.Count; i++) {
+                                        POSIT_fusion.Add(POSIT_BOARD_topLeft[i]);
+                                    }
+                                    break;
+                                case "top-right":
+                                    for (int i = 0; i < POSIT_BOARD_topRight.Count; i++) {
+                                        POSIT_fusion.Add(POSIT_BOARD_topRight[i]);
+                                    }
+                                    break;
+                                case "down-left":
+                                    for (int i = 0; i < POSIT_BOARD_downLeft.Count; i++) {
+                                        POSIT_fusion.Add(POSIT_BOARD_downLeft[i]);
+                                    }
+                                    break;
+                                case "down-right":
+                                    for (int i = 0; i < POSIT_BOARD_downRight.Count; i++) {
+                                        POSIT_fusion.Add(POSIT_BOARD_downRight[i]);
+                                    }
+                                    break;
+                            }
+                            switch (positUsingKeys_SHIPS) {
+                                case "all":
+                                    for (int i = 0; i < POSIT_SHIPS_all.Count; i++) {
+                                        POSIT_fusion.Add(POSIT_SHIPS_all[i]);
+                                    }
+                                    break;
+                                case "left":
+                                    for (int i = 0; i < POSIT_SHIPS_left.Count; i++) {
+                                        POSIT_fusion.Add(POSIT_SHIPS_left[i]);
+                                    }
+                                    break;
+                                case "right":
+                                    for (int i = 0; i < POSIT_SHIPS_right.Count; i++) {
+                                        POSIT_fusion.Add(POSIT_SHIPS_right[i]);
+                                    }
+                                    break;
+                            }
                         }
                         (bool, ConsoleKeyInfo) positCorr = GlobalMethod.Page.LoopCorrectKey_GameMode(isEnterPart, key, POSIT_fusion);
                         isEnterPart = positCorr.Item1;
@@ -254,6 +261,8 @@ namespace Page_PVC {
                     return selected;
                 }
                 public static void SelectUser() {
+                    //Console.WriteLine(++counterEnter);
+                    //Console.ReadLine();
                     userStr = Ranking.modePlayersInfo[PVC_mode][currentUser][0];
                     userInt = currentUser;
                     part = "positioning";
@@ -446,8 +455,9 @@ namespace Page_PVC {
                     Console.WriteLine("POSITIONING: | Choose ship: [Q][E] -> [ENTER] | Change direction: [C] | Set ship: [W][S][A][D]/arrows -> [ENTER] | Reset: [P]");
                     GlobalMethod.Page.RenderDottedLine(pageLineLength);
                     Console.WriteLine("Ships: " + "{" + RenderShipsInfo() + " }"); // KONCEPT
-                    Console.WriteLine("       " + RenderShipSpace() + "  ^");
-                    Console.WriteLine("Ship: " + positShipsCursor + " | Position: " + positBoardCursor);   // TYMCZASOWO
+                    if (positShips.Count > 0) Console.WriteLine("       " + RenderShipSpace() + "  ^");
+                    if (positShips.Count == 0) Console.WriteLine();
+                    Console.WriteLine("Ship: [" + positShipsCursor + "] | Direction: " + positDirection + " | Position: " + positBoardCursor);   // TYMCZASOWO
                 }
                 public static string RenderShipsInfo() {
                     string result = "";
@@ -580,12 +590,35 @@ namespace Page_PVC {
                     // - - - - - - - - - - - 
                     if (isPositReset) {
                         isPositReset = false;
-                        PVC pvc = new PVC();
-                        pvc.RenderPage();
+                        ReloadPage();
                     }
                 }
-                public static void Set() {
-                    // Ustawienie wybranego statku
+                public static void ChangeDirection() {
+                    positDirection = (positDirection == "horizontal") ? "vertical" : "horizontal";
+                    ReloadPage();
+                }
+                public static void SetShip() {   // Ustawianie wybranego statku
+                    if (counterEnter < 3) counterEnter++;   // Dlaczego w ogóle coś takiego jest? Wyjasnienie w pliku txt. pod tytułem "counterEnter - Dlaczego". 
+                    if (counterEnter > 1) {   // Bez blokady na zmienną "counterEnter" użytkownik mógłby tyle razy go nacisnąć w jednej sesji uruchomienia programu, że zakres wartości typu "int" wykraczałby poza zasięg typu "int".
+                        if (positShips.Count > 0) {
+                            bool isBad = false;
+
+                            // Walidacja
+
+                            if (isBad) {
+                                //Error message
+                            } else {
+                                positShips.RemoveAt(positShipsCursor);
+                                if (positShipsCursor > positShips.Count - 1) positShipsCursor -= 1;
+                                isPositReset = true;
+                                ReloadPage();
+                            }
+                        }
+                    }
+                }
+                public static void ReloadPage() {
+                    PVC pvc = new PVC();
+                    pvc.RenderPage();
                 }
             }
             public class Battle {
