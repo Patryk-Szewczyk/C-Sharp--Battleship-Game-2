@@ -30,6 +30,8 @@ namespace Page_PVC {
         public static string positUsingKeys_SHIPS = "";   // all, left, right, one, zero
         public static bool isPositReset = false;
         public static List<string> positShips = new List<string>();
+        public static List<int> positBoard = new List<int>();
+        public static List<int> shipCoorList = new List<int>();
         public static bool isEnterPart = false;
         public static int counterEnter = 0;
         public static List<ConsoleKey> usingKeys_ERROR = new List<ConsoleKey> { ConsoleKey.Backspace };
@@ -87,7 +89,7 @@ namespace Page_PVC {
                         GlobalMethod.Page.RenderDottedLine(pageLineLength);
                         break;
                     case "positioning":
-                        Positioning.RenderTitle();
+                        Positioning.User.RenderTitle();
                         break;
                     case "battle":
                         break;
@@ -108,9 +110,9 @@ namespace Page_PVC {
                         break;
                     case "positioning":
                         switch (key.Key) {
-                            case ConsoleKey.P: Positioning.Reset(); break;
-                            case ConsoleKey.C: Positioning.ChangeDirection(); break;
-                            case ConsoleKey.Enter: Positioning.SetShip(); break;
+                            case ConsoleKey.P: Positioning.User.Reset(); break;
+                            case ConsoleKey.C: Positioning.User.ChangeDirection(); break;
+                            case ConsoleKey.Enter: Positioning.User.SetShip(); break;
                         }
                         break;
                     case "battle":
@@ -144,8 +146,8 @@ namespace Page_PVC {
                         else key = GlobalMethod.Page.SelectUsingKeys(currentUser, page_ID, key, users, USER_standard, USER_top, USER_down, USER_one);
                         break;
                     case "positioning":
-                        Positioning.DetermineBoardUsingKeys();
-                        Positioning.DetermineShipsUsingKeys();
+                        Positioning.User.DetermineBoardUsingKeys();
+                        Positioning.User.DetermineShipsUsingKeys();
                         POSIT_fusion.Clear();
                         if (isPositReset) POSIT_fusion.Add(ConsoleKey.P);
                         POSIT_fusion.Add(ConsoleKey.Enter);
@@ -231,7 +233,7 @@ namespace Page_PVC {
             public static void MoveCursor(ConsoleKeyInfo key) {
                 switch (part) {
                     case "user": currentUser = GlobalMethod.Page.MoveButtons(users, currentUser, key); break;
-                    case "positioning": Positioning.CursorBoard(key); Positioning.CursorShips(key); break;
+                    case "positioning": Positioning.User.CursorBoard(key); Positioning.User.CursorShips(key); break;
                     case "battle":  break;
                     case "summary":  break;
                 }
@@ -267,7 +269,7 @@ namespace Page_PVC {
                     userInt = currentUser;
                     part = "positioning";
                     isEnterPart = true;
-                    Positioning.Reset();   // Ustawienie listy dynamicznej statków z opcji jeden raz, kolejne, tylko przy resecie.
+                    Positioning.User.Reset();   // Ustawienie listy dynamicznej statków z opcji jeden raz, kolejne, tylko przy resecie.
                 }
                 public static void AddUser() {
                     Console.WriteLine("GUIDE: Write new user name -> [ENTER]");
@@ -450,175 +452,192 @@ namespace Page_PVC {
                 }
             }
             public class Positioning {   // WAŻNE!!! NIE ZAPOMNIJ ZRESETOWAĆ ZMIENNEJ "positioningCursor" DO ZERA (0), PO ZAKOŃCZENIU OPERACJI W TEJ KLASIE! (ustawienie wszystkcich statków przez gracza)
-                public static void RenderTitle() {
-                    Console.WriteLine("User: [" + userStr + "] | [" + userInt + "]\n");
-                    Console.WriteLine("POSITIONING: | Choose ship: [Q][E] -> [ENTER] | Change direction: [C] | Set ship: [W][S][A][D]/arrows -> [ENTER] | Reset: [P]");
-                    GlobalMethod.Page.RenderDottedLine(pageLineLength);
-                    Console.WriteLine("Ships: " + "{" + RenderShipsInfo() + " }"); // KONCEPT
-                    if (positShips.Count > 0) Console.WriteLine("       " + RenderShipSpace() + "  ^");
-                    if (positShips.Count == 0) Console.WriteLine();
-                    Console.WriteLine("Ship: [" + positShipsCursor + "] | Direction: " + positDirection + " | Position: " + positBoardCursor);   // TYMCZASOWO
-                }
-                public static string RenderShipsInfo() {
-                    string result = "";
-                    for (int i = 0; i < positShips.Count; i++) {
-                        result += " " + positShips[i];
+                public class User {
+                    public static void RenderTitle() {
+                        Console.WriteLine("User: [" + userStr + "] | [" + userInt + "]\n");
+                        Console.WriteLine("POSITIONING: | Choose ship: [Q][E] -> [ENTER] | Change direction: [C] | Set ship: [W][S][A][D]/arrows -> [ENTER] | Reset: [P]");
+                        GlobalMethod.Page.RenderDottedLine(pageLineLength);
+                        Console.WriteLine("Ships: " + "{" + RenderShipsInfo() + " }"); // KONCEPT
+                        if (positShips.Count > 0) Console.WriteLine("       " + RenderShipSpace() + "  ^");
+                        if (positShips.Count == 0) Console.WriteLine();
+                        Console.WriteLine("Ship: [" + positShipsCursor + "] | Direction: " + positDirection + " | Position: " + positBoardCursor);   // TYMCZASOWO
                     }
-                    return result;
-                }
-                public static void CursorBoard(ConsoleKeyInfo key) {
-                    int cursor = positBoardCursor;
-                    if (key.Key == ConsoleKey.W || key.Key == ConsoleKey.UpArrow) {
-                        if (cursor > 9) cursor -= 10;
-                    } else if (key.Key == ConsoleKey.S || key.Key == ConsoleKey.DownArrow) {
-                        if (cursor < 90) cursor += 10;
-                    } else if (key.Key == ConsoleKey.A || key.Key == ConsoleKey.LeftArrow) {
-                        for (int i = 0, j = 10; i < 100; i=i+10, j=j+10) {
-                            if (cursor > i && cursor < j) cursor -= 1;
+                    public static string RenderShipsInfo() {
+                        string result = "";
+                        for (int i = 0; i < positShips.Count; i++) {
+                            result += " " + positShips[i];
                         }
-                    } else if (key.Key == ConsoleKey.D || key.Key == ConsoleKey.RightArrow) {
-                        for (int i = 0, j = 9; i < 100; i=i+10, j=j+10) {
-                            if (cursor >= i && cursor < j) cursor += 1;
+                        return result;
+                    }
+                    public static void CursorBoard(ConsoleKeyInfo key) {
+                        int cursor = positBoardCursor;
+                        if (key.Key == ConsoleKey.W || key.Key == ConsoleKey.UpArrow) {
+                            if (cursor > 9) cursor -= 10;
+                        } else if (key.Key == ConsoleKey.S || key.Key == ConsoleKey.DownArrow) {
+                            if (cursor < 90) cursor += 10;
+                        } else if (key.Key == ConsoleKey.A || key.Key == ConsoleKey.LeftArrow) {
+                            for (int i = 0, j = 10; i < 100; i = i + 10, j = j + 10) {
+                                if (cursor > i && cursor < j) cursor -= 1;
+                            }
+                        } else if (key.Key == ConsoleKey.D || key.Key == ConsoleKey.RightArrow) {
+                            for (int i = 0, j = 9; i < 100; i = i + 10, j = j + 10) {
+                                if (cursor >= i && cursor < j) cursor += 1;
+                            }
+                        }
+                        positBoardCursor = cursor;
+                        /*if (cursor > 0 && cursor < 10) cursor -= 1;  // Jeżeli kursor jest w przedziale {1,2,3,4,5,6,7,8,9}
+                        if (cursor > 10 && cursor < 20) cursor -= 1;   // Jeżeli kursor jest w przedziale {11,12,13,14,15,16,17,18,19}
+                        if (cursor > 20 && cursor < 30) cursor -= 1;   // Jeżeli kursor jest w przedziale {21,22,23,...}
+                        if (cursor > 30 && cursor < 40) cursor -= 1;*/ // ...
+                        /*if (cursor >= 0 && cursor < 9) cursor += 1;   // Jeżeli kursor jest w przedziale {0,1,2,3,4,5,6,7,8}
+                        if (cursor >= 10 && cursor < 19) cursor += 1;   // Jeżeli kursor jest w przedziale {10,11,12,13,14,15,16,17,18}
+                        if (cursor >= 20 && cursor < 29) cursor += 1;   // Jeżeli kursor jest w przedziale {20,21,22...}
+                        if (cursor >= 30 && cursor < 39) cursor += 1;*/ // ...
+                    }
+                    public static void CursorShips(ConsoleKeyInfo key) {
+                        int cursor = positShipsCursor;
+                        if (key.Key == ConsoleKey.Q) {
+                            if (cursor > 0) cursor -= 1;
+                        } else if (key.Key == ConsoleKey.E) {
+                            if (cursor < positShips.Count - 1) cursor += 1;
+                        }
+                        positShipsCursor = cursor;
+                    }
+                    public static void DetermineBoardUsingKeys() {   // MIXED: top-left, top-right, down-left, top-right
+                        int cursor = positBoardCursor;
+                        int[] top = new int[10] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+                        int[] down = new int[10] { 90, 91, 92, 93, 94, 95, 96, 97, 98, 99 };
+                        int[] left = new int[10] { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90 };
+                        int[] right = new int[10] { 9, 19, 29, 39, 49, 59, 69, 79, 89, 99 };
+                        int all = 0;
+                        int topLeft = 0;
+                        int topRight = 0;
+                        int downLeft = 0;
+                        int downRight = 0;
+                        all++;
+                        for (int i = 0; i < top.Length; i++) {
+                            if (cursor == top[i]) {
+                                positUsingKeys_BOARD = "top";
+                                topLeft++;
+                                topRight++;
+                                all--;
+                                break;
+                            }
+                        }
+                        all++;
+                        for (int i = 0; i < down.Length; i++) {
+                            if (cursor == down[i]) {
+                                positUsingKeys_BOARD = "down";
+                                downLeft++;
+                                downRight++;
+                                all--;
+                                break;
+                            }
+                        }
+                        all++;
+                        for (int i = 0; i < left.Length; i++) {
+                            if (cursor == left[i]) {
+                                positUsingKeys_BOARD = "left";
+                                topLeft++;
+                                downLeft++;
+                                all--;
+                                break;
+                            }
+                        }
+                        all++;
+                        for (int i = 0; i < right.Length; i++) {
+                            if (cursor == right[i]) {
+                                positUsingKeys_BOARD = "right";
+                                topRight++;
+                                downRight++;
+                                all--;
+                                break;
+                            }
+                        }
+                        if (topLeft == 2) positUsingKeys_BOARD = "top-left";
+                        if (topRight == 2) positUsingKeys_BOARD = "top-right";
+                        if (downLeft == 2) positUsingKeys_BOARD = "down-left";
+                        if (downRight == 2) positUsingKeys_BOARD = "down-right";
+                        if (all == 4) positUsingKeys_BOARD = "all";
+                    }
+                    public static void DetermineShipsUsingKeys() {   // NAPRAW TO!
+                        int cursor = positShipsCursor;
+                        int ships = positShips.Count - 1;
+                        if (cursor > 0 && cursor < ships - 1) positUsingKeys_SHIPS = "all";
+                        if (cursor == 0) positUsingKeys_SHIPS = "left";
+                        if (cursor == ships) positUsingKeys_SHIPS = "right";
+                        if (ships <= 1) positUsingKeys_SHIPS = "";
+                    }
+                    public static string RenderShipSpace() {
+                        string space = "";
+                        for (int i = 0; i < positShipsCursor; i++) {
+                            space += "  ";
+                        }
+                        return space;
+                    }
+                    public static void RenderBoard() {
+                        // Wyświetlanie tablicy z kursorem i utworzonymi statkami
+                    }
+                    public static void Reset() {   // RESET ma znajdować się jeszcze po bitwie, kiedy przejdzie się do podsumowania.  // Zrób potem z tego dwie metody!
+                        // - - - - - - - - - - - - Statki:
+                        positShipsCursor = 0;
+                        positShips.Clear();
+                        string[] ships = Options.options[Options.optShips].Split(',');   // TUTAJ!!!!!!!!!   Trzeba pobrać aktualne dane z pliku
+                        List<string> result = new List<string>();
+                        for (int i = 0; i < ships.Length; i++) {
+                            result.Add(ships[i]);
+                        }
+                        positShips = result;
+                        // - - - - - - - - - - - Plansza:
+                        positBoardCursor = 0;
+                        positBoard.Clear();
+                        for (int i = 0; i < 100; i++) {
+                            positBoard.Add(i);
+                        }
+                        // - - - - - - - - - - - 
+                        if (isPositReset) {
+                            isPositReset = false;
+                            ReloadPage();
                         }
                     }
-                    positBoardCursor = cursor;
-                    /*if (cursor > 0 && cursor < 10) cursor -= 1;  // Jeżeli kursor jest w przedziale {1,2,3,4,5,6,7,8,9}
-                    if (cursor > 10 && cursor < 20) cursor -= 1;   // Jeżeli kursor jest w przedziale {11,12,13,14,15,16,17,18,19}
-                    if (cursor > 20 && cursor < 30) cursor -= 1;   // Jeżeli kursor jest w przedziale {21,22,23,...}
-                    if (cursor > 30 && cursor < 40) cursor -= 1;*/ // ...
-                    /*if (cursor >= 0 && cursor < 9) cursor += 1;   // Jeżeli kursor jest w przedziale {0,1,2,3,4,5,6,7,8}
-                    if (cursor >= 10 && cursor < 19) cursor += 1;   // Jeżeli kursor jest w przedziale {10,11,12,13,14,15,16,17,18}
-                    if (cursor >= 20 && cursor < 29) cursor += 1;   // Jeżeli kursor jest w przedziale {20,21,22...}
-                    if (cursor >= 30 && cursor < 39) cursor += 1;*/ // ...
-                }
-                public static void CursorShips(ConsoleKeyInfo key) {
-                    int cursor = positShipsCursor;
-                    if (key.Key == ConsoleKey.Q) {
-                        if (cursor > 0) cursor -= 1;
-                    } else if (key.Key == ConsoleKey.E) {
-                        if (cursor < positShips.Count - 1) cursor += 1;
-                    }
-                    positShipsCursor = cursor;
-                }
-                public static void DetermineBoardUsingKeys() {   // MIXED: top-left, top-right, down-left, top-right
-                    int cursor = positBoardCursor;
-                    int[] top = new int[10] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-                    int[] down = new int[10] { 90, 91, 92, 93, 94, 95, 96, 97, 98, 99 };
-                    int[] left = new int[10] { 0, 10, 20, 30, 40, 50, 60, 70, 80, 90 };
-                    int[] right = new int[10] { 9, 19, 29, 39, 49, 59, 69, 79, 89, 99 };
-                    int all = 0;
-                    int topLeft = 0;
-                    int topRight = 0;
-                    int downLeft = 0;
-                    int downRight = 0;
-                    all++;
-                    for (int i = 0; i < top.Length; i++) {
-                        if (cursor == top[i]) {
-                            positUsingKeys_BOARD = "top";
-                            topLeft++;
-                            topRight++;
-                            all--;
-                            break;
-                        }
-                    }
-                    all++;
-                    for (int i = 0; i < down.Length; i++) {
-                        if (cursor == down[i]) {
-                            positUsingKeys_BOARD = "down";
-                            downLeft++;
-                            downRight++;
-                            all--;
-                            break;
-                        }
-                    }
-                    all++;
-                    for (int i = 0; i < left.Length; i++) {
-                        if (cursor == left[i]) {
-                            positUsingKeys_BOARD = "left";
-                            topLeft++;
-                            downLeft++;
-                            all--;
-                            break;
-                        }
-                    }
-                    all++;
-                    for (int i = 0; i < right.Length; i++) {
-                        if (cursor == right[i]) {
-                            positUsingKeys_BOARD = "right";
-                            topRight++;
-                            downRight++;
-                            all--;
-                            break;
-                        }
-                    }
-                    if (topLeft == 2) positUsingKeys_BOARD = "top-left";
-                    if (topRight == 2) positUsingKeys_BOARD = "top-right";
-                    if (downLeft == 2) positUsingKeys_BOARD = "down-left";
-                    if (downRight == 2) positUsingKeys_BOARD = "down-right";
-                    if (all == 4) positUsingKeys_BOARD = "all";
-                }
-                public static void DetermineShipsUsingKeys() {   // NAPRAW TO!
-                    int cursor = positShipsCursor;
-                    int ships = positShips.Count - 1;
-                    if (cursor > 0 && cursor < ships - 1) positUsingKeys_SHIPS = "all";
-                    if (cursor == 0) positUsingKeys_SHIPS = "left";
-                    if (cursor == ships) positUsingKeys_SHIPS = "right";
-                    if (ships <= 1) positUsingKeys_SHIPS = "";
-                }
-                public static string RenderShipSpace() {
-                    string space = "";
-                    for (int i = 0; i < positShipsCursor; i++) {
-                        space += "  ";
-                    }
-                    return space;
-                }
-                public static void RenderBoard() {
-                    // Wyświetlanie tablicy z kursorem i utworzonymi statkami
-                }
-                public static void Reset() {   // RESET ma znajdować się jeszcze po bitwie, kiedy przejdzie się do podsumowania.  // Zrób potem z tego dwie metody!
-                    // - - - - - - - - - - - - Statki:
-                    positShipsCursor = 0;
-                    positShips.Clear();
-                    string[] ships = Options.options[Options.optShips].Split(',');   // TUTAJ!!!!!!!!!   Trzeba pobrać aktualne dane z pliku
-                    List<string> result = new List<string>();
-                    for (int i = 0; i < ships.Length; i++) {
-                        result.Add(ships[i]);
-                    }
-                    positShips = result;
-                    // - - - - - - - - - - - Plansza:
-                    positBoardCursor = 0;
-                    // - - - - - - - - - - - 
-                    if (isPositReset) {
-                        isPositReset = false;
+                    public static void ChangeDirection() {
+                        positDirection = (positDirection == "horizontal") ? "vertical" : "horizontal";
                         ReloadPage();
                     }
-                }
-                public static void ChangeDirection() {
-                    positDirection = (positDirection == "horizontal") ? "vertical" : "horizontal";
-                    ReloadPage();
-                }
-                public static void SetShip() {   // Ustawianie wybranego statku
-                    if (counterEnter < 3) counterEnter++;   // Dlaczego w ogóle coś takiego jest? Wyjasnienie w pliku txt. pod tytułem "counterEnter - Dlaczego". 
-                    if (counterEnter > 1) {   // Bez blokady na zmienną "counterEnter" użytkownik mógłby tyle razy go nacisnąć w jednej sesji uruchomienia programu, że zakres wartości typu "int" wykraczałby poza zasięg typu "int".
-                        if (positShips.Count > 0) {
-                            bool isBad = false;
-
-                            // Walidacja
-
-                            if (isBad) {
-                                //Error message
-                            } else {
-                                positShips.RemoveAt(positShipsCursor);
-                                if (positShipsCursor > positShips.Count - 1) positShipsCursor -= 1;
-                                isPositReset = true;
-                                ReloadPage();
+                    public static void SetShip() {   // Ustawianie wybranego statku
+                        if (counterEnter < 3) counterEnter++;   // Dlaczego w ogóle coś takiego jest? Wyjasnienie w pliku txt. pod tytułem "counterEnter - Dlaczego". 
+                        if (counterEnter > 1) {   // Bez blokady na zmienną "counterEnter" użytkownik mógłby tyle razy go nacisnąć w jednej sesji uruchomienia programu, że zakres wartości typu "int" wykraczałby poza zasięg typu "int".
+                            if (positShips.Count > 0) {
+                                bool isBad = false;
+                                string error = "";
+                                (bool, string) valid = SetShipValidate();
+                                isBad = valid.Item1;
+                                error = valid.Item2;
+                                if (isBad) {
+                                    Console.WriteLine("\n" + error + "\n");
+                                } else {
+                                    positShips.RemoveAt(positShipsCursor);
+                                    if (positShipsCursor > positShips.Count - 1) positShipsCursor -= 1;
+                                    isPositReset = true;
+                                    ReloadPage();
+                                }
                             }
                         }
                     }
+                    public static (bool, string) SetShipValidate() {
+                        int init = positShipsCursor;
+                        string dir = positDirection;
+                        //positBoard
+                        //shipCoorList
+                        return (false, "");
+                    }
+                    public static void ReloadPage() {
+                        PVC pvc = new PVC();
+                        pvc.RenderPage();
+                    }
                 }
-                public static void ReloadPage() {
-                    PVC pvc = new PVC();
-                    pvc.RenderPage();
+                public class Computer {
+                    
                 }
             }
             public class Battle {
