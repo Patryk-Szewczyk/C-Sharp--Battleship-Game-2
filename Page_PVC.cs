@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using Library_GlobalMethods;
 using Page_Options;
 using Page_Ranking;
+using static Library_GlobalMethods.GlobalMethod;
 
 namespace Page_PVC {
     public class PVC {
@@ -25,13 +26,15 @@ namespace Page_PVC {
         public static int currentUser = 0;
         public static int positBoardCursor = 0;
         public static int positShipsCursor = 0;
+        public static string coorA0 = "A0";
         public static string positDirection = "horizontal";
         public static string positUsingKeys_BOARD = "";   // all, top, down, left, right
         public static string positUsingKeys_SHIPS = "";   // all, left, right, one, zero
         public static bool isPositReset = false;
         public static List<string> positShips = new List<string>();
         public static List<int> positBoard = new List<int>();
-        public static List<int> shipCoorList = new List<int>();
+        public static List<int> positShipCoor = new List<int>();
+        public static List<List<int>> userShipsCoor = new List<List<int>>();
         public static bool isEnterPart = false;
         public static int counterEnter = 0;
         public static List<ConsoleKey> usingKeys_ERROR = new List<ConsoleKey> { ConsoleKey.Backspace };
@@ -109,6 +112,9 @@ namespace Page_PVC {
                         }
                         break;
                     case "positioning":
+                        if (positShips.Count == 0) {   // Wyświetl statki:
+                            Positioning.User.ShowUserShips();
+                        }
                         switch (key.Key) {
                             case ConsoleKey.P: Positioning.User.Reset(); break;
                             case ConsoleKey.C: Positioning.User.ChangeDirection(); break;
@@ -460,7 +466,7 @@ namespace Page_PVC {
                         Console.WriteLine("Ships: " + "{" + RenderShipsInfo() + " }"); // KONCEPT
                         if (positShips.Count > 0) Console.WriteLine("       " + RenderShipSpace() + "  ^");
                         if (positShips.Count == 0) Console.WriteLine();
-                        Console.WriteLine("Ship: [" + positShipsCursor + "] | Direction: " + positDirection + " | Position: " + positBoardCursor);   // TYMCZASOWO
+                        Console.WriteLine("Ship: [" + positShipsCursor + "] | Direction: " + positDirection + " | Position: " + positBoardCursor + " / " + coorA0);   // TYMCZASOWO
                     }
                     public static string RenderShipsInfo() {
                         string result = "";
@@ -485,6 +491,7 @@ namespace Page_PVC {
                             }
                         }
                         positBoardCursor = cursor;
+                        ConvertTo_A0();
                         /*if (cursor > 0 && cursor < 10) cursor -= 1;  // Jeżeli kursor jest w przedziale {1,2,3,4,5,6,7,8,9}
                         if (cursor > 10 && cursor < 20) cursor -= 1;   // Jeżeli kursor jest w przedziale {11,12,13,14,15,16,17,18,19}
                         if (cursor > 20 && cursor < 30) cursor -= 1;   // Jeżeli kursor jest w przedziale {21,22,23,...}
@@ -493,6 +500,36 @@ namespace Page_PVC {
                         if (cursor >= 10 && cursor < 19) cursor += 1;   // Jeżeli kursor jest w przedziale {10,11,12,13,14,15,16,17,18}
                         if (cursor >= 20 && cursor < 29) cursor += 1;   // Jeżeli kursor jest w przedziale {20,21,22...}
                         if (cursor >= 30 && cursor < 39) cursor += 1;*/ // ...
+                    }
+                    public static void ConvertTo_A0() {
+                        string corrForm = Convert.ToString(positBoardCursor);
+                        switch (corrForm[0]) {
+                            case '0': corrForm = "A" + corrForm[0]; break;
+                            case '1': corrForm = "A" + corrForm[0]; break;
+                            case '2': corrForm = "A" + corrForm[0]; break;
+                            case '3': corrForm = "A" + corrForm[0]; break;
+                            case '4': corrForm = "A" + corrForm[0]; break;
+                            case '5': corrForm = "A" + corrForm[0]; break;
+                            case '6': corrForm = "A" + corrForm[0]; break;
+                            case '7': corrForm = "A" + corrForm[0]; break;
+                            case '8': corrForm = "A" + corrForm[0]; break;
+                            case '9': corrForm = "A" + corrForm[0]; break;
+                        }
+                        if (positBoardCursor > 9) {   // "34"   [0] = 3 | [1] = 4
+                            corrForm = Convert.ToString(positBoardCursor);
+                            switch (corrForm[0]) {
+                                case '1': corrForm = "B" + corrForm[1]; break;
+                                case '2': corrForm = "C" + corrForm[1]; break;
+                                case '3': corrForm = "D" + corrForm[1]; break;
+                                case '4': corrForm = "E" + corrForm[1]; break;
+                                case '5': corrForm = "F" + corrForm[1]; break;
+                                case '6': corrForm = "G" + corrForm[1]; break;
+                                case '7': corrForm = "H" + corrForm[1]; break;
+                                case '8': corrForm = "I" + corrForm[1]; break;
+                                case '9': corrForm = "J" + corrForm[1]; break;
+                            }
+                        }
+                        coorA0 = corrForm;
                     }
                     public static void CursorShips(ConsoleKeyInfo key) {
                         int cursor = positShipsCursor;
@@ -589,11 +626,14 @@ namespace Page_PVC {
                         }
                         positShips = result;
                         // - - - - - - - - - - - Plansza:
+                        coorA0 = "A0";
                         positBoardCursor = 0;
                         positBoard.Clear();
                         for (int i = 0; i < 100; i++) {
                             positBoard.Add(i);
                         }
+                        positShipCoor.Clear();
+                        userShipsCoor.Clear();
                         // - - - - - - - - - - - 
                         if (isPositReset) {
                             isPositReset = false;
@@ -608,28 +648,126 @@ namespace Page_PVC {
                         if (counterEnter < 3) counterEnter++;   // Dlaczego w ogóle coś takiego jest? Wyjasnienie w pliku txt. pod tytułem "counterEnter - Dlaczego". 
                         if (counterEnter > 1) {   // Bez blokady na zmienną "counterEnter" użytkownik mógłby tyle razy go nacisnąć w jednej sesji uruchomienia programu, że zakres wartości typu "int" wykraczałby poza zasięg typu "int".
                             if (positShips.Count > 0) {
+                                List<int> remList = new List<int>();
+                                List<int> shipCoor = new List<int>();
                                 bool isBad = false;
                                 string error = "";
-                                (bool, string) valid = SetShipValidate();
-                                isBad = valid.Item1;
-                                error = valid.Item2;
+                                (List<int>, List<int>, bool, string) valid = SetShipValidate();
+                                remList = valid.Item1;
+                                shipCoor = valid.Item2;
+                                isBad = valid.Item3;
+                                error = valid.Item4;
                                 if (isBad) {
                                     Console.WriteLine("\n" + error + "\n");
                                 } else {
-                                    positShips.RemoveAt(positShipsCursor);
+                                    // DO TESTÓW: - - - - - - - - - - - - - - - - - -
+                                    /*for (int i = 0; i < shipCoor.Count; i++) {
+                                        Console.Write(shipCoor[i] + ", ");
+                                    }
+                                    for (int i = 0; i < positBoard.Count; i++) {
+                                        Console.Write(positBoard[i] + ", ");
+                                    }*/
+                                    // - - - - - - - - - - - - - - - - - - - - - - -
+                                    // Właściwe usuwanie pól zajętych przez dany statek:
+                                    for (int i = 0; i < remList.Count; i++) {
+                                        positBoard.RemoveAt(remList[i]);
+                                    }
+                                    userShipsCoor.Add(shipCoor);
+                                    // - - - - - - - - - - - - - - - - - -
+                                    positShips.RemoveAt(positShipsCursor);   // Usuwanie ustawionego statku
+                                    //Console.ReadKey();
                                     if (positShipsCursor > positShips.Count - 1) positShipsCursor -= 1;
                                     isPositReset = true;
                                     ReloadPage();
                                 }
+                            } else if (positShips.Count == 0) {
+                                // 1. Przejdź do losowania statków dla komputera i zablokuj [ENTER]!!
+                                // 2. Wówczas pojawia się strona na której jest informacja o ładowaniu statków dla komputera z napisem "Loading..."
+                                // 3. Po wyslosowaniu statków program przechodzi dalej, czyści tą stronę i pojawia się strona bitwy.
                             }
                         }
                     }
-                    public static (bool, string) SetShipValidate() {
-                        int init = positShipsCursor;
-                        string dir = positDirection;
-                        //positBoard
-                        //shipCoorList
-                        return (false, "");
+                    public static (List<int>, List<int>, bool, string) SetShipValidate() {   // positBoard | shipCoorList
+                        int ship = int.Parse(positShips[positShipsCursor]);
+                        string positVal = Convert.ToString(positBoardCursor);
+                        //string positVal_0 = "";
+                        List<int> board = positBoard;
+                        int init = positBoardCursor;
+                        string dirVal = positDirection;
+                        int shipDist = 0, limit = 0;
+                        List<int> remList = new List<int>();
+                        List<int> shipCoor = new List<int>();
+                        bool isBad = false;
+                        string error = "";
+                        int rem = GlobalMethod.SearchRemoveAt(board, init);
+                        if (rem == -1) {
+                            isBad = true;
+                            error = "Ship can't overlap another ship.";
+                        } else {
+                            board.RemoveAt(rem);
+                            remList.Add(rem);
+                            shipCoor.Add(init);
+                            if (dirVal == "horizontal") {
+                                shipDist = init + (ship - 1);
+                                limit = (Convert.ToString(init).Length == 1) ? 9 : 9 + (10 * (int)char.GetNumericValue(Convert.ToChar(Convert.ToString(init)[0])));
+                                if (shipDist > limit) {
+                                    isBad = true;
+                                    error = "The ship can't leave the board.";
+                                }
+                                if (!isBad) {   // Czy  statek nakłada się na inny ustawiony na planszy statek?
+                                    if (ship > 1) {
+                                        for (int i = 1; i < ship; i++) {
+                                            rem = GlobalMethod.SearchRemoveAt(board, init + i);
+                                            if (rem == -1) {   // Jeżeli nie ma kolizji statku
+                                                isBad = true;
+                                                error = "Ship can't overlap another ship.";
+                                                break;
+                                            } else {
+                                                board.RemoveAt(rem);
+                                                remList.Add(rem);
+                                                shipCoor.Add(init + i);
+                                            }
+                                        }
+                                    }
+                                }
+                            } else if (dirVal == "vertical") {   // Napraw tą walidację!
+                                shipDist = (init * 10) + ((ship * 10) - 10);
+                                limit = (Convert.ToString(init).Length == 1) ? 90 : 90 + (1 * (int)char.GetNumericValue(Convert.ToChar(Convert.ToString(init)[1])));
+                                if (shipDist > limit) {
+                                    isBad = true;
+                                    error = "The ship can't leave the board.";
+                                }
+                                if (!isBad) {
+                                    if (ship > 1) {
+                                        for (int i = 10; i < ship * 10; i=i+10) {
+                                            rem = GlobalMethod.SearchRemoveAt(board, init + i);
+                                            if (rem == -1) {
+                                                isBad = true;
+                                                error = "Ship can't overlap another ship.";
+                                                break;
+                                            } else {
+                                                board.RemoveAt(rem);
+                                                remList.Add(rem);
+                                                shipCoor.Add(init + i);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        return (remList, shipCoor, isBad, error);
+                    }
+                    public static void ShowUserShips() {
+                        Console.WriteLine();
+                        for (int i = 0; i < userShipsCoor.Count; i++) {
+                            Console.Write((i + 1) + ". { ");
+                            for (int j = 0; j < userShipsCoor[i].Count; j++) {
+                                if (j < userShipsCoor[i].Count - 1) Console.Write(userShipsCoor[i][j] + ", ");
+                                else Console.Write(userShipsCoor[i][j]);
+                            }
+                            Console.Write(" }");
+                            Console.WriteLine();
+                        }
                     }
                     public static void ReloadPage() {
                         PVC pvc = new PVC();
