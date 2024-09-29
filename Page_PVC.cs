@@ -815,7 +815,7 @@ namespace Page_PVC {
                         public static void Sign(string sign, bool isCursor) {
                             ConsoleColor signColor = ConsoleColor.White;
                             if (sign == "~") signColor = ConsoleColor.Blue;
-                            else signColor = ConsoleColor.Yellow;
+                            else signColor = ConsoleColor.Gray;
                             string text = "";
                             if (isCursor) {
                                 GlobalMethod.Color("{", ConsoleColor.White);
