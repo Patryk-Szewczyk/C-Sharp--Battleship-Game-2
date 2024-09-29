@@ -467,6 +467,7 @@ namespace Page_PVC {
                         if (positShips.Count > 0) Console.WriteLine("       " + RenderShipSpace() + "  ^");
                         if (positShips.Count == 0) Console.WriteLine();
                         Console.WriteLine("Ship: [" + positShipsCursor + "] | Direction: " + positDirection + " | Position: " + positBoardCursor + " / " + coorA0);   // TYMCZASOWO
+                        ShowUserShips();   // do testów!
                     }
                     public static string RenderShipsInfo() {
                         string result = "";
@@ -648,34 +649,32 @@ namespace Page_PVC {
                         if (counterEnter < 3) counterEnter++;   // Dlaczego w ogóle coś takiego jest? Wyjasnienie w pliku txt. pod tytułem "counterEnter - Dlaczego". 
                         if (counterEnter > 1) {   // Bez blokady na zmienną "counterEnter" użytkownik mógłby tyle razy go nacisnąć w jednej sesji uruchomienia programu, że zakres wartości typu "int" wykraczałby poza zasięg typu "int".
                             if (positShips.Count > 0) {
-                                List<int> remList = new List<int>();
                                 List<int> shipCoor = new List<int>();
                                 bool isBad = false;
                                 string error = "";
-                                (List<int>, List<int>, bool, string) valid = SetShipValidate();
-                                remList = valid.Item1;
-                                shipCoor = valid.Item2;
-                                isBad = valid.Item3;
-                                error = valid.Item4;
+                                (List<int>, bool, string) valid = SetShipValidate();
+                                shipCoor = valid.Item1;
+                                isBad = valid.Item2;
+                                error = valid.Item3;
                                 if (isBad) {
                                     Console.WriteLine("\n" + error + "\n");
                                 } else {
-                                    // DO TESTÓW: - - - - - - - - - - - - - - - - - -
-                                    /*for (int i = 0; i < shipCoor.Count; i++) {
-                                        Console.Write(shipCoor[i] + ", ");
-                                    }
-                                    for (int i = 0; i < positBoard.Count; i++) {
-                                        Console.Write(positBoard[i] + ", ");
-                                    }*/
-                                    // - - - - - - - - - - - - - - - - - - - - - - -
-                                    // Właściwe usuwanie pól zajętych przez dany statek:
-                                    for (int i = 0; i < remList.Count; i++) {
-                                        positBoard.RemoveAt(remList[i]);
+                                    for (int i = 0; i < shipCoor.Count; i++) {   // Właściwe usuwanie pól zajętych przez dany statek:
+                                        positBoard.RemoveAt(GlobalMethod.SearchRemoveAt(positBoard, shipCoor[i]));
                                     }
                                     userShipsCoor.Add(shipCoor);
-                                    // - - - - - - - - - - - - - - - - - -
                                     positShips.RemoveAt(positShipsCursor);   // Usuwanie ustawionego statku
-                                    //Console.ReadKey();
+                                    // DO TESTÓW: - - - - - - - - - - - - - - - - - -
+                                    Console.WriteLine("\nWspółrzędne statku:");
+                                    for (int i = 0; i < shipCoor.Count; i++) {
+                                        Console.Write(shipCoor[i] + ", ");
+                                    }
+                                    Console.WriteLine("\nPo kasacji:");
+                                    for (int i = 0; i < positBoard.Count; i++) {
+                                        Console.Write(positBoard[i] + ", ");
+                                    }
+                                    // - - - - - - - - - - - - - - - - - - - - - - -
+                                    Console.ReadKey();
                                     if (positShipsCursor > positShips.Count - 1) positShipsCursor -= 1;
                                     isPositReset = true;
                                     ReloadPage();
@@ -687,15 +686,13 @@ namespace Page_PVC {
                             }
                         }
                     }
-                    public static (List<int>, List<int>, bool, string) SetShipValidate() {   // positBoard | shipCoorList
+                    public static (List<int>, bool, string) SetShipValidate() {   // positBoard | shipCoorList
                         int ship = int.Parse(positShips[positShipsCursor]);
                         string positVal = Convert.ToString(positBoardCursor);
-                        //string positVal_0 = "";
                         List<int> board = positBoard;
                         int init = positBoardCursor;
                         string dirVal = positDirection;
                         int shipDist = 0, limit = 0;
-                        List<int> remList = new List<int>();
                         List<int> shipCoor = new List<int>();
                         bool isBad = false;
                         string error = "";
@@ -703,16 +700,16 @@ namespace Page_PVC {
                         if (rem == -1) {
                             isBad = true;
                             error = "Ship can't overlap another ship.";
+                            shipCoor.Clear();
                         } else {
-                            board.RemoveAt(rem);
-                            remList.Add(rem);
                             shipCoor.Add(init);
                             if (dirVal == "horizontal") {
                                 shipDist = init + (ship - 1);
                                 limit = (Convert.ToString(init).Length == 1) ? 9 : 9 + (10 * (int)char.GetNumericValue(Convert.ToChar(Convert.ToString(init)[0])));
                                 if (shipDist > limit) {
                                     isBad = true;
-                                    error = "The ship can't leave the board.";
+                                    error = "The ship can't leave the board. | " + shipDist + " > " + limit + " = " + (shipDist > limit);
+                                    shipCoor.Clear();
                                 }
                                 if (!isBad) {   // Czy  statek nakłada się na inny ustawiony na planszy statek?
                                     if (ship > 1) {
@@ -721,21 +718,21 @@ namespace Page_PVC {
                                             if (rem == -1) {   // Jeżeli nie ma kolizji statku
                                                 isBad = true;
                                                 error = "Ship can't overlap another ship.";
+                                                shipCoor.Clear();
                                                 break;
                                             } else {
-                                                board.RemoveAt(rem);
-                                                remList.Add(rem);
                                                 shipCoor.Add(init + i);
                                             }
                                         }
                                     }
                                 }
-                            } else if (dirVal == "vertical") {   // Napraw tą walidację!
-                                shipDist = (init * 10) + ((ship * 10) - 10);
+                            } else if (dirVal == "vertical") {
+                                shipDist = init + ((ship * 10) - 10);
                                 limit = (Convert.ToString(init).Length == 1) ? 90 : 90 + (1 * (int)char.GetNumericValue(Convert.ToChar(Convert.ToString(init)[1])));
                                 if (shipDist > limit) {
                                     isBad = true;
                                     error = "The ship can't leave the board.";
+                                    shipCoor.Clear();
                                 }
                                 if (!isBad) {
                                     if (ship > 1) {
@@ -744,10 +741,9 @@ namespace Page_PVC {
                                             if (rem == -1) {
                                                 isBad = true;
                                                 error = "Ship can't overlap another ship.";
+                                                shipCoor.Clear();
                                                 break;
                                             } else {
-                                                board.RemoveAt(rem);
-                                                remList.Add(rem);
                                                 shipCoor.Add(init + i);
                                             }
                                         }
@@ -755,7 +751,7 @@ namespace Page_PVC {
                                 }
                             }
                         }
-                        return (remList, shipCoor, isBad, error);
+                        return (shipCoor, isBad, error);
                     }
                     public static void ShowUserShips() {
                         Console.WriteLine();
