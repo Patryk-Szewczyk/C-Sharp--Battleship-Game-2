@@ -112,9 +112,6 @@ namespace Page_PVC {
                         }
                         break;
                     case "positioning":
-                        if (positShips.Count == 0) {   // Wyświetl statki:
-                            Positioning.User.ShowUserShips();
-                        }
                         switch (key.Key) {
                             case ConsoleKey.P: Positioning.User.Reset(); break;
                             case ConsoleKey.C: Positioning.User.ChangeDirection(); break;
@@ -466,8 +463,8 @@ namespace Page_PVC {
                         Console.WriteLine("Ships: " + "{" + RenderShipsInfo() + " }"); // KONCEPT
                         if (positShips.Count > 0) Console.WriteLine("       " + RenderShipSpace() + "  ^");
                         if (positShips.Count == 0) Console.WriteLine();
-                        Console.WriteLine("Direction: " + positDirection + " | Position: " + positBoardCursor + " / " + ConvertTo_A0(positBoardCursor) + "\n\n");   // TYMCZASOWO
-                        //ShowUserShips();   // do testów!
+                        Console.WriteLine("Direction: " + positDirection + " | Position: " + positBoardCursor + " / " + ConvertTo_A0(positBoardCursor) + "\n\n");
+                        if (positShips.Count == 0) ShowUserShips();
                         Board.RenderBoard(positBoardCursor, userShipsCoor);
                     }
                     public static string RenderShipsInfo() {
@@ -751,7 +748,7 @@ namespace Page_PVC {
                         return (shipCoor, isBad, error);
                     }
                     public static void ShowUserShips() {
-                        Console.WriteLine();
+                        Console.WriteLine("\nYour ships:");
                         for (int i = 0; i < userShipsCoor.Count; i++) {
                             Console.Write((i + 1) + ". { ");
                             for (int j = 0; j < userShipsCoor[i].Count; j++) {
@@ -761,6 +758,7 @@ namespace Page_PVC {
                             Console.Write(" }");
                             Console.WriteLine();
                         }
+                        Console.WriteLine("\n To continue press [ENTER] key. If you want reset ships, press [P] key.");
                     }
                     public static void ReloadPage() {
                         PVC pvc = new PVC();
