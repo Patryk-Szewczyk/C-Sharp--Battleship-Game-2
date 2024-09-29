@@ -466,8 +466,9 @@ namespace Page_PVC {
                         Console.WriteLine("Ships: " + "{" + RenderShipsInfo() + " }"); // KONCEPT
                         if (positShips.Count > 0) Console.WriteLine("       " + RenderShipSpace() + "  ^");
                         if (positShips.Count == 0) Console.WriteLine();
-                        Console.WriteLine("Ship: [" + positShipsCursor + "] | Direction: " + positDirection + " | Position: " + positBoardCursor + " / " + coorA0);   // TYMCZASOWO
-                        ShowUserShips();   // do testów!
+                        Console.WriteLine("Direction: " + positDirection + " | Position: " + positBoardCursor + " / " + ConvertTo_A0(positBoardCursor) + "\n\n");   // TYMCZASOWO
+                        //ShowUserShips();   // do testów!
+                        Board.RenderBoard(positBoardCursor, userShipsCoor);
                     }
                     public static string RenderShipsInfo() {
                         string result = "";
@@ -492,7 +493,6 @@ namespace Page_PVC {
                             }
                         }
                         positBoardCursor = cursor;
-                        ConvertTo_A0();
                         /*if (cursor > 0 && cursor < 10) cursor -= 1;  // Jeżeli kursor jest w przedziale {1,2,3,4,5,6,7,8,9}
                         if (cursor > 10 && cursor < 20) cursor -= 1;   // Jeżeli kursor jest w przedziale {11,12,13,14,15,16,17,18,19}
                         if (cursor > 20 && cursor < 30) cursor -= 1;   // Jeżeli kursor jest w przedziale {21,22,23,...}
@@ -502,8 +502,8 @@ namespace Page_PVC {
                         if (cursor >= 20 && cursor < 29) cursor += 1;   // Jeżeli kursor jest w przedziale {20,21,22...}
                         if (cursor >= 30 && cursor < 39) cursor += 1;*/ // ...
                     }
-                    public static void ConvertTo_A0() {
-                        string corrForm = Convert.ToString(positBoardCursor);
+                    public static string ConvertTo_A0(int coordinate) {
+                        string corrForm = Convert.ToString(coordinate);
                         switch (corrForm[0]) {
                             case '0': corrForm = "A" + corrForm[0]; break;
                             case '1': corrForm = "A" + corrForm[0]; break;
@@ -516,8 +516,8 @@ namespace Page_PVC {
                             case '8': corrForm = "A" + corrForm[0]; break;
                             case '9': corrForm = "A" + corrForm[0]; break;
                         }
-                        if (positBoardCursor > 9) {   // "34"   [0] = 3 | [1] = 4
-                            corrForm = Convert.ToString(positBoardCursor);
+                        if (coordinate > 9) {   // "34"   [0] = 3 | [1] = 4
+                            corrForm = Convert.ToString(coordinate);
                             switch (corrForm[0]) {
                                 case '1': corrForm = "B" + corrForm[1]; break;
                                 case '2': corrForm = "C" + corrForm[1]; break;
@@ -530,7 +530,7 @@ namespace Page_PVC {
                                 case '9': corrForm = "J" + corrForm[1]; break;
                             }
                         }
-                        coorA0 = corrForm;
+                        return corrForm;
                     }
                     public static void CursorShips(ConsoleKeyInfo key) {
                         int cursor = positShipsCursor;
@@ -613,9 +613,6 @@ namespace Page_PVC {
                         }
                         return space;
                     }
-                    public static void RenderBoard() {
-                        // Wyświetlanie tablicy z kursorem i utworzonymi statkami
-                    }
                     public static void Reset() {   // RESET ma znajdować się jeszcze po bitwie, kiedy przejdzie się do podsumowania.  // Zrób potem z tego dwie metody!
                         // - - - - - - - - - - - - Statki:
                         positShipsCursor = 0;
@@ -665,7 +662,7 @@ namespace Page_PVC {
                                     userShipsCoor.Add(shipCoor);
                                     positShips.RemoveAt(positShipsCursor);   // Usuwanie ustawionego statku
                                     // DO TESTÓW: - - - - - - - - - - - - - - - - - -
-                                    Console.WriteLine("\nWspółrzędne statku:");
+                                    /*Console.WriteLine("\nWspółrzędne statku:");
                                     for (int i = 0; i < shipCoor.Count; i++) {
                                         Console.Write(shipCoor[i] + ", ");
                                     }
@@ -674,7 +671,7 @@ namespace Page_PVC {
                                         Console.Write(positBoard[i] + ", ");
                                     }
                                     // - - - - - - - - - - - - - - - - - - - - - - -
-                                    Console.ReadKey();
+                                    Console.ReadKey();*/
                                     if (positShipsCursor > positShips.Count - 1) positShipsCursor -= 1;
                                     isPositReset = true;
                                     ReloadPage();
@@ -758,8 +755,8 @@ namespace Page_PVC {
                         for (int i = 0; i < userShipsCoor.Count; i++) {
                             Console.Write((i + 1) + ". { ");
                             for (int j = 0; j < userShipsCoor[i].Count; j++) {
-                                if (j < userShipsCoor[i].Count - 1) Console.Write(userShipsCoor[i][j] + ", ");
-                                else Console.Write(userShipsCoor[i][j]);
+                                if (j < userShipsCoor[i].Count - 1) Console.Write(ConvertTo_A0(userShipsCoor[i][j]) + ", ");
+                                else Console.Write(ConvertTo_A0(userShipsCoor[i][j]));
                             }
                             Console.Write(" }");
                             Console.WriteLine();
@@ -768,6 +765,80 @@ namespace Page_PVC {
                     public static void ReloadPage() {
                         PVC pvc = new PVC();
                         pvc.RenderPage();
+                    }
+                    public class Board {
+                        public static void RenderBoard(int cursor, List<List<int>> ships) {
+                            string[] letters = new string[] { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J" };
+                            int cursorCnt = -1;
+                            bool isCursor = false;
+                            int shipCnt = -1;
+                            bool isShip = false;
+                            string sign = "";
+                            Top();
+                            SpaceVertical();
+                            for (int i = 0; i < 10; i++) {
+                                SpaceVertical();
+                                Left(letters[i]);
+                                for (int j = 0; j < 10; j++) {
+                                    cursorCnt++;
+                                    isCursor = (cursorCnt == cursor) ? true : false;
+                                    sign = "~";
+                                    shipCnt++;
+                                    for (int k = 0; k < ships.Count; k++) {
+                                        for (int l = 0; l < ships[k].Count; l++) {
+                                            isShip = (shipCnt == ships[k][l]) ? true : false;
+                                            if (isShip) {
+                                                switch (ships[k].Count) {
+                                                    case 1: sign = "1"; break;
+                                                    case 2: sign = "2"; break;
+                                                    case 3: sign = "3"; break;
+                                                    case 4: sign = "4"; break;
+                                                    case 5: sign = "5"; break;
+                                                    case 6: sign = "6"; break;
+                                                    case 7: sign = "7"; break;
+                                                    case 8: sign = "8"; break;
+                                                    case 9: sign = "9"; break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    Sign(sign, isCursor);
+                                }
+                                Right();
+                            }
+                            SpaceVertical();
+                            Bottom();
+                        }
+                        public static void Top() {
+                            GlobalMethod.Color("          0   1   2   3   4   5   6   7   8   9      \n", ConsoleColor.Green);
+                            GlobalMethod.Color("     _______________________________________________ \n", ConsoleColor.Green);
+                        }
+                        public static void Bottom() {
+                            GlobalMethod.Color("    |_______________________________________________| \n", ConsoleColor.Green);
+                        }
+                        public static void SpaceVertical() {
+                            GlobalMethod.Color("    |                                               | \n", ConsoleColor.Green);
+                        }
+                        public static void Left(string letter) {
+                            GlobalMethod.Color(" " + letter + "  |    ", ConsoleColor.Green);
+                        }
+                        public static void Right() {
+                            GlobalMethod.Color("   |\n", ConsoleColor.Green);
+                        }
+                        public static void Sign(string sign, bool isCursor) {
+                            ConsoleColor signColor = ConsoleColor.White;
+                            if (sign == "~") signColor = ConsoleColor.Blue;
+                            else signColor = ConsoleColor.Yellow;
+                            string text = "";
+                            if (isCursor) {
+                                GlobalMethod.Color("{", ConsoleColor.White);
+                                GlobalMethod.Color(sign, signColor);
+                                GlobalMethod.Color("} ", ConsoleColor.White);
+                            } else {
+                                text = " " + sign + "  ";
+                                GlobalMethod.Color(text, signColor);
+                            }
+                        }
                     }
                 }
                 public class Computer {
