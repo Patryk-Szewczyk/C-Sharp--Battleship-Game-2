@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -31,10 +32,12 @@ namespace Page_PVC {
         public static string positUsingKeys_BOARD = "";   // all, top, down, left, right
         public static string positUsingKeys_SHIPS = "";   // all, left, right, one, zero
         public static bool isPositReset = false;
+        public static bool isPositEnter = true;
         public static List<string> positShips = new List<string>();
         public static List<int> positBoard = new List<int>();
         public static List<int> positShipCoor = new List<int>();
         public static List<List<int>> userShipsCoor = new List<List<int>>();
+        public static List<List<int>> compShipsCoor = new List<List<int>>();
         public static bool isEnterPart = false;
         public static int counterEnter = 0;
         public static List<ConsoleKey> usingKeys_ERROR = new List<ConsoleKey> { ConsoleKey.Backspace };
@@ -115,7 +118,10 @@ namespace Page_PVC {
                         switch (key.Key) {
                             case ConsoleKey.P: Positioning.User.Reset(); break;
                             case ConsoleKey.C: Positioning.User.ChangeDirection(); break;
-                            case ConsoleKey.Enter: Positioning.User.SetShip(); break;
+                            case ConsoleKey.Enter:
+                                if (positShips.Count > 0) Positioning.User.SetShip();
+                                else if (positShips.Count == 0) Positioning.Computer.PrepareShips();
+                                break;
                         }
                         break;
                     case "battle":
@@ -153,7 +159,7 @@ namespace Page_PVC {
                         Positioning.User.DetermineShipsUsingKeys();
                         POSIT_fusion.Clear();
                         if (isPositReset) POSIT_fusion.Add(ConsoleKey.P);
-                        POSIT_fusion.Add(ConsoleKey.Enter);
+                        if (isPositEnter) POSIT_fusion.Add(ConsoleKey.Enter);
                         //POSIT_fusion.Add(ConsoleKey.Backspace);   // TYLKO DLA TESTÓW!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         if (positShips.Count > 0) {
                             POSIT_fusion.Add(ConsoleKey.C);
@@ -662,10 +668,6 @@ namespace Page_PVC {
                                     isPositReset = true;
                                     ReloadPage();
                                 }
-                            } else if (positShips.Count == 0) {
-                                // 1. Przejdź do losowania statków dla komputera i zablokuj [ENTER]!!
-                                // 2. Wówczas pojawia się strona na której jest informacja o ładowaniu statków dla komputera z napisem "Loading..."
-                                // 3. Po wyslosowaniu statków program przechodzi dalej, czyści tą stronę i pojawia się strona bitwy.
                             }
                         }
                     }
@@ -829,7 +831,129 @@ namespace Page_PVC {
                     }
                 }
                 public class Computer {
-                    
+                    public static void PrepareShips() {
+                        Console.Clear();
+                        isPositEnter = false;
+                        isPositReset = false;
+                        Console.WriteLine("Preparing ships for artificial intelligence.\n\nLoading...");
+                        // [TAK] 1. Przejdź do losowania statków dla komputera i zablokuj [ENTER]!!
+                        // [TAK] 2. Wówczas pojawia się strona na której jest informacja o ładowaniu statków dla komputera z napisem "Loading..."
+                        // [TAK] 3. Po wyslosowaniu statków program przechodzi dalej, czyści tą stronę i pojawia się strona bitwy.
+                        // [TAK] 4. Po przejściu do strony bitwy, ustaw "isPositEnter" na TRUE.
+                        string[] optShips = Options.options[Options.optShips].Split(',');   // TUTAJ!!!!!!!!!   Trzeba pobrać aktualne dane z pliku
+                        List<int> ships = new List<int>();
+                        for (int i = 0; i < optShips.Length; i++) {
+                            ships.Add(int.Parse(optShips[i]));
+                        }
+                        compShipsCoor = DrawingShips(MakeFleet(ships));
+                        // DO TESTÓW--------------------------------------------------- SKASUJ TO PÓŹNIEJ!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                        Console.WriteLine("\n\n");
+                        for (int i = 0; i < compShipsCoor.Count; i++) {
+                            for (int j = 0; j < compShipsCoor[i].Count; j++) {
+                                Console.Write(compShipsCoor[i][j] + " ");
+                            }
+                            Console.WriteLine();
+                        }
+                        // ---------------------------------------------------
+                        Console.WriteLine("\n\nThe ships setup for the AI went well. Now prepare yourself for battle." +
+                            "\n\nBattle instructions:" +
+                            "\n1. Use the cursor to select a square on the enemy board that you want to attack: [W][S][A][D]/arrows." +
+                            "\n2. Click [ENTER] when you want to shoot." +
+                            "\n3. When you hit, you gain another shot and continue the same way." +
+                            "\n4.1. When you miss, your enemy makes another shot." +
+                            "\n4.2. The AI selects the square that it wants to attack and gives information about the selection," +
+                            "\n     when you click [ENTER], you will see the result of this selection on your board." +
+                            "\n5. Square: [~], Miss: [O], Hit: [X], Sunken ship: [number], Cursor: { }" +
+                            "\n6. Each activity related to hitting and sinking a ship is scored." +
+                            "\n7. The one who sinks all of their enemy's ships wins." +
+                            "\n\nClick [ENTER] when you are ready.");
+                        Console.ReadLine();
+                        part = "battle";
+                        isPositEnter = true;
+                    }
+                    public static List<List<int>> MakeFleet(List<int> shipsInfo) {
+                        List<List<int>> shipsList = new List<List<int>>();
+                        for (int i = 0; i < shipsInfo.Count; i++) {
+                            List<int> ship = new List<int>();
+                            shipsList.Add(ship);
+                            for (int j = 0; j < shipsInfo[i]; j++) {
+                                shipsList[i].Add(i + 1);
+                            }
+                        }
+                        return shipsList;
+                    }
+                    public static List<List<int>> DrawingShips(List<List<int>> shipsList) {
+                        string equalDir = Options.options[Options.optEqualShipsAI];
+                        bool isCorrect = false;
+                        List<int> board = new List<int>();
+                        string dirVal = "";
+                        string[] dirAr = new string[2] { "toRight", "toBottom" };
+                        Random rand = new Random();
+                        int init = 0;
+                        int rem = 0;
+                        int shipDist = 0, limit = 0;
+                        double minBott = shipsList.Count / 2, bottCount = 0;
+                        minBott = (shipsList.Count % 2 == 1) ? minBott = Math.Floor(minBott) + rand.Next(0, 2) : minBott = shipsList.Count / 2;   // Jeżeli mam liczbę nieparzystą, to czy będzie więcej czy mniej statków "toBottom" o 1 zależy od losowości.
+                        bool isShip = false;
+                        while (!isCorrect) {
+                            board.Clear();   // Dlaczego tak, a nie board = array ? Gdyż lista jest przekazywana nie kopią a referencją, w związku z czym odwołuję się do pierwotnie zadeklarowanej listy i zmniejszam ją w nieskończoność, zamiast tworzyć nową kopię.
+                            for (int i = 0; i < 100; i++) board.Add(i);
+                            bottCount = 0;
+                            for (int i = 0; i < shipsList.Count; i++) {
+                                init = rand.Next(0, board.Count);
+                                rem = GlobalMethod.SearchRemoveAt(board, init);
+                                if (rem == -1) break;   // Kolizję pola początkowego nowego statku z już istniejącym.
+                                board.RemoveAt(rem);
+                                dirVal = dirAr[rand.Next(0, dirAr.Length)];
+                                if (dirVal == "toRight") {
+                                    shipDist = init + (shipsList[i].Count - 1);   // Obliczanie długości statku na planszy.
+                                    limit = (Convert.ToString(init).Length == 1) ? 9 : 9 + (10 * (int)char.GetNumericValue(Convert.ToChar(Convert.ToString(init)[0])));   // Jeżeli statek jest większy niż 1 pole długości - współrzędna inicjacyjna jest "ciachana" w celu dodania odpowiedniej jej częsci do bazowej liczby limitu, aby ostatecznie wyznaczyć odpowiedni limit dla statku znajdującym się w odpowiednim polu. Np. Dla statku o długości 3, w kierunku "toRight" bazawa wartość limitu wynosi 9, jeżeli współrzędna początkowa wynosi 54, to wycinana jest 5, mnożona przez 10 i dodawana do 9, w związku z czym mamy 59. Analogicznie jest w przypadku toBottom, tylko wartości są tak dostosowane aby dotyczyły NIE częsści dziesiętnej, a części jedności. Wówczas będziemy mięli 94.
+                                    if (shipDist > limit) break;   // Jeżeli statek wychodzi poza planszę, losuj statki od nowa. Jeżeli np. mamy statek długości 3, "toRight", a współrzędną początkową 54, to limit wynosi 59, a "shipDist" wynosi [współrzędna początkowo] + [długość statku] - 1, czyli 56. Wówczas mamy 56 <= 59, co jest prawdą, więc tworzenie staatku przechodzi ten etap.
+                                    if (shipsList[i].Count > 1) {   // Tworzenie pól długości dla statków powyżej 1 pola długości (2, 3, 4 ...).
+                                        for (int j = 1; j < shipsList[i].Count; j++) {
+                                            isShip = false;
+                                            rem = GlobalMethod.SearchRemoveAt(board, init + j);
+                                            if (rem != -1) {   // Jeżeli nie ma kolizji statku
+                                                board.RemoveAt(rem);
+                                                shipsList[i][j] = init + j;
+                                                isShip = true;
+                                            }
+                                            if (!isShip) break;   // Dlaczego dwa "break" i warunek? Normalnie wystarczyłby ten, ale ponieważ "break" ogranicza się do najbliższego "for", więc zrobiłem specjalny warunek, za pomocą którego będziemy kontrolować "break" pętli for wewnętrznej i "właściwej" nadrzędnej.
+                                        }
+                                        if (!isShip) break;
+                                    }
+                                    shipsList[i][0] = init;   // Jest to na końcu aby nie wciskać wartości gdy reszta pól długości statku będzie miała nieprawidłowe współrzędne. Operacja ta zaoszczędza mocy obliczeniowej.
+                                } else if (dirVal == "toBottom") {
+                                    bottCount++;
+                                    shipDist = init + ((shipsList[i].Count * 10) - 10);   // Wcześniej: (init * 10) + ((shipsList[i].Count * 10) - 10);
+                                    limit = (Convert.ToString(init).Length == 1) ? 90 : 90 + (1 * (int)char.GetNumericValue(Convert.ToChar(Convert.ToString(init)[1])));
+                                    if (shipDist > limit) break;
+                                    if (shipsList[i].Count > 1) {
+                                        for (int j = 10; j < shipsList[i].Count * 10; j=j+10) {
+                                            isShip = false;
+                                            rem = GlobalMethod.SearchRemoveAt(board, init + j);
+                                            if (rem != -1) {
+                                                board.RemoveAt(rem);
+                                                shipsList[i][j / 10] = init + j;
+                                                isShip = true;
+                                            }
+                                            if (!isShip) break;
+                                        }
+                                        if (!isShip) break;
+                                    }
+                                    shipsList[i][0] = init;
+                                }
+                                if (i == shipsList.Count - 1) {
+                                    if (equalDir == "ON") {
+                                        if (bottCount == minBott) isCorrect = true;   // Jeżeli wszystkie statki uzyskały poprawne wspoółrzędne, przejdź dalej -> Jeżeli liczba statków "toBottom" jest właściwa, zakończ algorytm.
+                                    } else {
+                                        isCorrect = true;
+                                    }
+                                }
+                            }
+                        }
+                        return shipsList;
+                    }
                 }
             }
             public class Battle {
