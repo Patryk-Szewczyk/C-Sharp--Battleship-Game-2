@@ -1,38 +1,18 @@
-using Library_GlobalMethods;
-using Page_Ranking;
 using System;
+using Page_Ranking;
 using System.Collections.Generic;
+using Library_GlobalMethods;
 
 namespace Page_Intro {
     public class Intro {
         public static void RenderPage() {
             Info();
             Ranking.Upload.SearchFile("players_PVC.txt");   // Jeżeli chcesz podpiąć kolejny ranking jedyne co trzeba zrobić, to dodać nazwę przycisku i skopiować tą metodę z podaniem nazwy pliku z rozszerzeniem.
-            Ranking.Upload.SearchFile("players_PVP.txt");   // Jest to tutaj, aby można było kożystać z danych rankingu w stronie Options.
-            // Test losowania statków:
-            /*List<int> plansza = new List<int>();
-            List<int> statki = new List<int> { 2, 2, 2, 3, 3, 4, 5 };   // Limit 10 statków o długości 10
-            List<List<int>> listaStatkow = new List<List<int>>();
-            for (int i = 0; i < 100; i++) {
-                plansza.Add(i);
-            }
-            Console.Clear();
-            Console.WriteLine("Loading...");
-            listaStatkow = GlobalMethod.RandomShips(plansza, GlobalMethod.PrepareShips(statki));
-            Console.Clear();
-            Console.WriteLine("\n\n");
-            for (int i = 0; i < listaStatkow.Count; i++) {
-                for (int j = 0; j < listaStatkow[i].Count; j++) {
-                    Console.Write(listaStatkow[i][j] + " ");
-                }
-                Console.WriteLine();
-            }*/
-
-
+            //Ranking.Upload.SearchFile("players_PVP.txt");   // Jest to tutaj, aby można było kożystać z danych rankingu w stronie Options.
             LoopCorrectKey();
         }
         private static void Info() {
-            Console.WriteLine("\nBattleship 2 AI [Version 1.00]" +
+            Console.WriteLine("\nBattleship Game 2: AI [Version 1.00]" +
                 "\nCopyright (c) Patryk Szewczyk 20841 | 2 INF, AHNS. All rights reserved." +
                 "\n\nBattleship Game is simple game which depend of sunking ships between players." +
                 "\nTo start game you must do a few activites to mainly set ships." +
