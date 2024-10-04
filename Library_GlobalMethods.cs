@@ -106,6 +106,16 @@ namespace Library_GlobalMethods {
             }
             return corrForm;
         }
+        public static int[] ConvertTo_IntArray(List<int> list) {
+            int[] array = new int[list.Count];
+            for (int i = 0; i < list.Count; i++) array[i] = list[i];
+            return array;
+        }
+        public static List<int> ConvertTo_IntList(int[] array) {
+            List<int> list = new List<int>();
+            for (int i = 0; i < array.Length; i++) list.Add(array[i]);
+            return list;
+        }
         public class Page {
             public static void RenderDottedLine(int length) {
                 string text = "";
