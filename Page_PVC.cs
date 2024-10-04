@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 using Library_GlobalMethods;
 using Page_Options;
 using Page_Ranking;
+using static Page_PVC.PVC;
 
 namespace Page_PVC {
     public class PVC {
@@ -151,7 +152,9 @@ namespace Page_PVC {
                 public static List<ConsoleKey> POSIT_SHIPS_all = new List<ConsoleKey>() { ConsoleKey.Q, ConsoleKey.E };
                 public static List<ConsoleKey> POSIT_SHIPS_left = new List<ConsoleKey>() { ConsoleKey.E };
                 public static List<ConsoleKey> POSIT_SHIPS_right = new List<ConsoleKey>() { ConsoleKey.Q };
-                public static List<ConsoleKey> battle = new List<ConsoleKey>() { ConsoleKey.Enter, ConsoleKey.W, ConsoleKey.S, ConsoleKey.A, ConsoleKey.D, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.LeftArrow, ConsoleKey.RightArrow };
+                public static List<ConsoleKey> battle_all = new List<ConsoleKey>() { ConsoleKey.W, ConsoleKey.S, ConsoleKey.A, ConsoleKey.D, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.LeftArrow, ConsoleKey.RightArrow };
+                public static List<ConsoleKey> battle = new List<ConsoleKey>();
+
             }
             public static ConsoleKeyInfo KeysControl(ConsoleKeyInfo key) {
                 switch (part) {
@@ -240,8 +243,16 @@ namespace Page_PVC {
                     case "battle":
                         //isPositEnter = true;
                         //Battle.DetermineBoardUsingKeys();   // ZRÓB TĄ METODĘ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                        UsingKeysLists.POSIT_fusion.Clear();
-                        if (isPositEnter) UsingKeysLists.POSIT_fusion.Add(ConsoleKey.Enter);
+                        UsingKeysLists.battle.Clear();
+                        UsingKeysLists.battle.Add(ConsoleKey.W);
+                        UsingKeysLists.battle.Add(ConsoleKey.S);
+                        UsingKeysLists.battle.Add(ConsoleKey.A);
+                        UsingKeysLists.battle.Add(ConsoleKey.D);
+                        UsingKeysLists.battle.Add(ConsoleKey.UpArrow);
+                        UsingKeysLists.battle.Add(ConsoleKey.DownArrow);
+                        UsingKeysLists.battle.Add(ConsoleKey.LeftArrow);
+                        UsingKeysLists.battle.Add(ConsoleKey.RightArrow);
+                        if (isPositEnter) UsingKeysLists.battle.Add(ConsoleKey.Enter);
                         //POSIT_fusion.Add(ConsoleKey.Backspace);   // TYLKO DLA TESTÓW!
                         (bool, ConsoleKeyInfo) battle = GlobalMethod.Page.LoopCorrectKey_GameMode(isEnterPart, key, UsingKeysLists.battle);
                         isEnterPart = battle.Item1;
@@ -841,7 +852,7 @@ namespace Page_PVC {
                         Console.WriteLine("\n\n");
                         for (int i = 0; i < compShipsCoor.Count; i++) {
                             for (int j = 0; j < compShipsCoor[i].Count; j++) {
-                                Console.Write(compShipsCoor[i][j] + " ");
+                                Console.Write(GlobalMethod.ConvertTo_A0(compShipsCoor[i][j]) + " ");
                             }
                             Console.WriteLine();
                         }
@@ -957,20 +968,33 @@ namespace Page_PVC {
                 public static bool isTurnUser = true;
                 public static int userCursor = 0;
                 public static int compCursor = 0;
-                public static string[] userHitMiss = new string[100];
-                public static string[] compHitMiss = new string[100];
+                public static string[] userBoard = new string[100];
+                public static string[] compBoard = new string[100];
+                //public static string[] userHitMiss = new string[100];
+                //public static string[] compHitMiss = new string[100];
                 public static List<int> userRemList = new List<int>();
                 public static List<int> compRemList = new List<int>();
+                //public static List<int> userSunken = new List<int>();
+                //public static List<int> compSunken = new List<int>();
+                public static bool isError = false;
+                public static string error = "";
+                // userShipsCoor
+                // compShipsCoor
                 public static int score = 0;
                 public static void RenderContent() {
-                    if (counterEnter == 0) { userHitMiss = MakeHitMissArray(userShipsCoor); compHitMiss = MakeHitMissArray(compShipsCoor); }
-                    if (counterEnter == 0) { userRemList = MakeRemList(); compRemList = MakeRemList(); }
+                    if (counterEnter == 0) { userBoard = MakeBoardArray(); compBoard = MakeBoardArray(); }
+                    //if (counterEnter == 0) { userHitMiss = MakeHitMissArray(userShipsCoor); compHitMiss = MakeHitMissArray(compShipsCoor); }
+                    if (counterEnter == 0) { userRemList = MakeRemoveList(); compRemList = MakeRemoveList(); }
                     Console.WriteLine("User: [" + userStr + "] | [" + userInt + "]\n");
                     Console.WriteLine("BATTLE: | ATTACK: [W][S][A][D]/arrows -> [ENTER] | Computer statements: [ENTER]");
                     GlobalMethod.Page.RenderDottedLine(pageLineLength);
-                    Console.WriteLine("Attack: " + GlobalMethod.ConvertTo_A0(userCursor) + "\n\n");
-
-                    if (counterEnter == 0) {
+                    if (isTurnUser == false) Console.WriteLine("Click [ENTER] to next to computer select coordinate.");
+                    else {
+                        Console.WriteLine("Select field to attack your enemy.\n");
+                        Console.WriteLine("Attack: " + GlobalMethod.ConvertTo_A0(userCursor) + "\n\n");
+                    }
+                    if (isError) Console.WriteLine(error);
+                    /*if (counterEnter == 0) {
                         int counter = 0;
                         Console.WriteLine("Gracz:");
                         for (int i = 0; i < 10; i++) {
@@ -989,7 +1013,32 @@ namespace Page_PVC {
                             }
                             Console.WriteLine();
                         }
+                    }*/
+                    // TEST: - - - - - - - - - - - - - -
+                    int counter = 0;
+                    Console.WriteLine("\n\nPlansza gracza:");
+                    for (int i = 0; i < 10; i++) {
+                        for (int j = 0; j < 10; j++) {
+                            Console.Write(userBoard[counter] + " ");
+                            counter++;
+                        }
+                        Console.WriteLine();
                     }
+                    counter = 0;
+                    Console.WriteLine("\nPlansza komputera:");
+                    for (int i = 0; i < 10; i++) {
+                        for (int j = 0; j < 10; j++) {
+                            Console.Write(compBoard[counter] + " ");
+                            counter++;
+                        }
+                        Console.WriteLine();
+                    }
+                    // - - - - - - - - - - - - - - - -
+                }
+                public static string[] MakeBoardArray() {
+                    string[] board = new string[100];
+                    for (int i = 0; i < 100; i++) board[i] = "~";
+                    return board;
                 }
                 public static string[] MakeHitMissArray(List<List<int>> shipsList) {
                     string[] hitMiss = new string[100];
@@ -1001,29 +1050,93 @@ namespace Page_PVC {
                     }
                     return hitMiss;
                 }
-                public static List<int> MakeRemList() {
+                public static List<int> MakeRemoveList() {
                     List<int> remList = new List<int>();
                     for (int i = 0; i < 100; i++) remList.Add(i);
                     return remList;
                 }
+                public static void ReloadPage() {
+                    PVC pvc = new PVC();
+                    pvc.RenderPage();
+                }
                 public class User {   // Bool "isTurnUser" zmienia się kiedy któryś z graczy spudłuje!
-                    public static void Attack() {
+                    public static void Attack() {   // Mechanika ataku dla gracza
                         if (counterEnter < 3) counterEnter++;   // Dlaczego w ogóle coś takiego jest? Wyjasnienie w pliku txt. pod tytułem "counterEnter - Dlaczego". 
                         if (counterEnter > 1) {   // Bez blokady na zmienną "counterEnter" użytkownik mógłby tyle razy go nacisnąć w jednej sesji uruchomienia programu, że zakres wartości typu "int" wykraczałby poza zasięg typu "int".
-                            // Mechanika ataku dla gracza
+                            //Console.WriteLine("Kolej komputera");
                             isTurnUser = false;
-                            Console.WriteLine("Kolej komputera");
+                            isError = false;
+                            int cursor = userCursor;
+                            int remove = GlobalMethod.SearchRemoveAt(compRemList, cursor);
+                            if (remove != -1) {
+                                bool isHit = false;
+                                for (int i = 0; i < compShipsCoor.Count; i++) {
+                                    for (int j = 0; j < compShipsCoor[i].Count; j++) {
+                                        if (cursor == compShipsCoor[i][j]) {
+                                            isHit = true;
+                                            break;
+                                        }
+                                    }
+                                    if (isHit) break;
+                                }
+                                compRemList.RemoveAt(remove);
+                                compBoard[cursor] = isHit ? "X" : "O";
+                            } else {
+                                isError = true;
+                                error = "This field has already been attacked!";
+                            }
+                            ReloadPage();
                         }
                     }
                 }
                 public class Computer {
-                    public static void Attack() {
-                        // Mechanika ataku dla sztucznej inteligencji
-                        Console.WriteLine("Kolej gracza");
+                    public static void Attack() {   // Mechanika ataku dla sztucznej inteligencji
+                        //Console.WriteLine("Kolej gracza");
                         isTurnUser = true;
+                        Random random = new Random();
+                        int[] remListArray = GlobalMethod.ConvertTo_IntArray(userRemList);
+                        //userRemList = GlobalMethod.ConvertTo_IntList(remListArray);
+                        int cursor = random.Next(0, remListArray.Length);
+                        int remove = GlobalMethod.SearchRemoveAt(userRemList, cursor);
+                        bool isHit = false;
+                        for (int i = 0; i < userShipsCoor.Count; i++) {
+                            for (int j = 0; j < userShipsCoor[i].Count; j++) {
+                                if (cursor == userShipsCoor[i][j]) {
+                                    isHit = true;
+                                    break;
+                                }
+                            }
+                            if (isHit) break;
+                        }
+                        userRemList.RemoveAt(remove);   // Z tym jest BŁĄD!
+                        userBoard[cursor] = isHit ? "X" : "O";
+                        Console.WriteLine("Computer choose " + cursor + " field. Click [ENTER] key to continue.");
+                        Console.ReadLine();
+                        ReloadPage();
+                    }
+                    public static void SRS() {   // Strategic Random Shooting
+
+                    }
+                    public static void FSM() {   // Finite State Machine - strategiczne ostrzeliwanie statków i szukanie kolejnych, jeżeli natrafiono na nowy statek.
+
                     }
                 }
                 public class Board {
+                    // PLAN:
+                    /*
+                     * 1.Bieżemy araja z hitMiss i na podstawie jego sprawdzamy czy jest hit czy miss.
+                     * 2. Po sprawdzeniu, wyświetlamy określony rezultat.
+                     * 3. Jeżeli jest miss, to wyświetlamy miss.
+                     * 4. Jeżeli jest hit, to nastepnie sprawdzamy czy PO tym hit'cie trafiony statek jest zatopiony czy nie.
+                     *     [BOOL] <IF> ... {wyświetl statek}
+                     *     [BOOL] <ELSE> ... {punkt 4.1}
+                     *     4.1. Jeżeli nie, to wstawiamy "X" w to pole.
+                     *     4.2. Jeżeli tak, to odkrywamy cały statek składający się z określonego numeru (- od jego długości)
+                     *         4.2.1. Jeżeli do tego dojdzie, to utwórz wcześniej poza całą metodą zmienną globalną statyczną i zmień wówczas jej wartość na true,
+                     *                if true -> reset metody.
+                     *         4.2.2. Zrób przed punktem 4.1. warunkek na true powyższego ^ bool'a i else dotyczące 4.2., jeżeli jest false (to można jecieć do 4.2),
+                     *                jeżeli jest true, to wyświetlamy cały statek (numerycznie). [BOOL]
+                     */
                     public static void RenderBoard() {
 
                     }
