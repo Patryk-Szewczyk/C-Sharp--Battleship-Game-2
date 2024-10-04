@@ -995,26 +995,6 @@ namespace Page_PVC {
                         Console.WriteLine("Attack: " + GlobalMethod.ConvertTo_A0(userCursor) + "\n\n");
                     }
                     if (isError) Console.WriteLine(error);
-                    /*if (counterEnter == 0) {
-                        int counter = 0;
-                        Console.WriteLine("Gracz:");
-                        for (int i = 0; i < 10; i++) {
-                            for (int j = 0; j < 10; j++) {
-                                Console.Write(userHitMiss[counter] + " ");
-                                counter++;
-                            }
-                            Console.WriteLine();
-                        }
-                        counter = 0;
-                        Console.WriteLine("\n\nKomputer:");
-                        for (int i = 0; i < 10; i++) {
-                            for (int j = 0; j < 10; j++) {
-                                Console.Write(compHitMiss[counter] + " ");
-                                counter++;
-                            }
-                            Console.WriteLine();
-                        }
-                    }*/
                     // TEST: - - - - - - - - - - - - - -
                     int counter = 0;
                     Console.WriteLine("\n\nPlansza gracza:");
@@ -1035,6 +1015,26 @@ namespace Page_PVC {
                         Console.WriteLine();
                     }
                     // - - - - - - - - - - - - - - - -
+                    /*if (counterEnter == 0) {
+                        int counter = 0;
+                        Console.WriteLine("Gracz:");
+                        for (int i = 0; i < 10; i++) {
+                            for (int j = 0; j < 10; j++) {
+                                Console.Write(userHitMiss[counter] + " ");
+                                counter++;
+                            }
+                            Console.WriteLine();
+                        }
+                        counter = 0;
+                        Console.WriteLine("\n\nKomputer:");
+                        for (int i = 0; i < 10; i++) {
+                            for (int j = 0; j < 10; j++) {
+                                Console.Write(compHitMiss[counter] + " ");
+                                counter++;
+                            }
+                            Console.WriteLine();
+                        }
+                    }*/
                 }
                 public static string[] MakeBoardArray() {
                     string[] board = new string[100];
@@ -1099,9 +1099,9 @@ namespace Page_PVC {
                         //Console.WriteLine("Kolej gracza");
                         isTurnUser = true;
                         Random random = new Random();
-                        int[] remListArray = GlobalMethod.ConvertTo_IntArray(userRemList);
+                        //int[] remListArray = GlobalMethod.ConvertTo_IntArray(userRemList);
                         //userRemList = GlobalMethod.ConvertTo_IntList(remListArray);
-                        int cursor = random.Next(0, remListArray.Length);
+                        int cursor = random.Next(0, userRemList.Count);
                         int remove = GlobalMethod.SearchRemoveAt(userRemList, cursor);
                         bool isHit = false;
                         for (int i = 0; i < userShipsCoor.Count; i++) {
@@ -1113,7 +1113,7 @@ namespace Page_PVC {
                             }
                             if (isHit) break;
                         }
-                        userRemList.RemoveAt(remove);   // Z tym jest BŁĄD!
+                        userRemList.RemoveAt(remove);   // Z tym jest BŁĄD! Kiedy "remove" jest równe -1, trzeba wylosować ponownie! Zrób specjalną do tego pętlę!!!
                         userBoard[cursor] = isHit ? "X" : "O";
                         Console.WriteLine("Computer choose " + cursor + " field. Click [ENTER] key to continue.");
                         Console.ReadLine();
