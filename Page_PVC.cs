@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Remoting.Messaging;
 using System.Runtime.Serialization.Formatters;
 using System.Security.Cryptography.X509Certificates;
+using System.Security.Policy;
 using System.Text.RegularExpressions;
 using Library_GlobalMethods;
 using Page_Options;
@@ -1064,28 +1065,32 @@ namespace Page_PVC {
                         if (counterEnter < 3) counterEnter++;   // Dlaczego w ogóle coś takiego jest? Wyjasnienie w pliku txt. pod tytułem "counterEnter - Dlaczego". 
                         if (counterEnter > 1) {   // Bez blokady na zmienną "counterEnter" użytkownik mógłby tyle razy go nacisnąć w jednej sesji uruchomienia programu, że zakres wartości typu "int" wykraczałby poza zasięg typu "int".
                             //Console.WriteLine("Kolej komputera");
-                            isTurnUser = false;
-                            isError = false;
-                            int cursor = userCursor;
-                            int remove = GlobalMethod.SearchRemoveAt(compRemList, cursor);
-                            if (remove != -1) {
-                                bool isHit = false;
-                                for (int i = 0; i < compShipsCoor.Count; i++) {
-                                    for (int j = 0; j < compShipsCoor[i].Count; j++) {
-                                        if (cursor == compShipsCoor[i][j]) {
-                                            isHit = true;
-                                            break;
+                            bool isLoop = true;
+                            while (isLoop) {
+                                isError = false;
+                                int cursor = userCursor;
+                                int remove = GlobalMethod.SearchRemoveAt(compRemList, cursor);
+                                if (remove != -1) {
+                                    bool isHit = false;
+                                    for (int i = 0; i < compShipsCoor.Count; i++) {
+                                        for (int j = 0; j < compShipsCoor[i].Count; j++) {
+                                            if (cursor == compShipsCoor[i][j]) {
+                                                isHit = true;
+                                                break;
+                                            }
                                         }
+                                        if (isHit) break;
                                     }
-                                    if (isHit) break;
+                                    compRemList.RemoveAt(remove);
+                                    compBoard[cursor] = isHit ? "X" : "O";
+                                    isLoop = false;
+                                    isTurnUser = false;
+                                } else {
+                                    isError = true;
+                                    error = "This field has already been attacked!";
                                 }
-                                compRemList.RemoveAt(remove);
-                                compBoard[cursor] = isHit ? "X" : "O";
-                            } else {
-                                isError = true;
-                                error = "This field has already been attacked!";
+                                ReloadPage();
                             }
-                            ReloadPage();
                         }
                     }
                 }
