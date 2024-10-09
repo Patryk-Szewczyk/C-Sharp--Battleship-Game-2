@@ -12,7 +12,6 @@ using System.Text.RegularExpressions;
 using Library_GlobalMethods;
 using Page_Options;
 using Page_Ranking;
-using static Page_PVC.PVC;
 
 namespace Page_PVC {
     public class PVC {
@@ -607,10 +606,10 @@ namespace Page_PVC {
                     public static void DetermineShipsUsingKeys() {   // NAPRAW TO!
                         int cursor = positShipsCursor;
                         int ships = positShips.Count - 1;
-                        if (cursor > 0 && cursor < ships) positUsingKeys_SHIPS = "all";
                         if (cursor == 0) positUsingKeys_SHIPS = "left";
-                        if (cursor == ships) positUsingKeys_SHIPS = "right";
-                        if (ships <= 1) positUsingKeys_SHIPS = "";
+                        else if (cursor == ships) positUsingKeys_SHIPS = "right";
+                        else if (cursor > 0 && cursor < ships) positUsingKeys_SHIPS = "all";
+                        else if (ships <= 1) positUsingKeys_SHIPS = "";
                     }
                     public static string RenderShipSpace() {
                         string space = "";
@@ -1102,7 +1101,11 @@ namespace Page_PVC {
                         //int[] remListArray = GlobalMethod.ConvertTo_IntArray(userRemList);
                         //userRemList = GlobalMethod.ConvertTo_IntList(remListArray);
                         int cursor = random.Next(0, userRemList.Count);
-                        int remove = GlobalMethod.SearchRemoveAt(userRemList, cursor);
+                        int remove = 0;
+                        while (true) {
+                            remove = GlobalMethod.SearchRemoveAt(userRemList, cursor);
+                            if (remove != -1) break;
+                        }
                         bool isHit = false;
                         for (int i = 0; i < userShipsCoor.Count; i++) {
                             for (int j = 0; j < userShipsCoor[i].Count; j++) {
@@ -1113,17 +1116,22 @@ namespace Page_PVC {
                             }
                             if (isHit) break;
                         }
-                        userRemList.RemoveAt(remove);   // Z tym jest BŁĄD! Kiedy "remove" jest równe -1, trzeba wylosować ponownie! Zrób specjalną do tego pętlę!!!
+                        userRemList.RemoveAt(remove);   // Z tym jest BŁĄD! Kiedy "remove" jest równe -1, trzeba wylosować ponownie! Zrób specjalną do tego pętlę!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                         userBoard[cursor] = isHit ? "X" : "O";
                         Console.WriteLine("Computer choose " + cursor + " field. Click [ENTER] key to continue.");
                         Console.ReadLine();
                         ReloadPage();
                     }
-                    public static void SRS() {   // Strategic Random Shooting
+                    public class AI {
+                        public static void Control() { // Kontrola SRC i FSM.
 
-                    }
-                    public static void FSM() {   // Finite State Machine - strategiczne ostrzeliwanie statków i szukanie kolejnych, jeżeli natrafiono na nowy statek.
+                        }
+                        public static void SRS() {   // Strategic Random Shooting
 
+                        }
+                        public static void FSM() {   // Finite State Machine - strategiczne ostrzeliwanie statków i szukanie kolejnych, jeżeli natrafiono na nowy statek.
+
+                        }
                     }
                 }
                 public class Board {
